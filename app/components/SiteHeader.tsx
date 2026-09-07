@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { GraduationCap, Menu, Phone, X } from "./icons";
+import { GraduationCap, Menu, Phone, User, X } from "./icons";
 
 const nav = [
   { href: "/about", label: "About" },
@@ -46,6 +46,13 @@ export default function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <Link
+            href="/signin"
+            className="hidden shrink-0 items-center gap-1.5 rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:border-teal-600 hover:text-teal-700 sm:flex dark:border-slate-700 dark:text-slate-200 dark:hover:border-teal-500 dark:hover:text-teal-300"
+          >
+            <User className="h-3.5 w-3.5" />
+            Sign In
+          </Link>
           <a
             href="tel:9789214998"
             className="hidden shrink-0 items-center gap-1.5 rounded-full bg-gradient-to-r from-teal-600 to-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-teal-900/15 transition-transform hover:scale-[1.03] sm:flex"
@@ -77,9 +84,17 @@ export default function SiteHeader() {
               {item.label}
             </Link>
           ))}
+          <Link
+            href="/signin"
+            onClick={() => setOpen(false)}
+            className="mt-1 flex items-center justify-center gap-1.5 rounded-full border border-slate-300 px-4 py-2.5 font-semibold text-slate-700 dark:border-slate-700 dark:text-slate-200"
+          >
+            <User className="h-3.5 w-3.5" />
+            Sign In
+          </Link>
           <a
             href="tel:9789214998"
-            className="mt-1 flex items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-teal-600 to-emerald-600 px-4 py-2.5 font-semibold text-white"
+            className="flex items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-teal-600 to-emerald-600 px-4 py-2.5 font-semibold text-white"
           >
             <Phone className="h-3.5 w-3.5" />
             Call Now

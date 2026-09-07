@@ -81,7 +81,18 @@ export default function SiteFooter() {
             © {new Date().getFullYear()} Thangam Varahi Tuition Hub. All
             rights reserved.
           </span>
-          <span>Udyam Reg. No. UDYAM-TN-02-0419567</span>
+          <span className="flex items-center gap-3">
+            <span>Udyam Reg. No. UDYAM-TN-02-0419567</span>
+            <span aria-hidden className="text-stone-300 dark:text-slate-700">
+              |
+            </span>
+            <Link
+              href="/admin/login"
+              className="hover:text-teal-700 dark:hover:text-teal-300"
+            >
+              Admin Login
+            </Link>
+          </span>
         </div>
       </div>
     </footer>

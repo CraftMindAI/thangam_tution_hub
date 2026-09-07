@@ -117,6 +117,34 @@ export function X({ className }: IconProps) {
   );
 }
 
+export function User({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <circle cx="12" cy="8" r="3.8" />
+      <path d="M4.5 20c1-3.8 4-6 7.5-6s6.5 2.2 7.5 6" />
+    </svg>
+  );
+}
+
+export function Eye({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z" />
+      <circle cx="12" cy="12" r="2.8" />
+    </svg>
+  );
+}
+
+export function EyeOff({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M3 3l18 18" />
+      <path d="M10.6 5.6A10.6 10.6 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a13.7 13.7 0 0 1-3.2 4M6.6 6.9C4.1 8.6 2.5 12 2.5 12S6 18.5 12 18.5c1.3 0 2.5-.3 3.6-.8" />
+      <path d="M9.9 9.9a2.8 2.8 0 0 0 3.9 3.9" />
+    </svg>
+  );
+}
+
 export function ArrowRight({ className }: IconProps) {
   return (
     <svg {...base} className={className}>
