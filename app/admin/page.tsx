@@ -3,6 +3,7 @@ import Link from "next/link";
 import { createClient } from "../lib/supabase/server";
 import SignOutButton from "../components/SignOutButton";
 import CreateAdminForm from "./CreateAdminForm";
+import StartZoomButton from "./StartZoomButton";
 import { Award, BookOpen, Users } from "../components/icons";
 
 function formatDateTime(iso: string) {
@@ -87,6 +88,10 @@ export default async function AdminDashboard() {
                 New Student Enquiries
               </p>
             </div>
+          </div>
+
+          <div className="mt-6">
+            <StartZoomButton userId={user.id} userName={user.email ?? "Admin"} />
           </div>
 
           <div className="mt-6">
