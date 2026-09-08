@@ -191,26 +191,6 @@ export function HeartHandshake({ className }: IconProps) {
   );
 }
 
-export function LayoutDashboard({ className }: IconProps) {
-  return (
-    <svg {...base} className={className}>
-      <rect x="3" y="3" width="7" height="9" rx="1.5" />
-      <rect x="14" y="3" width="7" height="5" rx="1.5" />
-      <rect x="14" y="12" width="7" height="9" rx="1.5" />
-      <rect x="3" y="16" width="7" height="5" rx="1.5" />
-    </svg>
-  );
-}
-
-export function Calendar({ className }: IconProps) {
-  return (
-    <svg {...base} className={className}>
-      <rect x="3" y="5" width="18" height="16" rx="2" />
-      <path d="M3 10h18M8 3v4M16 3v4" />
-    </svg>
-  );
-}
-
 export function CalendarClock({ className }: IconProps) {
   return (
     <svg {...base} className={className}>
