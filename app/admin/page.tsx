@@ -4,9 +4,10 @@ import { createClient } from "../lib/supabase/server";
 import SignOutButton from "../components/SignOutButton";
 import CreateAdminForm from "./CreateAdminForm";
 import StartZoomButton from "./StartZoomButton";
-import { Award, BookOpen, Users } from "../components/icons";
+import { Award, BookOpen, Sparkles, Users } from "../components/icons";
 
-function formatDateTime(iso: string) {
+function formatDateTime(iso: string | null) {
+  if (!iso) return "Not scheduled";
   return new Date(iso).toLocaleString("en-IN", {
     day: "2-digit",
     month: "2-digit",
@@ -36,16 +37,21 @@ export default async function AdminDashboard() {
     redirect("/admin/login");
   }
 
-  const [{ data: existingRequests }, { data: newRequests }] = await Promise.all([
-    supabase
-      .from("existing_student_requests")
-      .select("*")
-      .order("created_at", { ascending: false }),
-    supabase
-      .from("new_student_requests")
-      .select("*")
-      .order("created_at", { ascending: false }),
-  ]);
+  const [{ data: existingRequests }, { data: newRequests }, { data: demoRequests }] =
+    await Promise.all([
+      supabase
+        .from("existing_student_requests")
+        .select("*")
+        .order("created_at", { ascending: false }),
+      supabase
+        .from("new_student_requests")
+        .select("*")
+        .order("created_at", { ascending: false }),
+      supabase
+        .from("demo_requests")
+        .select("*")
+        .order("created_at", { ascending: false }),
+    ]);
 
   return (
     <div className="flex flex-1 flex-col bg-stone-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100">
@@ -65,7 +71,7 @@ export default async function AdminDashboard() {
 
       <main className="flex-1">
         <section className="mx-auto max-w-6xl px-6 py-10">
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-3">
             <div className="rounded-2xl border border-stone-200/70 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-800">
               <span className="flex h-10 w-10 items-center justify-center rounded-full bg-teal-50 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300">
                 <BookOpen className="h-5 w-5" />
@@ -86,6 +92,17 @@ export default async function AdminDashboard() {
               </p>
               <p className="text-sm text-slate-600 dark:text-slate-400">
                 New Student Enquiries
+              </p>
+            </div>
+            <div className="rounded-2xl border border-stone-200/70 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-800">
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-teal-50 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300">
+                <Sparkles className="h-5 w-5" />
+              </span>
+              <p className="mt-3 text-2xl font-bold text-slate-900 dark:text-white">
+                {demoRequests?.length ?? 0}
+              </p>
+              <p className="text-sm text-slate-600 dark:text-slate-400">
+                Demo Class Requests
               </p>
             </div>
           </div>
@@ -156,10 +173,10 @@ export default async function AdminDashboard() {
               <thead className="border-b border-stone-200/70 text-xs uppercase tracking-wider text-slate-500 dark:border-slate-700 dark:text-slate-400">
                 <tr>
                   <th className="px-4 py-3">Student</th>
-                  <th className="px-4 py-3">Contacted Person</th>
-                  <th className="px-4 py-3">Relationship</th>
                   <th className="px-4 py-3">Standard</th>
-                  <th className="px-4 py-3">Follow-up Contact</th>
+                  <th className="px-4 py-3">School</th>
+                  <th className="px-4 py-3">Parent Name</th>
+                  <th className="px-4 py-3">Parent Phone</th>
                   <th className="px-4 py-3">Meeting</th>
                 </tr>
               </thead>
@@ -171,16 +188,16 @@ export default async function AdminDashboard() {
                         {r.student_name}
                       </td>
                       <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
-                        {r.contact_person_name}
-                      </td>
-                      <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
-                        {r.relationship_with_student}
-                      </td>
-                      <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
                         {r.standard}
                       </td>
                       <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
-                        {r.followup_contact_name} &middot; {r.followup_contact_number}
+                        {r.school_name}
+                      </td>
+                      <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
+                        {r.parent_name}
+                      </td>
+                      <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
+                        {r.parent_phone}
                       </td>
                       <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
                         {formatDateTime(r.meeting_at)}
@@ -191,6 +208,52 @@ export default async function AdminDashboard() {
                   <tr>
                     <td colSpan={6} className="px-4 py-6 text-center text-slate-500 dark:text-slate-400">
                       No enquiries yet.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          <h2 className="mt-10 text-sm font-semibold uppercase tracking-wider text-teal-700 dark:text-teal-400">
+            Demo Class Requests
+          </h2>
+          <div className="mt-3 overflow-x-auto rounded-2xl border border-stone-200/70 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-800">
+            <table className="w-full min-w-[720px] text-left text-sm">
+              <thead className="border-b border-stone-200/70 text-xs uppercase tracking-wider text-slate-500 dark:border-slate-700 dark:text-slate-400">
+                <tr>
+                  <th className="px-4 py-3">Name</th>
+                  <th className="px-4 py-3">Email</th>
+                  <th className="px-4 py-3">Phone</th>
+                  <th className="px-4 py-3">Details</th>
+                  <th className="px-4 py-3">Submitted</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-stone-100 dark:divide-slate-700">
+                {demoRequests?.length ? (
+                  demoRequests.map((r) => (
+                    <tr key={r.id}>
+                      <td className="px-4 py-3 font-medium text-slate-800 dark:text-slate-200">
+                        {r.name}
+                      </td>
+                      <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
+                        {r.email}
+                      </td>
+                      <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
+                        {r.phone}
+                      </td>
+                      <td className="max-w-xs px-4 py-3 text-slate-600 dark:text-slate-400">
+                        {r.description}
+                      </td>
+                      <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
+                        {formatDateTime(r.created_at)}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={5} className="px-4 py-6 text-center text-slate-500 dark:text-slate-400">
+                      No demo requests yet.
                     </td>
                   </tr>
                 )}

@@ -3,15 +3,12 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, Phone, User, X } from "./icons";
+import { Menu, User, X } from "./icons";
 
 const nav = [
-  { href: "/about", label: "About" },
-  { href: "/#classes", label: "Classes" },
-  { href: "/#why-us", label: "Why Us" },
-  { href: "/#fees", label: "Fees" },
-  { href: "/#timings", label: "Timings" },
-  { href: "/#contact", label: "Contact" },
+  { href: "/about", label: "About Us" },
+  { href: "/contact", label: "Contact Us" },
+  { href: "/demo", label: "Demo" },
 ];
 
 export default function SiteHeader() {
@@ -61,13 +58,12 @@ export default function SiteHeader() {
             <User className="h-3.5 w-3.5" />
             Sign In
           </Link>
-          <a
-            href="tel:9789214998"
-            className="hidden shrink-0 items-center gap-1.5 rounded-full bg-gradient-to-r from-teal-600 to-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-teal-900/15 transition-transform hover:scale-[1.03] sm:flex"
+          <Link
+            href="/signup"
+            className="hidden shrink-0 items-center gap-1.5 rounded-full bg-teal-600 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-teal-900/15 transition-colors hover:bg-teal-700 sm:flex"
           >
-            <Phone className="h-3.5 w-3.5" />
-            Call Now
-          </a>
+            Sign Up
+          </Link>
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
@@ -100,13 +96,13 @@ export default function SiteHeader() {
             <User className="h-3.5 w-3.5" />
             Sign In
           </Link>
-          <a
-            href="tel:9789214998"
-            className="flex items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-teal-600 to-emerald-600 px-4 py-2.5 font-semibold text-white"
+          <Link
+            href="/signup"
+            onClick={() => setOpen(false)}
+            className="flex items-center justify-center gap-1.5 rounded-full bg-teal-600 px-4 py-2.5 font-semibold text-white"
           >
-            <Phone className="h-3.5 w-3.5" />
-            Call Now
-          </a>
+            Sign Up
+          </Link>
         </nav>
       )}
     </header>

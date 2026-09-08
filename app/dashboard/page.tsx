@@ -211,21 +211,15 @@ export default async function Dashboard() {
                     </dd>
                   </div>
                   <div className="flex justify-between gap-4">
-                    <dt>Contacted Person</dt>
-                    <dd className="font-medium text-slate-800 dark:text-slate-200">
-                      {newReq.contact_person_name}
-                    </dd>
-                  </div>
-                  <div className="flex justify-between gap-4">
-                    <dt>Relationship</dt>
-                    <dd className="font-medium text-slate-800 dark:text-slate-200">
-                      {newReq.relationship_with_student}
-                    </dd>
-                  </div>
-                  <div className="flex justify-between gap-4">
                     <dt>Standard</dt>
                     <dd className="font-medium text-slate-800 dark:text-slate-200">
                       {newReq.standard}
+                    </dd>
+                  </div>
+                  <div className="flex justify-between gap-4">
+                    <dt>School</dt>
+                    <dd className="font-medium text-slate-800 dark:text-slate-200">
+                      {newReq.school_name}
                     </dd>
                   </div>
                 </dl>
@@ -239,16 +233,16 @@ export default async function Dashboard() {
                   Scheduled Meeting
                 </h2>
                 <p className="mt-3 text-lg font-semibold text-slate-800 dark:text-slate-200">
-                  {new Date(newReq.meeting_at).toLocaleDateString("en-IN", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                  })}{" "}
-                  &middot;{" "}
-                  {new Date(newReq.meeting_at).toLocaleTimeString("en-IN", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
+                  {newReq.meeting_at
+                    ? `${new Date(newReq.meeting_at).toLocaleDateString("en-IN", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                      })} · ${new Date(newReq.meeting_at).toLocaleTimeString("en-IN", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}`
+                    : "Not scheduled yet — we'll be in touch."}
                 </p>
               </div>
 
@@ -257,19 +251,19 @@ export default async function Dashboard() {
                   <Phone className="h-5 w-5" />
                 </span>
                 <h2 className="mt-4 font-semibold text-slate-900 dark:text-white">
-                  Follow-up Contact
+                  Parent / Guardian
                 </h2>
                 <dl className="mt-3 space-y-1.5 text-sm text-slate-600 dark:text-slate-400">
                   <div className="flex justify-between gap-4">
                     <dt>Name</dt>
                     <dd className="font-medium text-slate-800 dark:text-slate-200">
-                      {newReq.followup_contact_name}
+                      {newReq.parent_name}
                     </dd>
                   </div>
                   <div className="flex justify-between gap-4">
-                    <dt>Number</dt>
+                    <dt>Phone</dt>
                     <dd className="font-medium text-slate-800 dark:text-slate-200">
-                      {newReq.followup_contact_number}
+                      {newReq.parent_phone}
                     </dd>
                   </div>
                 </dl>

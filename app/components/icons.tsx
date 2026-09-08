@@ -145,6 +145,34 @@ export function EyeOff({ className }: IconProps) {
   );
 }
 
+export function Calendar({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <rect x="3.5" y="5" width="17" height="15" rx="2" />
+      <path d="M3.5 9.5h17M8 3v3.5M16 3v3.5" />
+    </svg>
+  );
+}
+
+export function LayoutDashboard({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <rect x="3.5" y="3.5" width="7.5" height="9" rx="1.3" />
+      <rect x="13" y="3.5" width="7.5" height="5.5" rx="1.3" />
+      <rect x="13" y="11" width="7.5" height="9.5" rx="1.3" />
+      <rect x="3.5" y="15" width="7.5" height="5.5" rx="1.3" />
+    </svg>
+  );
+}
+
+export function MessageSquare({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M4 5.5h16v11H9l-4 3.5v-3.5H4Z" />
+    </svg>
+  );
+}
+
 export function ArrowRight({ className }: IconProps) {
   return (
     <svg {...base} className={className}>
