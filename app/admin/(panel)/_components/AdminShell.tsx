@@ -18,8 +18,12 @@ export default function AdminShell({
 }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [hoveredHref, setHoveredHref] = useState<string | null>(null);
 
-  const current = [...adminNav]
+  const flatNav = adminNav.flatMap((item) =>
+    item.children ? [item, ...item.children] : [item]
+  );
+  const current = [...flatNav]
     .sort((a, b) => b.href.length - a.href.length)
     .find((item) => isActive(pathname, item) || pathname.startsWith(`${item.href}/`));
   const pageTitle = current?.label ?? "Admin";
@@ -28,20 +32,52 @@ export default function AdminShell({
     <nav className="flex flex-1 flex-col gap-1 px-3">
       {adminNav.map((item) => {
         const active = isActive(pathname, item);
+        const childOnPath =
+          item.children?.some((c) => isActive(pathname, c)) ?? false;
+        const sectionOpen =
+          Boolean(item.children) &&
+          (active || childOnPath || hoveredHref === item.href);
         return (
-          <Link
+          <div
             key={item.href}
-            href={item.href}
-            onClick={() => setMobileOpen(false)}
-            className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
-              active
-                ? "bg-gradient-to-r from-slate-700 to-slate-900 text-white shadow-sm shadow-slate-900/20"
-                : "text-slate-600 hover:bg-stone-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
-            }`}
+            onMouseEnter={() => item.children && setHoveredHref(item.href)}
+            onMouseLeave={() => setHoveredHref(null)}
           >
-            <item.icon className="h-4.5 w-4.5 shrink-0" />
-            {item.label}
-          </Link>
+            <Link
+              href={item.href}
+              onClick={() => setMobileOpen(false)}
+              className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
+                active
+                  ? "bg-gradient-to-r from-slate-700 to-slate-900 text-white shadow-sm shadow-slate-900/20"
+                  : "text-slate-600 hover:bg-stone-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
+              }`}
+            >
+              <item.icon className="h-4.5 w-4.5 shrink-0" />
+              {item.label}
+            </Link>
+
+            {item.children && sectionOpen && (
+              <div className="mt-1 ml-4 flex flex-col gap-0.5 border-l border-stone-200 pl-3 dark:border-slate-700">
+                {item.children.map((child) => {
+                  const childActive = isActive(pathname, child);
+                  return (
+                    <Link
+                      key={child.href}
+                      href={child.href}
+                      onClick={() => setMobileOpen(false)}
+                      className={`rounded-lg px-3 py-2 text-sm transition-colors ${
+                        childActive
+                          ? "font-semibold text-slate-900 dark:text-white"
+                          : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+                      }`}
+                    >
+                      {child.label}
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         );
       })}
     </nav>

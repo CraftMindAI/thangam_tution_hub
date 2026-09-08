@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import * as z from "zod";
 import { createClient } from "../lib/supabase/server";
@@ -115,6 +116,68 @@ export async function createAdminUser(
   }
 
   return { success: true, email: parsed.data.email };
+}
+
+const updateProfileSchema = z.object({
+  full_name: z.string().trim().min(2, "Enter your name"),
+  phone: z
+    .string()
+    .trim()
+    .regex(phoneRegex, "Enter a valid 10-digit mobile number"),
+});
+
+export type UpdateProfileState =
+  | { error: string }
+  | { success: true }
+  | undefined;
+
+export async function updateAdminProfile(
+  _state: UpdateProfileState,
+  formData: FormData
+): Promise<UpdateProfileState> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: "You must be signed in as an admin to do this." };
+  }
+
+  const { data: currentProfile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  if (currentProfile?.role !== "admin") {
+    return { error: "Only admins can update this profile." };
+  }
+
+  const parsed = updateProfileSchema.safeParse({
+    full_name: formData.get("full_name"),
+    phone: formData.get("phone"),
+  });
+
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid input." };
+  }
+
+  const admin = createAdminClient();
+  const { error } = await admin
+    .from("profiles")
+    .update({
+      full_name: parsed.data.full_name,
+      phone: parsed.data.phone,
+    })
+    .eq("id", user.id);
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath("/admin", "layout");
+  return { success: true };
 }
 
 const setPasswordSchema = z

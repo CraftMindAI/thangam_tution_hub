@@ -17,7 +17,19 @@ export type NavItem = {
   icon: IconType;
   /** match child routes as active too */
   matchPrefix?: boolean;
+  /** nested links shown under this item in the sidebar */
+  children?: NavItem[];
 };
+
+export const settingsNav: NavItem[] = [
+  { label: "Profile", href: "/admin/settings/profile", icon: Settings },
+  {
+    label: "Meeting Preference",
+    href: "/admin/settings/meeting-preference",
+    icon: CalendarClock,
+  },
+  { label: "Admin Users", href: "/admin/settings/admin-users", icon: Users },
+];
 
 export const adminNav: NavItem[] = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
@@ -40,17 +52,8 @@ export const adminNav: NavItem[] = [
     href: "/admin/settings",
     icon: Settings,
     matchPrefix: true,
+    children: settingsNav,
   },
-];
-
-export const settingsNav: NavItem[] = [
-  { label: "Profile", href: "/admin/settings", icon: Settings },
-  {
-    label: "Meeting Preference",
-    href: "/admin/settings/meeting-preference",
-    icon: CalendarClock,
-  },
-  { label: "Admin Users", href: "/admin/settings/admin-users", icon: Users },
 ];
 
 export function isActive(pathname: string, item: NavItem) {
