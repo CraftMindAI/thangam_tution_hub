@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { GraduationCap, Mail, MapPin, Phone } from "./icons";
+import Image from "next/image";
+import { Mail, MapPin, Phone } from "./icons";
 
 const quickLinks = [
   { href: "/about", label: "About Us" },
@@ -15,8 +16,14 @@ export default function SiteFooter() {
         <div className="grid gap-10 sm:grid-cols-3">
           <div>
             <div className="flex items-center gap-2.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white">
-                <GraduationCap className="h-5 w-5" />
+              <span className="relative flex h-9 w-9 shrink-0 overflow-hidden rounded-xl">
+                <Image
+                  src="/logo.jpeg"
+                  alt="Thangam Varahi Tuition Hub"
+                  fill
+                  sizes="36px"
+                  className="object-cover"
+                />
               </span>
               <span className="text-sm font-extrabold tracking-tight text-slate-900 dark:text-white">
                 Thangam Varahi Tuition Hub

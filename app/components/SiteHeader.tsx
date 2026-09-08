@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { GraduationCap, Menu, Phone, User, X } from "./icons";
+import Image from "next/image";
+import { Menu, Phone, User, X } from "./icons";
 
 const nav = [
   { href: "/about", label: "About" },
@@ -20,8 +21,15 @@ export default function SiteHeader() {
     <header className="sticky top-0 z-30 border-b border-stone-200/70 bg-stone-50/80 backdrop-blur-lg dark:border-slate-800 dark:bg-slate-900/80">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-3.5">
         <Link href="/" className="flex items-center gap-2.5">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white shadow-md shadow-teal-900/10">
-            <GraduationCap className="h-5 w-5" />
+          <span className="relative flex h-9 w-9 shrink-0 overflow-hidden rounded-xl shadow-md shadow-teal-900/10">
+            <Image
+              src="/logo.jpeg"
+              alt="Thangam Varahi Tuition Hub"
+              fill
+              sizes="36px"
+              className="object-cover"
+              priority
+            />
           </span>
           <span className="flex flex-col leading-tight">
             <span className="text-sm font-extrabold tracking-tight text-slate-900 sm:text-base dark:text-white">

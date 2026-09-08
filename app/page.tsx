@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import SiteHeader from "./components/SiteHeader";
 import SiteFooter from "./components/SiteFooter";
 import {
@@ -258,6 +259,43 @@ export default function Home() {
                   {activity}
                 </span>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Online Classes */}
+        <section className="py-20">
+          <div className="mx-auto max-w-6xl px-6">
+            <div className="text-center">
+              <Eyebrow>Class On Air</Eyebrow>
+              <h2 className="mt-4 text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+                Free Online Doubt-Clearing Sessions
+              </h2>
+              <p className="mx-auto mt-3 max-w-2xl text-slate-600 dark:text-slate-400">
+                Every child gets live, one-on-one online sessions after
+                tuition hours, at no extra cost — so no doubt goes
+                unanswered.
+              </p>
+            </div>
+            <div className="mt-10 grid gap-5 sm:grid-cols-2">
+              <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-stone-200/70 shadow-sm dark:border-slate-800">
+                <Image
+                  src="/coa.jpg"
+                  alt="Live online class in session"
+                  fill
+                  sizes="(min-width: 640px) 50vw, 100vw"
+                  className="object-cover"
+                />
+              </div>
+              <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-stone-200/70 shadow-sm dark:border-slate-800">
+                <Image
+                  src="/online.avif"
+                  alt="Student attending an online tuition session"
+                  fill
+                  sizes="(min-width: 640px) 50vw, 100vw"
+                  className="object-cover"
+                />
+              </div>
             </div>
           </div>
         </section>
