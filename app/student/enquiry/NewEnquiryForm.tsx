@@ -4,7 +4,7 @@ import { useActionState, useRef, useEffect } from "react";
 import { submitStudentEnquiry } from "../../actions/enquiry";
 
 const inputClass =
-  "mt-1.5 w-full rounded-lg border border-stone-300 bg-stone-50 px-3.5 py-2.5 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-white";
+  "mt-1.5 w-full rounded-lg border border-stone-300 bg-stone-50 px-3.5 py-2.5 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-slate-500 focus:ring-2 focus:ring-slate-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-white";
 const errorInputClass =
   "border-red-400 focus:border-red-500 focus:ring-red-500/20 dark:border-red-500/70";
 const labelClass = "text-sm font-medium text-slate-700 dark:text-slate-200";
@@ -43,6 +43,7 @@ export default function NewEnquiryForm() {
           Your enquiry has been submitted.
         </p>
       )}
+
 
       <label htmlFor="title" className={labelClass}>
         Title (e.g. Unit / Chapter name)
@@ -86,7 +87,7 @@ export default function NewEnquiryForm() {
       <button
         type="submit"
         disabled={pending}
-        className="mt-6 flex w-full items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-teal-600 to-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-teal-900/15 transition-transform hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
+        className="mt-6 flex w-full items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-slate-700 to-slate-900 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-slate-900/20 transition-transform hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
       >
         {pending ? "Submitting…" : "Submit Enquiry"}
       </button>

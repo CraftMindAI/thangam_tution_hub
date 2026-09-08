@@ -93,7 +93,7 @@ export default function MonthCalendar({ events }: { events: CalendarEvent[] }) {
               <span
                 className={`flex h-6 w-6 items-center justify-center rounded-full ${
                   isToday
-                    ? "bg-teal-600 font-semibold text-white"
+                    ? "bg-slate-800 font-semibold text-white dark:bg-slate-100 dark:text-slate-900"
                     : "text-slate-700 dark:text-slate-300"
                 }`}
               >
@@ -103,7 +103,7 @@ export default function MonthCalendar({ events }: { events: CalendarEvent[] }) {
                 <span
                   key={idx}
                   title={`${event.label}${event.time ? ` · ${event.time}` : ""}`}
-                  className="mt-1 flex w-full items-center justify-center gap-0.5 truncate rounded bg-gradient-to-r from-teal-600 to-emerald-600 px-1 py-0.5 text-[10px] font-medium text-white"
+                  className="mt-1 flex w-full items-center justify-center gap-0.5 truncate rounded bg-gradient-to-r from-slate-700 to-slate-900 px-1 py-0.5 text-[10px] font-medium text-white"
                 >
                   {event.time ?? event.label}
                 </span>

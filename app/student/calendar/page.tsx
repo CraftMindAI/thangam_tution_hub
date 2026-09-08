@@ -53,17 +53,12 @@ export default async function StudentCalendar() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-6 py-10">
-      <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-        Calendar
-      </h1>
-      <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+    <div className="space-y-6">
+      <p className="text-sm text-slate-600 dark:text-slate-400">
         Your upcoming classes and meeting invites will appear here.
       </p>
 
-      <div className="mt-6">
-        <MonthCalendar events={events} />
-      </div>
+      <MonthCalendar events={events} />
     </div>
   );
 }

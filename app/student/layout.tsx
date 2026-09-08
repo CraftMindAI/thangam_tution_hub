@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "../lib/supabase/server";
-import Sidebar from "./Sidebar";
+import StudentShell from "./_components/StudentShell";
 
 export default async function StudentLayout({
   children,
@@ -14,10 +14,18 @@ export default async function StudentLayout({
     redirect("/signin");
   }
 
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("full_name")
+    .eq("id", user.id)
+    .single();
+
   return (
-    <div className="flex flex-1 bg-stone-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100">
-      <Sidebar />
-      <main className="flex-1 overflow-y-auto">{children}</main>
-    </div>
+    <StudentShell
+      studentName={profile?.full_name ?? user.email ?? "Student"}
+      studentEmail={user.email ?? ""}
+    >
+      {children}
+    </StudentShell>
   );
 }
