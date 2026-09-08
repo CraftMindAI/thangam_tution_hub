@@ -1,4 +1,5 @@
 import { createClient } from "../../../../lib/supabase/server";
+import { createAdminClient } from "../../../../lib/supabase/admin";
 import CreateAdminForm from "../../../CreateAdminForm";
 
 export default async function AdminUsersPage() {
@@ -10,15 +11,28 @@ export default async function AdminUsersPage() {
     .eq("role", "admin")
     .order("full_name", { ascending: true });
 
+  // Emails live on auth.users, not profiles — pull them with the service client.
+  const emailById = new Map<string, string>();
+  try {
+    const adminClient = createAdminClient();
+    const { data } = await adminClient.auth.admin.listUsers({ perPage: 1000 });
+    for (const u of data?.users ?? []) {
+      if (u.email) emailById.set(u.id, u.email);
+    }
+  } catch {
+    // If the service key isn't configured, just show a dash for email.
+  }
+
   return (
     <div className="space-y-6">
       <CreateAdminForm />
 
       <div className="overflow-x-auto rounded-2xl border border-stone-200/70 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-800">
-        <table className="w-full min-w-[480px] text-left text-sm">
+        <table className="w-full min-w-[560px] text-left text-sm">
           <thead className="border-b border-stone-200/70 text-xs uppercase tracking-wider text-slate-500 dark:border-slate-700 dark:text-slate-400">
             <tr>
               <th className="px-4 py-3">Name</th>
+              <th className="px-4 py-3">Email</th>
               <th className="px-4 py-3">Phone</th>
             </tr>
           </thead>
@@ -30,6 +44,9 @@ export default async function AdminUsersPage() {
                     {a.full_name ?? "—"}
                   </td>
                   <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
+                    {emailById.get(a.id) ?? "—"}
+                  </td>
+                  <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
                     {a.phone ?? "—"}
                   </td>
                 </tr>
@@ -37,7 +54,7 @@ export default async function AdminUsersPage() {
             ) : (
               <tr>
                 <td
-                  colSpan={2}
+                  colSpan={3}
                   className="px-4 py-6 text-center text-slate-500 dark:text-slate-400"
                 >
                   No admin users found.
