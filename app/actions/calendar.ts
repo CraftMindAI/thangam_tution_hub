@@ -455,7 +455,7 @@ export async function updateCalendarEvent(
   const { data: existing } = await auth.supabase
     .from("calendar_events")
     .select("call_id, attachment_url, attachment_name")
-    .eq("id", id)
+    .eq("id", id).eq("created_by", auth.userId)
     .single();
   if (!existing) return { error: "That meeting no longer exists." };
 
@@ -489,7 +489,7 @@ export async function updateCalendarEvent(
       attachment_url: attachmentUrl,
       attachment_name: attachmentName,
     })
-    .eq("id", id);
+    .eq("id", id).eq("created_by", auth.userId);
   if (updateErr) return { error: updateErr.message };
 
   const emails = await syncEventInvites(auth.supabase, id, classFilter);
@@ -554,14 +554,14 @@ export async function rescheduleCalendarEvent(
     .select(
       "title, description, meeting_type, duration_minutes, call_id, attachment_url, attachment_name"
     )
-    .eq("id", parsed.data.id)
+    .eq("id", parsed.data.id).eq("created_by", auth.userId)
     .single();
   if (!existing) return { error: "That meeting no longer exists." };
 
   const { error } = await auth.supabase
     .from("calendar_events")
     .update({ starts_at: startsAt.toISOString() })
-    .eq("id", parsed.data.id);
+    .eq("id", parsed.data.id).eq("created_by", auth.userId);
   if (error) return { error: error.message };
 
   const { data: inviteRows } = await auth.supabase
@@ -607,7 +607,7 @@ export async function cancelCalendarEvent(
     .select(
       "title, description, meeting_type, starts_at, duration_minutes, call_id, attachment_url, attachment_name"
     )
-    .eq("id", id)
+    .eq("id", id).eq("created_by", auth.userId)
     .single();
   if (!existing) return { error: "That meeting no longer exists." };
 
@@ -620,7 +620,7 @@ export async function cancelCalendarEvent(
   const { error } = await auth.supabase
     .from("calendar_events")
     .delete()
-    .eq("id", id);
+    .eq("id", id).eq("created_by", auth.userId);
   if (error) return { error: error.message };
 
   const emailed = await notifyInvitees(

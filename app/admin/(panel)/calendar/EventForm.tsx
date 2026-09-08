@@ -29,21 +29,34 @@ export type EditableEvent = {
   attachment_name: string | null;
 };
 
-type Props =
+type Props = (
   | { mode: "create"; defaultDate: string; defaultTime: string }
-  | { mode: "edit"; event: EditableEvent };
+  | { mode: "edit"; event: EditableEvent }
+) & {
+  /** When set, the form is shown inside a modal: on success it calls this
+   *  and refreshes instead of navigating to the calendar page. */
+  onDone?: () => void;
+};
 
 export default function EventForm(props: Props) {
   const router = useRouter();
   const isEdit = props.mode === "edit";
+  const inModal = typeof props.onDone === "function";
   const [state, formAction, pending] = useActionState(
     isEdit ? updateCalendarEvent : createCalendarEvent,
     undefined
   );
 
   useEffect(() => {
-    if (state && "success" in state) router.push("/admin/calendar");
-  }, [state, router]);
+    if (state && "success" in state) {
+      if (props.onDone) {
+        props.onDone();
+        router.refresh();
+      } else {
+        router.push("/admin/calendar");
+      }
+    }
+  }, [state, router, props]);
 
   const ev = props.mode === "edit" ? props.event : null;
   let defaultDate: string;
@@ -62,13 +75,15 @@ export default function EventForm(props: Props) {
       action={formAction}
       className="rounded-2xl border border-stone-200/70 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-800"
     >
-      <Link
-        href="/admin/calendar"
-        className="mb-4 inline-flex items-center gap-1.5 text-sm font-semibold text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-      >
-        <ArrowRight className="h-4 w-4 rotate-180" />
-        Back to calendar
-      </Link>
+      {!inModal && (
+        <Link
+          href="/admin/calendar"
+          className="mb-4 inline-flex items-center gap-1.5 text-sm font-semibold text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+        >
+          <ArrowRight className="h-4 w-4 rotate-180" />
+          Back to calendar
+        </Link>
+      )}
 
       {isEdit && <input type="hidden" name="id" value={ev!.id} />}
 
@@ -232,12 +247,22 @@ export default function EventForm(props: Props) {
               ? "Save & notify students"
               : "Schedule & send invites"}
         </button>
-        <Link
-          href="/admin/calendar"
-          className="rounded-full border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:border-slate-500 hover:text-slate-900 dark:border-slate-600 dark:text-slate-200 dark:hover:border-slate-400 dark:hover:text-white"
-        >
-          Cancel
-        </Link>
+        {inModal ? (
+          <button
+            type="button"
+            onClick={props.onDone}
+            className="rounded-full border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:border-slate-500 hover:text-slate-900 dark:border-slate-600 dark:text-slate-200 dark:hover:border-slate-400 dark:hover:text-white"
+          >
+            Cancel
+          </button>
+        ) : (
+          <Link
+            href="/admin/calendar"
+            className="rounded-full border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:border-slate-500 hover:text-slate-900 dark:border-slate-600 dark:text-slate-200 dark:hover:border-slate-400 dark:hover:text-white"
+          >
+            Cancel
+          </Link>
+        )}
       </div>
     </form>
   );

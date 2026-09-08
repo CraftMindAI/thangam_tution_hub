@@ -33,7 +33,6 @@ export const settingsNav: NavItem[] = [
 
 export const adminNav: NavItem[] = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
-  { label: "Meetings", href: "/admin/meetings", icon: Calendar },
   {
     label: "Upcoming Meetings",
     href: "/admin/upcoming-meetings",

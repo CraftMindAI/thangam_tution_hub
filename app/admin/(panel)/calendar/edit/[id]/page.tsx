@@ -18,9 +18,10 @@ export default async function EditEventPage({
   const { data: event } = await supabase
     .from("calendar_events")
     .select(
-      "id, title, description, meeting_type, starts_at, duration_minutes, repeat_daily, class_filter, attachment_name"
+      "id, title, description, meeting_type, starts_at, duration_minutes, class_filter, attachment_name"
     )
     .eq("id", id)
+    .eq("created_by", user.id)
     .single();
 
   if (!event) notFound();

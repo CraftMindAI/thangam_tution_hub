@@ -34,11 +34,16 @@ export default async function CalendarPage({
   const weekEnd = addDays(weekStart, 7);
 
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   const { data } = await supabase
     .from("calendar_events")
     .select(
       "id, title, description, starts_at, duration_minutes, meeting_type, class_filter, call_id, attachment_url, attachment_name"
     )
+    .eq("created_by", user?.id ?? "")
     .gte("starts_at", weekStart.toISOString())
     .lt("starts_at", weekEnd.toISOString())
     .order("starts_at", { ascending: true });
