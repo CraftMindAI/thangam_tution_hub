@@ -162,3 +162,80 @@ export function HeartHandshake({ className }: IconProps) {
     </svg>
   );
 }
+
+export function LayoutDashboard({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <rect x="3" y="3" width="7" height="9" rx="1.5" />
+      <rect x="14" y="3" width="7" height="5" rx="1.5" />
+      <rect x="14" y="12" width="7" height="9" rx="1.5" />
+      <rect x="3" y="16" width="7" height="5" rx="1.5" />
+    </svg>
+  );
+}
+
+export function Calendar({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <rect x="3" y="5" width="18" height="16" rx="2" />
+      <path d="M3 10h18M8 3v4M16 3v4" />
+    </svg>
+  );
+}
+
+export function CalendarClock({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M21 10V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h6" />
+      <path d="M3 10h18M8 3v4M16 3v4" />
+      <circle cx="17.5" cy="16.5" r="4" />
+      <path d="M17.5 15v1.7l1.2.8" />
+    </svg>
+  );
+}
+
+export function ClipboardList({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <rect x="8" y="3" width="8" height="4" rx="1" />
+      <path d="M8 5H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
+      <path d="M8.5 11h.01M8.5 15h.01M12 11h4M12 15h4" />
+    </svg>
+  );
+}
+
+export function Inbox({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M3 12h5l2 3h4l2-3h5" />
+      <path d="M5 5h14l2 7v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6L5 5Z" />
+    </svg>
+  );
+}
+
+export function Settings({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <circle cx="12" cy="12" r="3" />
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.2.61.78 1.03 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z" />
+    </svg>
+  );
+}
+
+export function Video({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <rect x="2" y="6" width="14" height="12" rx="2" />
+      <path d="m16 10 6-3.5v11L16 14" />
+    </svg>
+  );
+}
+
+export function LogOut({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+      <path d="m16 17 5-5-5-5M21 12H9" />
+    </svg>
+  );
+}
