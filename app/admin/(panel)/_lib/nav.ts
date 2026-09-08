@@ -39,6 +39,12 @@ export const adminNav: NavItem[] = [
     href: "/admin/upcoming-meetings",
     icon: CalendarClock,
   },
+  {
+    label: "Calendar",
+    href: "/admin/calendar",
+    icon: Calendar,
+    matchPrefix: true,
+  },
   { label: "Assign Task", href: "/admin/assign-task", icon: ClipboardList },
   { label: "Enquiry", href: "/admin/enquiry", icon: Inbox },
   {
