@@ -129,20 +129,28 @@ export default function Home() {
                 result.
               </p>
               <div className="mt-8 flex flex-wrap gap-4">
-                <a
-                  href="tel:9789214998"
+                <Link
+                  href="/demo"
                   className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-teal-600 to-emerald-600 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-teal-900/20 transition-transform hover:scale-[1.03]"
                 >
-                  Call for Admission: 97892 14998
+                  Book a Free Demo Class
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                </a>
-                <Link
-                  href="/#fees"
-                  className="inline-flex items-center rounded-full border border-slate-300 bg-white/70 px-6 py-3.5 text-sm font-semibold text-slate-700 backdrop-blur transition-colors hover:border-teal-600 hover:text-teal-700 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-200 dark:hover:border-teal-500 dark:hover:text-teal-300"
-                >
-                  View Fee Structure
                 </Link>
+                <a
+                  href="tel:9789214998"
+                  className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white/70 px-6 py-3.5 text-sm font-semibold text-slate-700 backdrop-blur transition-colors hover:border-teal-600 hover:text-teal-700 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-200 dark:hover:border-teal-500 dark:hover:text-teal-300"
+                >
+                  <Phone className="h-4 w-4" />
+                  97892 14998
+                </a>
               </div>
+              <Link
+                href="/#fees"
+                className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-teal-700 hover:gap-2.5 dark:text-teal-300"
+              >
+                View fee structure
+                <ArrowRight className="h-4 w-4 transition-all" />
+              </Link>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -204,27 +212,53 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="relative mt-12 flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+            <div className="relative mt-14 flex flex-col gap-10 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
               <div
                 className="absolute top-6 right-8 left-8 hidden h-0.5 bg-gradient-to-r from-teal-300 via-teal-400 to-emerald-400 sm:block dark:from-teal-800 dark:via-teal-700 dark:to-emerald-700"
                 aria-hidden
               />
               {[
-                "Nursery (LKG / UKG)",
-                "1st – 5th Std.",
-                "6th – 9th Std.",
-                "10th Std.",
-              ].map((grade, i) => (
+                {
+                  grade: "Nursery",
+                  sub: "LKG / UKG",
+                  icon: Sparkles,
+                  desc: "Playful, foundational learning to build early reading, writing and number skills.",
+                },
+                {
+                  grade: "1st – 5th Std.",
+                  sub: "Primary",
+                  icon: BookOpen,
+                  desc: "Strong basics across all subjects, with two dedicated notebooks per child.",
+                },
+                {
+                  grade: "6th – 9th Std.",
+                  sub: "Middle & High",
+                  icon: Users,
+                  desc: "Deeper subject coverage with individual attention at every child's own table.",
+                },
+                {
+                  grade: "10th Std.",
+                  sub: "Board Year",
+                  icon: Award,
+                  desc: "Focused, exam-ready preparation to help every child give their best in boards.",
+                },
+              ].map(({ grade, sub, icon: Icon, desc }) => (
                 <div
                   key={grade}
-                  className="relative flex flex-1 flex-col items-center gap-3 text-center"
+                  className="group relative flex flex-1 flex-col items-center gap-3 text-center"
                 >
-                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-teal-600 to-emerald-600 text-base font-bold text-white shadow-md shadow-teal-900/20 ring-4 ring-stone-50 dark:ring-slate-900">
-                    {i + 1}
+                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-teal-600 to-emerald-600 text-white shadow-md shadow-teal-900/20 ring-4 ring-stone-50 transition-transform group-hover:scale-110 dark:ring-slate-900">
+                    <Icon className="h-5 w-5" />
                   </span>
-                  <span className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-teal-700 dark:text-teal-400">
+                    {sub}
+                  </span>
+                  <span className="-mt-2 text-base font-bold text-slate-900 dark:text-white">
                     {grade}
                   </span>
+                  <p className="max-w-[15rem] text-sm leading-6 text-slate-600 dark:text-slate-400">
+                    {desc}
+                  </p>
                 </div>
               ))}
             </div>
@@ -484,6 +518,14 @@ export default function Home() {
                     thangamvarahituitionhub247365@gmail.com
                   </a>
                 </p>
+                <a
+                  href="https://wa.me/919789214998"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-white/15 px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-white/25"
+                >
+                  Chat with us on WhatsApp
+                </a>
               </div>
               <div className="flex flex-col items-center justify-center gap-4 bg-white p-8 text-center dark:bg-slate-800">
                 <h3 className="font-semibold text-slate-900 dark:text-white">
