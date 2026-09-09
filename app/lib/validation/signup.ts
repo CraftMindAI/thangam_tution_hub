@@ -27,6 +27,13 @@ export const signUpSchema = z
       .string()
       .trim()
       .regex(phoneRegex, "Enter a valid 10-digit mobile number"),
+    location: z.string().trim().min(2, "Enter your area / locality"),
+    parent_email: z
+      .string()
+      .trim()
+      .optional()
+      .transform((v) => (v ? v : undefined))
+      .pipe(z.union([z.undefined(), z.string().email("Enter a valid parent email")])),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",

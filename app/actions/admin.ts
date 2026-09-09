@@ -6,6 +6,7 @@ import { headers } from "next/headers";
 import * as z from "zod";
 import { createClient } from "../lib/supabase/server";
 import { createAdminClient } from "../lib/supabase/admin";
+import { buildAdminPath } from "../lib/secure-path";
 import {
   defaultMeetingPreferences,
   type MeetingPreferences,
@@ -42,7 +43,7 @@ export async function adminSignIn(
     return { error: "This account does not have admin access." };
   }
 
-  redirect("/admin");
+  redirect(buildAdminPath(data.user.id));
 }
 
 const phoneRegex = /^[6-9]\d{9}$/;
@@ -123,7 +124,7 @@ export async function createAdminUser(
     return { error: profileErr.message };
   }
 
-  revalidatePath("/admin/settings/admin-users");
+  revalidatePath("/admin/[sid]/[uid]", "layout");
   return { success: true, email: parsed.data.email };
 }
 
@@ -185,7 +186,7 @@ export async function updateAdminProfile(
     return { error: error.message };
   }
 
-  revalidatePath("/admin", "layout");
+  revalidatePath("/admin/[sid]/[uid]", "layout");
   return { success: true };
 }
 
@@ -253,7 +254,7 @@ export async function updateMeetingPreferences(
     return { error: error.message };
   }
 
-  revalidatePath("/admin/settings/meeting-preference");
+  revalidatePath("/admin/[sid]/[uid]", "layout");
   return { success: true };
 }
 
@@ -300,5 +301,5 @@ export async function setPassword(
     return { error: error.message };
   }
 
-  redirect("/admin");
+  redirect(buildAdminPath(user.id));
 }

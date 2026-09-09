@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import * as z from "zod";
 import { createClient } from "../lib/supabase/server";
 import { createAdminClient } from "../lib/supabase/admin";
+import { buildAdminPath, buildStudentDashboardPath } from "../lib/secure-path";
 
 export type SignInState = { error?: string } | undefined;
 
@@ -32,7 +33,11 @@ export async function signIn(
     .eq("id", data.user.id)
     .single();
 
-  redirect(profile?.role === "admin" ? "/admin" : "/student");
+  redirect(
+    profile?.role === "admin"
+      ? buildAdminPath(data.user.id)
+      : buildStudentDashboardPath(data.user.id)
+  );
 }
 
 export async function signOut() {
@@ -139,5 +144,15 @@ export async function resetPassword(
     return { error: error.message };
   }
 
-  redirect("/student");
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  redirect(
+    profile?.role === "admin"
+      ? buildAdminPath(user.id)
+      : buildStudentDashboardPath(user.id)
+  );
 }

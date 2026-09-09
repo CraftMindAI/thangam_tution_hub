@@ -2,48 +2,83 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Menu, X } from "../../components/icons";
-import { signOut } from "../../actions/auth";
-import { buildStudentNav, isActive } from "../_lib/nav";
+import { Award, Menu, X } from "@/app/components/icons";
+import { signOut } from "@/app/actions/auth";
+import { adminBase, buildAdminNav, isActive } from "../_lib/nav";
 
-export default function StudentShell({
+export default function AdminShell({
   children,
-  studentName,
-  studentEmail,
-  dashboardHref,
+  adminName,
+  adminEmail,
 }: {
   children: React.ReactNode;
-  studentName: string;
-  studentEmail: string;
-  dashboardHref: string;
+  adminName: string;
+  adminEmail: string;
 }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [hoveredHref, setHoveredHref] = useState<string | null>(null);
 
-  const studentNav = buildStudentNav(dashboardHref);
-  const current = studentNav.find((item) => isActive(pathname, item));
-  const pageTitle = current?.label ?? "Student Portal";
+  const adminNav = buildAdminNav(adminBase(pathname));
+  const flatNav = adminNav.flatMap((item) =>
+    item.children ? [item, ...item.children] : [item]
+  );
+  const current = [...flatNav]
+    .sort((a, b) => b.href.length - a.href.length)
+    .find((item) => isActive(pathname, item) || pathname.startsWith(`${item.href}/`));
+  const pageTitle = current?.label ?? "Admin";
 
   const nav = (
     <nav className="flex flex-1 flex-col gap-1 px-3">
-      {studentNav.map((item) => {
+      {adminNav.map((item) => {
         const active = isActive(pathname, item);
+        const childOnPath =
+          item.children?.some((c) => isActive(pathname, c)) ?? false;
+        const sectionOpen =
+          Boolean(item.children) &&
+          (active || childOnPath || hoveredHref === item.href);
         return (
-          <Link
+          <div
             key={item.href}
-            href={item.href}
-            onClick={() => setMobileOpen(false)}
-            className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
-              active
-                ? "bg-gradient-to-r from-slate-700 to-slate-900 text-white shadow-sm shadow-slate-900/20"
-                : "text-slate-600 hover:bg-stone-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
-            }`}
+            onMouseEnter={() => item.children && setHoveredHref(item.href)}
+            onMouseLeave={() => setHoveredHref(null)}
           >
-            <item.icon className="h-4.5 w-4.5 shrink-0" />
-            {item.label}
-          </Link>
+            <Link
+              href={item.href}
+              onClick={() => setMobileOpen(false)}
+              className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
+                active
+                  ? "bg-gradient-to-r from-slate-700 to-slate-900 text-white shadow-sm shadow-slate-900/20"
+                  : "text-slate-600 hover:bg-stone-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
+              }`}
+            >
+              <item.icon className="h-4.5 w-4.5 shrink-0" />
+              {item.label}
+            </Link>
+
+            {item.children && sectionOpen && (
+              <div className="mt-1 ml-4 flex flex-col gap-0.5 border-l border-stone-200 pl-3 dark:border-slate-700">
+                {item.children.map((child) => {
+                  const childActive = isActive(pathname, child);
+                  return (
+                    <Link
+                      key={child.href}
+                      href={child.href}
+                      onClick={() => setMobileOpen(false)}
+                      className={`rounded-lg px-3 py-2 text-sm transition-colors ${
+                        childActive
+                          ? "font-semibold text-slate-900 dark:text-white"
+                          : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+                      }`}
+                    >
+                      {child.label}
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         );
       })}
     </nav>
@@ -54,19 +89,13 @@ export default function StudentShell({
       {/* Desktop sidebar */}
       <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-stone-200/70 bg-white py-5 lg:flex dark:border-slate-800 dark:bg-slate-800">
         <Link href="/" className="flex items-center gap-2.5 px-6 pb-5">
-          <span className="relative flex h-9 w-9 shrink-0 overflow-hidden rounded-xl shadow-md shadow-slate-900/20">
-            <Image
-              src="/logo.jpeg"
-              alt="Thangam Varahi Tuition Hub"
-              fill
-              sizes="36px"
-              className="object-cover"
-            />
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-slate-700 to-slate-900 text-white shadow-md shadow-slate-900/20">
+            <Award className="h-5 w-5" />
           </span>
           <span className="text-sm font-extrabold leading-tight tracking-tight text-slate-900 dark:text-white">
             Thangam Varahi
             <span className="block text-xs font-semibold text-slate-500 dark:text-slate-400">
-              Student Portal
+              Admin Panel
             </span>
           </span>
         </Link>
@@ -74,10 +103,10 @@ export default function StudentShell({
         <div className="mt-auto border-t border-stone-200/70 px-3 pt-4 dark:border-slate-700">
           <div className="px-3 pb-2">
             <p className="truncate text-sm font-semibold text-slate-800 dark:text-slate-200">
-              {studentName}
+              {adminName}
             </p>
             <p className="truncate text-xs text-slate-500 dark:text-slate-400">
-              {studentEmail}
+              {adminEmail}
             </p>
           </div>
           <form action={signOut}>
@@ -101,7 +130,7 @@ export default function StudentShell({
           <aside className="absolute left-0 top-0 flex h-full w-64 flex-col border-r border-stone-200/70 bg-white py-5 dark:border-slate-800 dark:bg-slate-900">
             <div className="flex items-center justify-between px-6 pb-5">
               <span className="text-sm font-extrabold tracking-tight text-slate-900 dark:text-white">
-                Student Portal
+                Admin Panel
               </span>
               <button
                 type="button"
