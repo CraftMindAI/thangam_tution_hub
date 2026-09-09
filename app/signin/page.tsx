@@ -87,7 +87,7 @@ export default function SignIn() {
 
             <div className="mt-3 text-right">
               <Link
-                href="/"
+                href="/forgot-password"
                 className="text-xs font-medium text-teal-700 hover:underline dark:text-teal-400"
               >
                 Forgot password?

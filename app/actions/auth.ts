@@ -1,8 +1,10 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import * as z from "zod";
 import { createClient } from "../lib/supabase/server";
+import { createAdminClient } from "../lib/supabase/admin";
 
 export type SignInState = { error?: string } | undefined;
 
@@ -37,6 +39,59 @@ export async function signOut() {
   const supabase = await createClient();
   await supabase.auth.signOut();
   redirect("/signin");
+}
+
+export type RequestPasswordResetState =
+  | { error?: string; success?: boolean; message?: string }
+  | undefined;
+
+export async function requestPasswordReset(
+  _state: RequestPasswordResetState,
+  formData: FormData
+): Promise<RequestPasswordResetState> {
+  const email = formData.get("email");
+
+  if (typeof email !== "string" || !email) {
+    return { error: "Please enter your email address." };
+  }
+
+  const admin = createAdminClient();
+  const { data: userList, error: lookupError } = await admin.auth.admin.listUsers({
+    page: 1,
+    perPage: 1000,
+  });
+
+  if (lookupError) {
+    return { error: "Something went wrong. Please try again." };
+  }
+
+  const userExists = userList.users.some(
+    (u) => u.email?.toLowerCase() === email.toLowerCase()
+  );
+
+  if (!userExists) {
+    return { error: "No account found with that email address." };
+  }
+
+  const headersList = await headers();
+  const host = headersList.get("host");
+  const proto =
+    headersList.get("x-forwarded-proto") ??
+    (host?.startsWith("localhost") ? "http" : "https");
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${proto}://${host}/reset-password`,
+  });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  return {
+    success: true,
+    message: "A reset link has been sent to your email.",
+  };
 }
 
 const resetPasswordSchema = z
