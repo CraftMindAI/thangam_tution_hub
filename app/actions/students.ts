@@ -26,11 +26,18 @@ type AdminClient = ReturnType<typeof createAdminClient>;
  * profile row. Mirrors how admins are created. Returns the auth user id, or
  * null if the account could not be created or found.
  */
+type StudentProfileFields = {
+  fullName: string;
+  phone: string;
+  location: string;
+  parentPhone: string;
+  parentEmail: string | null;
+};
+
 async function ensureStudentAuthUser(
   adminClient: AdminClient,
   email: string,
-  fullName: string,
-  phone: string,
+  profileFields: StudentProfileFields,
   origin: string,
   existingByEmail: Map<string, string> | null
 ): Promise<{ id: string | null; note?: string }> {
@@ -63,8 +70,11 @@ async function ensureStudentAuthUser(
       {
         id: userId,
         role: STUDENT_ROLE,
-        full_name: fullName,
-        phone: phone || null,
+        full_name: profileFields.fullName,
+        phone: profileFields.phone || null,
+        location: profileFields.location,
+        parent_phone: profileFields.parentPhone || null,
+        parent_email: profileFields.parentEmail,
       },
       { onConflict: "id", ignoreDuplicates: true }
     );
@@ -168,19 +178,32 @@ export async function addStudent(
   const { id: userId, note } = await ensureStudentAuthUser(
     adminClient,
     parsed.data.email,
-    parsed.data.name,
-    parsed.data.phone,
+    {
+      fullName: parsed.data.name,
+      phone: parsed.data.phone,
+      location: parsed.data.location,
+      parentPhone: parsed.data.parent_phone,
+      parentEmail: parsed.data.parent_email,
+    },
     await siteOrigin(),
     null
   );
 
-  const { error } = await auth.supabase
-    .from("students")
-    .insert({ ...parsed.data, created_by: auth.userId, user_id: userId });
+  if (userId) {
+    // Class / school for the roster live on an intake row (no scheduled meeting).
+    const { error } = await adminClient.from("new_student_requests").insert({
+      user_id: userId,
+      student_name: parsed.data.name,
+      standard: parsed.data.class,
+      school_name: parsed.data.school,
+      parent_name: parsed.data.name,
+      parent_phone: parsed.data.parent_phone,
+      meeting_at: null,
+    });
+    if (error) return { error: error.message };
+  }
 
-  if (error) return { error: error.message };
-
-  revalidatePath("/admin/students");
+  revalidatePath("/admin/[sid]/[uid]", "layout");
 
   const suffix = userId
     ? " An invite to set a password was emailed."
@@ -309,29 +332,52 @@ export async function importStudents(
   );
   let invited = 0;
 
-  const payload: (z.infer<typeof studentSchema> & {
-    created_by: string;
-    user_id: string | null;
-  })[] = [];
+  const intakeRows: {
+    user_id: string;
+    student_name: string;
+    standard: string;
+    school_name: string;
+    parent_name: string;
+    parent_phone: string;
+    meeting_at: null;
+  }[] = [];
 
   for (const v of valid) {
     const { id } = await ensureStudentAuthUser(
       adminClient,
       v.email,
-      v.name,
-      v.phone,
+      {
+        fullName: v.name,
+        phone: v.phone,
+        location: v.location,
+        parentPhone: v.parent_phone,
+        parentEmail: v.parent_email,
+      },
       origin,
       existingByEmail
     );
-    if (id) invited += 1;
-    payload.push({ ...v, created_by: auth.userId, user_id: id });
+    if (id) {
+      invited += 1;
+      intakeRows.push({
+        user_id: id,
+        student_name: v.name,
+        standard: v.class,
+        school_name: v.school,
+        parent_name: v.name,
+        parent_phone: v.parent_phone,
+        meeting_at: null,
+      });
+    }
   }
 
-  const { error } = await auth.supabase.from("students").insert(payload);
+  if (intakeRows.length) {
+    const { error } = await adminClient
+      .from("new_student_requests")
+      .insert(intakeRows);
+    if (error) return { error: error.message };
+  }
 
-  if (error) return { error: error.message };
-
-  revalidatePath("/admin/students");
+  revalidatePath("/admin/[sid]/[uid]", "layout");
 
   let message = `Imported ${valid.length} student${valid.length === 1 ? "" : "s"} (${invited} invite${invited === 1 ? "" : "s"} emailed).`;
   if (errors.length) {
@@ -373,9 +419,11 @@ export async function deleteStudent(formData: FormData) {
   const auth = await requireAdmin();
   if (!auth.ok) return;
 
-  const id = formData.get("id");
-  if (typeof id !== "string" || !id) return;
+  const userId = formData.get("id");
+  if (typeof userId !== "string" || !userId) return;
 
-  await auth.supabase.from("students").delete().eq("id", id);
-  revalidatePath("/admin/students");
+  // Removing the auth user cascades to profiles + intake rows.
+  const adminClient = createAdminClient();
+  await adminClient.auth.admin.deleteUser(userId);
+  revalidatePath("/admin/[sid]/[uid]", "layout");
 }

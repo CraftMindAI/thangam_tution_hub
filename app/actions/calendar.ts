@@ -10,6 +10,7 @@ import { createAdminClient } from "../lib/supabase/admin";
 import { getMailTransport, MAIL_FROM } from "../lib/mailer";
 import { MEETING_TYPES, MEETING_TYPE_LABELS } from "../lib/calendar";
 import { STUDENT_CLASSES } from "../lib/students";
+import { getRosterByClass } from "../lib/roster";
 
 export type CalendarActionState =
   | { error: string }
@@ -161,20 +162,14 @@ async function syncEventInvites(
 ): Promise<string[]> {
   await supabase.from("calendar_event_invites").delete().eq("event_id", eventId);
 
-  let q = supabase
-    .from("students")
-    .select("id, name, email")
-    .order("name", { ascending: true });
-  if (classFilter) q = q.eq("class", classFilter);
-
-  const { data: students } = await q;
-  const rows = (students ?? [])
+  const roster = await getRosterByClass(classFilter);
+  const rows = roster
     .filter((s) => s.email)
+    .sort((a, b) => a.name.localeCompare(b.name))
     .map((s) => ({
       event_id: eventId,
-      student_id: s.id,
       student_name: s.name,
-      email: s.email as string,
+      email: s.email,
       status: "pending" as const,
     }));
 
@@ -419,7 +414,7 @@ export async function createCalendarEvent(
     }
   }
 
-  revalidatePath("/admin/calendar");
+  revalidatePath("/admin/[sid]/[uid]", "layout");
   return {
     success: true,
     message: `${dates.length > 1 ? `${dates.length} meetings scheduled` : "Meeting scheduled"}. ${emailedSuffix(
@@ -515,7 +510,7 @@ export async function updateCalendarEvent(
     await markInviteStatus(auth.supabase, id, emailed ? "sent" : "failed");
   }
 
-  revalidatePath("/admin/calendar");
+  revalidatePath("/admin/[sid]/[uid]", "layout");
   return {
     success: true,
     message: `Meeting updated. ${emailedSuffix(emailed, emails.length)}`,
@@ -585,7 +580,7 @@ export async function rescheduleCalendarEvent(
     );
   }
 
-  revalidatePath("/admin/calendar");
+  revalidatePath("/admin/[sid]/[uid]", "layout");
   return {
     success: true,
     message: `Meeting rescheduled. ${emailedSuffix(emailed, emails.length)}`,
@@ -631,7 +626,7 @@ export async function cancelCalendarEvent(
     null
   );
 
-  revalidatePath("/admin/calendar");
+  revalidatePath("/admin/[sid]/[uid]", "layout");
   return {
     success: true,
     message: `Meeting cancelled. ${

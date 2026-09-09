@@ -190,6 +190,12 @@ export default function SignUp() {
               required={false}
               errors={errors?.school_name}
             />
+            <Field
+              label="Location"
+              name="location"
+              errors={errors?.location}
+              inputProps={{ placeholder: "Area / locality" }}
+            />
 
             <h2 className="mt-6 text-sm font-semibold uppercase tracking-wider text-teal-700 dark:text-teal-400">
               Parent Details
@@ -205,6 +211,13 @@ export default function SignUp() {
                 maxLength: 10,
                 placeholder: "10-digit mobile number",
               }}
+            />
+            <Field
+              label="Parent's Email"
+              name="parent_email"
+              type="email"
+              required={false}
+              errors={errors?.parent_email}
             />
 
             <button

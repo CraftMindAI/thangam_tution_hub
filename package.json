@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:reset": "node scripts/reset-db.mjs",
+    "db:seed": "node scripts/seed-admin.mjs",
+    "db:setup": "node scripts/reset-db.mjs --seed"
   },
   "dependencies": {
     "@stream-io/node-sdk": "^0.8.6",

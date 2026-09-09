@@ -1,8 +1,10 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import { createClient } from "../lib/supabase/server";
 import { createAdminClient } from "../lib/supabase/admin";
 import { signUpSchema, type SignUpFieldErrors } from "../lib/validation/signup";
+import { buildStudentDashboardPath } from "../lib/secure-path";
 
 export type SignUpState =
   | { errors: SignUpFieldErrors; formError?: string }
@@ -22,6 +24,8 @@ export async function signUp(
     school_name: formData.get("school_name"),
     parent_name: formData.get("parent_name"),
     parent_phone: formData.get("parent_phone"),
+    location: formData.get("location"),
+    parent_email: formData.get("parent_email"),
   });
 
   if (!parsed.success) {
@@ -59,9 +63,14 @@ export async function signUp(
   // already have accounts created for them.
   const admin = createAdminClient();
 
-  const { error: profileError } = await admin
-    .from("profiles")
-    .insert({ id: userId, role: "new_student" });
+  const { error: profileError } = await admin.from("profiles").insert({
+    id: userId,
+    role: "new_student",
+    full_name: input.student_name,
+    location: input.location,
+    parent_phone: input.parent_phone,
+    parent_email: input.parent_email ?? null,
+  });
   if (profileError) {
     return { errors: {}, formError: profileError.message };
   }
@@ -78,5 +87,9 @@ export async function signUp(
     return { errors: {}, formError: requestError.message };
   }
 
-  return { success: true, needsConfirmation: !data.session };
+  if (data.session) {
+    redirect(buildStudentDashboardPath(userId));
+  }
+
+  return { success: true, needsConfirmation: true };
 }

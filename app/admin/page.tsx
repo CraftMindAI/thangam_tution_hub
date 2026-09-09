@@ -1,16 +1,16 @@
 import { redirect } from "next/navigation";
 import { createClient } from "../lib/supabase/server";
-import { buildAdminPath, buildStudentDashboardPath } from "../lib/secure-path";
+import { buildAdminPath } from "../lib/secure-path";
 
-// Legacy route — kept as a redirect to the role-appropriate home.
-export default async function Dashboard() {
+// Stable entry point — sends a signed-in admin to their encrypted panel URL.
+export default async function AdminIndex() {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/signin");
+    redirect("/admin/login");
   }
 
   const { data: profile } = await supabase
@@ -19,9 +19,9 @@ export default async function Dashboard() {
     .eq("id", user.id)
     .single();
 
-  redirect(
-    profile?.role === "admin"
-      ? buildAdminPath(user.id)
-      : buildStudentDashboardPath(user.id)
-  );
+  if (profile?.role !== "admin") {
+    redirect("/admin/login");
+  }
+
+  redirect(buildAdminPath(user.id));
 }
