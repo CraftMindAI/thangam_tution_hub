@@ -90,8 +90,8 @@ export default async function AdminDashboard({
         .order("starts_at", { ascending: true })
         .limit(LIMIT),
       supabase
-        .from("new_student_requests")
-        .select("id, student_name, standard, parent_name, parent_phone, created_at")
+        .from("student_enquiries")
+        .select("id, title, subject, created_at")
         .order("created_at", { ascending: false })
         .limit(LIMIT),
       supabase
@@ -226,12 +226,10 @@ export default async function AdminDashboard({
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="font-medium text-slate-800 dark:text-slate-200">
-                        {r.student_name}
+                        {r.title}
                       </p>
                       <p className="text-slate-500 dark:text-slate-400">
-                        Std {r.standard}
-                        {r.parent_name ? ` · ${r.parent_name}` : ""}
-                        {r.parent_phone ? ` · ${r.parent_phone}` : ""}
+                        {r.subject}
                       </p>
                     </div>
                     <span className="shrink-0 text-xs text-slate-500 dark:text-slate-400">

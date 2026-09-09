@@ -10,7 +10,7 @@ import { createAdminClient } from "../lib/supabase/admin";
 import { getMailTransport, MAIL_FROM } from "../lib/mailer";
 import { MEETING_TYPES, MEETING_TYPE_LABELS } from "../lib/calendar";
 import { STUDENT_CLASSES } from "../lib/students";
-import { getRosterByClass } from "../lib/roster";
+import { getMeetingInvitees, getEnquiryStudents } from "../lib/roster";
 
 export type CalendarActionState =
   | { error: string }
@@ -54,6 +54,7 @@ const eventSchema = z.object({
   time: z.string().trim().min(1, "Time is required"),
   duration_minutes: z.coerce.number().int().min(5).max(600),
   class_filter: z.string().trim(),
+  enquiry_user_id: z.string().trim(),
 });
 
 const MAX_OCCURRENCES = 60;
@@ -154,17 +155,28 @@ async function uploadAttachment(
   return { url, name: file.name, buffer };
 }
 
-/** Replace the invite list for an event with the current matching students. */
+/**
+ * Replace the invite list for an event.
+ *
+ * An "inquiry" meeting is about one student's enquiry, so only that student is
+ * invited and the class is ignored. Every other type invites the Offline
+ * students it applies to — the whole roster when no class is set, otherwise
+ * just that class.
+ */
 async function syncEventInvites(
   supabase: Supabase,
   eventId: string,
-  classFilter: string | null
+  classFilter: string | null,
+  enquiryUserId: string | null
 ): Promise<string[]> {
   await supabase.from("calendar_event_invites").delete().eq("event_id", eventId);
 
-  const roster = await getRosterByClass(classFilter);
-  const rows = roster
-    .filter((s) => s.email)
+  const invitees = enquiryUserId
+    ? (await getEnquiryStudents())
+        .filter((s) => s.userId === enquiryUserId && s.email)
+        .map((s) => ({ name: s.name, email: s.email }))
+    : await getMeetingInvitees(classFilter);
+  const rows = invitees
     .sort((a, b) => a.name.localeCompare(b.name))
     .map((s) => ({
       event_id: eventId,
@@ -303,6 +315,7 @@ export async function createCalendarEvent(
     time: formData.get("time"),
     duration_minutes: formData.get("duration_minutes"),
     class_filter: formData.get("class_filter") ?? "",
+    enquiry_user_id: formData.get("enquiry_user_id") ?? "",
   });
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid input." };
@@ -313,6 +326,11 @@ export async function createCalendarEvent(
     return { error: "Enter a valid date and time." };
   }
   const classFilter = resolveClassFilter(parsed.data.class_filter);
+  // Only an inquiry meeting targets a single student.
+  const enquiryUserId =
+    parsed.data.meeting_type === "inquiry" && parsed.data.enquiry_user_id
+      ? parsed.data.enquiry_user_id
+      : null;
 
   const weekdays = formData.get("repeat_weekdays") === "on";
   const weekends = formData.get("repeat_weekends") === "on";
@@ -356,6 +374,7 @@ export async function createCalendarEvent(
         starts_at: start.toISOString(),
         duration_minutes: parsed.data.duration_minutes,
         class_filter: classFilter,
+        enquiry_user_id: enquiryUserId,
         call_id: callCreated ? callId : null,
         attachment_url: attachmentUrl,
         attachment_name: attachmentName,
@@ -371,7 +390,7 @@ export async function createCalendarEvent(
     eventIds.push(event.id);
     if (!firstCallId && callCreated) firstCallId = callId;
 
-    const emails = await syncEventInvites(auth.supabase, event.id, classFilter);
+    const emails = await syncEventInvites(auth.supabase, event.id, classFilter, enquiryUserId);
     emails.forEach((e) => allEmails.add(e));
   }
 
@@ -442,6 +461,7 @@ export async function updateCalendarEvent(
     time: formData.get("time"),
     duration_minutes: formData.get("duration_minutes"),
     class_filter: formData.get("class_filter") ?? "",
+    enquiry_user_id: formData.get("enquiry_user_id") ?? "",
   });
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid input." };
@@ -459,6 +479,11 @@ export async function updateCalendarEvent(
     return { error: "Enter a valid date and time." };
   }
   const classFilter = resolveClassFilter(parsed.data.class_filter);
+  // Only an inquiry meeting targets a single student.
+  const enquiryUserId =
+    parsed.data.meeting_type === "inquiry" && parsed.data.enquiry_user_id
+      ? parsed.data.enquiry_user_id
+      : null;
 
   let attachmentUrl: string | null = existing.attachment_url;
   let attachmentName: string | null = existing.attachment_name;
@@ -481,13 +506,14 @@ export async function updateCalendarEvent(
       starts_at: startsAt.toISOString(),
       duration_minutes: parsed.data.duration_minutes,
       class_filter: classFilter,
+      enquiry_user_id: enquiryUserId,
       attachment_url: attachmentUrl,
       attachment_name: attachmentName,
     })
     .eq("id", id).eq("created_by", auth.userId);
   if (updateErr) return { error: updateErr.message };
 
-  const emails = await syncEventInvites(auth.supabase, id, classFilter);
+  const emails = await syncEventInvites(auth.supabase, id, classFilter, enquiryUserId);
   const emailed = await notifyInvitees(
     "updated",
     {

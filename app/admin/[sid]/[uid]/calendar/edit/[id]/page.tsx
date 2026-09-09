@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/app/lib/supabase/server";
+import { getEnquiryStudents } from "@/app/lib/roster";
 import EventForm, { type EditableEvent } from "../../EventForm";
 
 export default async function EditEventPage({
@@ -18,7 +19,7 @@ export default async function EditEventPage({
   const { data: event } = await supabase
     .from("calendar_events")
     .select(
-      "id, title, description, meeting_type, starts_at, duration_minutes, class_filter, attachment_name"
+      "id, title, description, meeting_type, starts_at, duration_minutes, class_filter, enquiry_user_id, attachment_name"
     )
     .eq("id", id)
     .eq("created_by", user.id)
@@ -26,12 +27,18 @@ export default async function EditEventPage({
 
   if (!event) notFound();
 
+  const enquiryStudents = await getEnquiryStudents();
+
   return (
     <div className="mx-auto max-w-2xl">
       <h2 className="mb-4 text-lg font-bold tracking-tight text-slate-900 dark:text-white">
         Edit Meeting
       </h2>
-      <EventForm mode="edit" event={event as EditableEvent} />
+      <EventForm
+        mode="edit"
+        event={event as EditableEvent}
+        enquiryStudents={enquiryStudents}
+      />
     </div>
   );
 }

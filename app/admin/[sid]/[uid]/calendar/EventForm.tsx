@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -27,13 +27,22 @@ export type EditableEvent = {
   starts_at: string;
   duration_minutes: number;
   class_filter: string | null;
+  enquiry_user_id: string | null;
   attachment_name: string | null;
+};
+
+export type EnquiryOption = {
+  userId: string;
+  name: string;
+  latestTitle: string;
 };
 
 type Props = (
   | { mode: "create"; defaultDate: string; defaultTime: string }
   | { mode: "edit"; event: EditableEvent }
 ) & {
+  /** Students who have raised an enquiry — offered when type is "inquiry". */
+  enquiryStudents: EnquiryOption[];
   /** When set, the form is shown inside a modal: on success it calls this
    *  and refreshes instead of navigating to the calendar page. */
   onDone?: () => void;
@@ -44,6 +53,10 @@ export default function EventForm(props: Props) {
   const base = adminBase(usePathname());
   const isEdit = props.mode === "edit";
   const inModal = typeof props.onDone === "function";
+  const [meetingType, setMeetingType] = useState<MeetingType>(
+    props.mode === "edit" ? props.event.meeting_type : "daily"
+  );
+  const isInquiry = meetingType === "inquiry";
   const [state, formAction, pending] = useActionState(
     isEdit ? updateCalendarEvent : createCalendarEvent,
     undefined
@@ -123,7 +136,8 @@ export default function EventForm(props: Props) {
           <select
             name="meeting_type"
             required
-            defaultValue={ev?.meeting_type ?? "daily"}
+            value={meetingType}
+            onChange={(e) => setMeetingType(e.target.value as MeetingType)}
             className={inputClass}
           >
             {MEETING_TYPES.map((t) => (
@@ -138,7 +152,8 @@ export default function EventForm(props: Props) {
           <select
             name="class_filter"
             defaultValue={ev?.class_filter ?? ""}
-            className={inputClass}
+            disabled={isInquiry}
+            className={`${inputClass} disabled:opacity-50`}
           >
             <option value="">All classes</option>
             {STUDENT_CLASSES.map((c) => (
@@ -147,6 +162,11 @@ export default function EventForm(props: Props) {
               </option>
             ))}
           </select>
+          <span className="mt-1 block text-xs font-normal text-slate-500 dark:text-slate-400">
+            {isInquiry
+              ? "Not used for an inquiry — only the chosen student is invited."
+              : "Only Offline students are invited."}
+          </span>
         </label>
         <label className="text-sm font-medium text-slate-700 dark:text-slate-200">
           Date
@@ -180,6 +200,32 @@ export default function EventForm(props: Props) {
             className={inputClass}
           />
         </label>
+
+        {isInquiry && (
+          <label className="text-sm font-medium text-slate-700 dark:text-slate-200">
+            Student
+            <select
+              name="enquiry_user_id"
+              required
+              defaultValue={ev?.enquiry_user_id ?? ""}
+              className={inputClass}
+            >
+              <option value="" disabled>
+                {props.enquiryStudents.length
+                  ? "Select a student"
+                  : "No enquiries yet"}
+              </option>
+              {props.enquiryStudents.map((s) => (
+                <option key={s.userId} value={s.userId}>
+                  {s.name} — {s.latestTitle}
+                </option>
+              ))}
+            </select>
+            <span className="mt-1 block text-xs font-normal text-slate-500 dark:text-slate-400">
+              Students who have raised an enquiry. Only this student is invited.
+            </span>
+          </label>
+        )}
       </div>
 
       {props.mode === "create" && (

@@ -1,15 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import EventForm from "./EventForm";
+import EventForm, { type EnquiryOption } from "./EventForm";
 import { X } from "@/app/components/icons";
 
 export default function AddEventModal({
   defaultDate,
   defaultTime = "09:00",
+  enquiryStudents,
 }: {
   defaultDate: string;
   defaultTime?: string;
+  enquiryStudents: EnquiryOption[];
 }) {
   const [open, setOpen] = useState(false);
 
@@ -43,6 +45,7 @@ export default function AddEventModal({
                 mode="create"
                 defaultDate={defaultDate}
                 defaultTime={defaultTime}
+                enquiryStudents={enquiryStudents}
                 onDone={() => setOpen(false)}
               />
             </div>

@@ -1,3 +1,4 @@
+import { getEnquiryStudents } from "@/app/lib/roster";
 import EventForm from "../EventForm";
 
 function todayYmd() {
@@ -13,6 +14,7 @@ export default async function AddEventPage({
   searchParams: Promise<{ date?: string; hrs?: string }>;
 }) {
   const { date, hrs } = await searchParams;
+  const enquiryStudents = await getEnquiryStudents();
 
   const defaultDate =
     date && /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : todayYmd();
@@ -28,7 +30,12 @@ export default async function AddEventPage({
       <h2 className="mb-4 text-lg font-bold tracking-tight text-slate-900 dark:text-white">
         New Meeting
       </h2>
-      <EventForm mode="create" defaultDate={defaultDate} defaultTime={defaultTime} />
+      <EventForm
+        mode="create"
+        defaultDate={defaultDate}
+        defaultTime={defaultTime}
+        enquiryStudents={enquiryStudents}
+      />
     </div>
   );
 }

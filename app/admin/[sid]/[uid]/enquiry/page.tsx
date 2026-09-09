@@ -1,4 +1,5 @@
-import { createClient } from "@/app/lib/supabase/server";
+import { createAdminClient } from "@/app/lib/supabase/admin";
+import { Inbox } from "@/app/components/icons";
 
 function formatDateTime(iso: string) {
   return new Date(iso).toLocaleString("en-IN", {
@@ -11,130 +12,91 @@ function formatDateTime(iso: string) {
 }
 
 export default async function EnquiryPage() {
-  const supabase = await createClient();
+  // Service role: enquiries are joined to auth emails, which RLS can't reach.
+  const admin = createAdminClient();
 
-  const [{ data: existingRequests }, { data: newRequests }] = await Promise.all([
-    supabase
-      .from("existing_student_requests")
-      .select("*")
-      .order("created_at", { ascending: false }),
-    supabase
-      .from("new_student_requests")
-      .select("*")
-      .order("created_at", { ascending: false }),
+  const { data: enquiries } = await admin
+    .from("student_enquiries")
+    .select("id, user_id, title, subject, description, created_at")
+    .order("created_at", { ascending: false });
+
+  const userIds = [...new Set((enquiries ?? []).map((e) => e.user_id))];
+
+  const [{ data: userList }, { data: profiles }] = await Promise.all([
+    admin.auth.admin.listUsers({ perPage: 1000 }),
+    userIds.length
+      ? admin.from("profiles").select("id, full_name").in("id", userIds)
+      : Promise.resolve({ data: [] }),
   ]);
 
-  return (
-    <div className="space-y-10">
-      <section>
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-teal-700 dark:text-teal-400">
-          Existing Student Requests
-        </h2>
-        <div className="mt-3 overflow-x-auto rounded-2xl border border-stone-200/70 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-800">
-          <table className="w-full min-w-[720px] text-left text-sm">
-            <thead className="border-b border-stone-200/70 text-xs uppercase tracking-wider text-slate-500 dark:border-slate-700 dark:text-slate-400">
-              <tr>
-                <th className="px-4 py-3">Student</th>
-                <th className="px-4 py-3">Parent</th>
-                <th className="px-4 py-3">Standard</th>
-                <th className="px-4 py-3">Subject</th>
-                <th className="px-4 py-3">Class Time</th>
-                <th className="px-4 py-3">Feedback</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-stone-100 dark:divide-slate-700">
-              {existingRequests?.length ? (
-                existingRequests.map((r) => (
-                  <tr key={r.id}>
-                    <td className="px-4 py-3 font-medium text-slate-800 dark:text-slate-200">
-                      {r.student_name}
-                    </td>
-                    <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
-                      {r.parent_name} &middot; {r.parent_contact}
-                    </td>
-                    <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
-                      {r.standard}
-                    </td>
-                    <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
-                      {r.subject} ({r.chapter_unit})
-                    </td>
-                    <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
-                      {r.expected_class_date} {r.expected_class_time}
-                    </td>
-                    <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
-                      {r.feedback_rating ?? "—"}
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td
-                    colSpan={6}
-                    className="px-4 py-6 text-center text-slate-500 dark:text-slate-400"
-                  >
-                    No requests yet.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </section>
+  const emailById = new Map(
+    (userList?.users ?? [])
+      .filter((u) => u.email)
+      .map((u) => [u.id, u.email as string])
+  );
+  const nameById = new Map(
+    (profiles ?? []).map((p) => [p.id, p.full_name as string | null])
+  );
 
-      <section>
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-teal-700 dark:text-teal-400">
-          New Student Enquiries
-        </h2>
-        <div className="mt-3 overflow-x-auto rounded-2xl border border-stone-200/70 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-800">
-          <table className="w-full min-w-[720px] text-left text-sm">
-            <thead className="border-b border-stone-200/70 text-xs uppercase tracking-wider text-slate-500 dark:border-slate-700 dark:text-slate-400">
-              <tr>
-                <th className="px-4 py-3">Student</th>
-                <th className="px-4 py-3">Parent</th>
-                <th className="px-4 py-3">Standard</th>
-                <th className="px-4 py-3">School</th>
-                <th className="px-4 py-3">Meeting</th>
-                <th className="px-4 py-3">Submitted</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-stone-100 dark:divide-slate-700">
-              {newRequests?.length ? (
-                newRequests.map((r) => (
-                  <tr key={r.id}>
-                    <td className="px-4 py-3 font-medium text-slate-800 dark:text-slate-200">
-                      {r.student_name}
-                    </td>
-                    <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
-                      {r.parent_name} &middot; {r.parent_phone}
-                    </td>
-                    <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
-                      {r.standard}
-                    </td>
-                    <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
-                      {r.school_name ?? "—"}
-                    </td>
-                    <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
-                      {r.meeting_at ? formatDateTime(r.meeting_at) : "—"}
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-slate-600 dark:text-slate-400">
-                      {formatDateTime(r.created_at)}
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td
-                    colSpan={6}
-                    className="px-4 py-6 text-center text-slate-500 dark:text-slate-400"
-                  >
-                    No enquiries yet.
+  return (
+    <div className="space-y-4">
+      <p className="text-sm text-slate-600 dark:text-slate-400">
+        Enquiries submitted by students from their portal, newest first.
+      </p>
+
+      <div className="overflow-x-auto rounded-2xl border border-stone-200/70 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-800">
+        <table className="w-full min-w-[860px] text-left text-sm">
+          <thead className="border-b border-stone-200/70 text-xs uppercase tracking-wider text-slate-500 dark:border-slate-700 dark:text-slate-400">
+            <tr>
+              <th className="px-4 py-3">Student</th>
+              <th className="px-4 py-3">Title</th>
+              <th className="px-4 py-3">Subject</th>
+              <th className="px-4 py-3">Description</th>
+              <th className="px-4 py-3">Submitted</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-stone-100 dark:divide-slate-700">
+            {enquiries?.length ? (
+              enquiries.map((e) => (
+                <tr key={e.id}>
+                  <td className="px-4 py-3">
+                    <p className="font-medium text-slate-800 dark:text-slate-200">
+                      {nameById.get(e.user_id) ||
+                        emailById.get(e.user_id) ||
+                        "Student"}
+                    </p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      {emailById.get(e.user_id) ?? "—"}
+                    </p>
+                  </td>
+                  <td className="px-4 py-3 font-medium text-slate-800 dark:text-slate-200">
+                    {e.title}
+                  </td>
+                  <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
+                    {e.subject}
+                  </td>
+                  <td className="max-w-md px-4 py-3 text-slate-600 dark:text-slate-400">
+                    {e.description}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap text-slate-600 dark:text-slate-400">
+                    {formatDateTime(e.created_at)}
                   </td>
                 </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </section>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan={5}
+                  className="px-4 py-10 text-center text-slate-500 dark:text-slate-400"
+                >
+                  <Inbox className="mx-auto h-6 w-6 opacity-50" />
+                  <p className="mt-2">No enquiries yet.</p>
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
