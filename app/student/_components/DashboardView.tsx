@@ -2,8 +2,8 @@ import Link from "next/link";
 import { createClient } from "../../lib/supabase/server";
 
 const roleLabels: Record<string, string> = {
-  existing_student: "Existing Student",
-  new_student: "New Student",
+  existing_student: "Offline Student",
+  new_student: "Online Student",
   admin: "Admin",
 };
 

@@ -7,6 +7,7 @@ import {
 } from "@/app/lib/calendar";
 import { STUDENT_CLASSES } from "@/app/lib/students";
 import { CalendarClock, Video } from "@/app/components/icons";
+import { getEnquiryStudents } from "@/app/lib/roster";
 import AddEventModal from "../calendar/AddEventModal";
 
 type EventRow = {
@@ -109,6 +110,7 @@ export default async function UpcomingMeetingsPage({
 
   const { data } = await query;
   const events = (data ?? []) as EventRow[];
+  const enquiryStudents = await getEnquiryStudents();
   const hasFilters = Boolean(dateFilter || typeFilter || classFilter);
 
   const groups = new Map<string, EventRow[]>();
@@ -127,7 +129,10 @@ export default async function UpcomingMeetingsPage({
             ? "Meetings you scheduled on the selected date."
             : "Meetings you scheduled, from today onward."}
         </p>
-        <AddEventModal defaultDate={dateFilter || todayKey} />
+        <AddEventModal
+          defaultDate={dateFilter || todayKey}
+          enquiryStudents={enquiryStudents}
+        />
       </div>
 
       <form

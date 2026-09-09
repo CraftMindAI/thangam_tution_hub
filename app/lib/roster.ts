@@ -1,13 +1,14 @@
 import "server-only";
 import { createAdminClient } from "./supabase/admin";
-import { normalizeClass } from "./students";
+import { normalizeClass, STUDENT_TYPES, type StudentType } from "./students";
 
-const STUDENT_ROLES = ["new_student", "existing_student"] as const;
+const STUDENT_ROLES = STUDENT_TYPES;
 
 export type RosterStudent = {
   userId: string;
   name: string;
   email: string;
+  type: StudentType;
   class: string;
   school: string;
   location: string | null;
@@ -28,7 +29,7 @@ export async function getRoster(): Promise<RosterStudent[]> {
     admin
       .from("profiles")
       .select(
-        "id, full_name, phone, class, school, location, parent_phone, parent_email"
+        "id, role, full_name, phone, class, school, location, parent_phone, parent_email"
       )
       .in("role", STUDENT_ROLES as unknown as string[]),
   ]);
@@ -39,22 +40,96 @@ export async function getRoster(): Promise<RosterStudent[]> {
       .map((u) => [u.id, u.email as string])
   );
 
-  return (profiles ?? []).map((p) => ({
-    userId: p.id,
-    name: p.full_name ?? emailById.get(p.id) ?? "",
-    email: emailById.get(p.id) ?? "",
-    class: normalizeClass(p.class ?? ""),
-    school: p.school ?? "",
-    location: p.location ?? null,
-    phone: p.phone ?? null,
-    parent_phone: p.parent_phone ?? null,
-    parent_email: p.parent_email ?? null,
-  }));
+  return (profiles ?? [])
+    .map((p) => ({
+      userId: p.id,
+      name: p.full_name ?? emailById.get(p.id) ?? "",
+      email: emailById.get(p.id) ?? "",
+      type: p.role as StudentType,
+      class: normalizeClass(p.class ?? ""),
+      school: p.school ?? "",
+      location: p.location ?? null,
+      phone: p.phone ?? null,
+      parent_phone: p.parent_phone ?? null,
+      parent_email: p.parent_email ?? null,
+    }))
+    // New students first, then offline students; alphabetical within each.
+    .sort(
+      (a, b) =>
+        (a.type === b.type ? 0 : a.type === "new_student" ? -1 : 1) ||
+        a.name.localeCompare(b.name)
+    );
 }
 
-/** Roster filtered to a single class (used for calendar invite matching). */
-export async function getRosterByClass(cls: string | null): Promise<RosterStudent[]> {
+/**
+ * Who gets emailed a meeting invitation.
+ *
+ * Only Offline students (`existing_student`) are invited — Online sign-ups are
+ * enquiries, not enrolled students, so they are never invited, not even when
+ * the meeting is set to "All classes". Pass a class to narrow further, or null
+ * for every class.
+ */
+export async function getMeetingInvitees(
+  cls: string | null
+): Promise<RosterStudent[]> {
   const roster = await getRoster();
-  if (!cls) return roster;
-  return roster.filter((s) => s.class === cls);
+  return roster.filter(
+    (s) =>
+      s.type === "existing_student" && s.email && (!cls || s.class === cls)
+  );
+}
+
+export type EnquiryStudent = {
+  userId: string;
+  name: string;
+  email: string;
+  /** Title of their most recent enquiry, shown to disambiguate the dropdown. */
+  latestTitle: string;
+};
+
+/**
+ * Students who have submitted at least one enquiry, newest first — the
+ * candidates for an "Inquiry" meeting. One entry per student, not per enquiry.
+ */
+export async function getEnquiryStudents(): Promise<EnquiryStudent[]> {
+  const admin = createAdminClient();
+
+  const { data: enquiries } = await admin
+    .from("student_enquiries")
+    .select("user_id, title, created_at")
+    .order("created_at", { ascending: false });
+
+  if (!enquiries?.length) return [];
+
+  const userIds = [...new Set(enquiries.map((e) => e.user_id))];
+
+  const [{ data: userList }, { data: profiles }] = await Promise.all([
+    admin.auth.admin.listUsers({ perPage: 1000 }),
+    admin.from("profiles").select("id, full_name").in("id", userIds),
+  ]);
+
+  const emailById = new Map(
+    (userList?.users ?? [])
+      .filter((u) => u.email)
+      .map((u) => [u.id, u.email as string])
+  );
+  const nameById = new Map(
+    (profiles ?? []).map((p) => [p.id, p.full_name as string | null])
+  );
+
+  // enquiries is newest-first, so the first row per user is their latest.
+  const seen = new Set<string>();
+  const out: EnquiryStudent[] = [];
+  for (const e of enquiries) {
+    if (seen.has(e.user_id)) continue;
+    seen.add(e.user_id);
+    const email = emailById.get(e.user_id) ?? "";
+    out.push({
+      userId: e.user_id,
+      name: nameById.get(e.user_id) || email || "Student",
+      email,
+      latestTitle: e.title,
+    });
+  }
+  return out;
 }

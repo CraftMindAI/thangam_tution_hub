@@ -99,8 +99,8 @@ export default async function CalendarPage({
       </div>
 
       <p className="text-sm text-slate-500 dark:text-slate-400">
-        Click any time slot to schedule a meeting. Every student on the roster is
-        emailed an invite.
+        Click any time slot to schedule a meeting. Offline students in the
+        selected class are emailed an invite — Online sign-ups are not invited.
       </p>
 
       <WeekCalendar weekStartISO={ymd(weekStart)} events={events} />
