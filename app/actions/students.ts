@@ -1,11 +1,13 @@
 "use server";
 
+import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import * as XLSX from "xlsx";
 import * as z from "zod";
 import { createClient } from "../lib/supabase/server";
 import { createAdminClient } from "../lib/supabase/admin";
+import { sendPasswordSetupEmail } from "../lib/mailer";
 import { STUDENT_CLASSES, normalizeClass } from "../lib/students";
 
 const STUDENT_ROLE = "existing_student";
@@ -21,29 +23,31 @@ async function siteOrigin() {
 
 type AdminClient = ReturnType<typeof createAdminClient>;
 
-/**
- * Invite (or look up) the auth user for a student and make sure they have a
- * profile row. Mirrors how admins are created. Returns the auth user id, or
- * null if the account could not be created or found.
- */
-type StudentProfileFields = {
-  fullName: string;
-  phone: string;
-  location: string;
-  parentPhone: string;
-  parentEmail: string | null;
-};
+type StudentInput = z.infer<typeof studentSchema>;
 
-async function ensureStudentAuthUser(
+type EnsureResult =
+  | { ok: true; id: string; emailed: boolean }
+  | { ok: false; error: string };
+
+/**
+ * Create the student's account and profile: create (or look up) the auth user,
+ * write every field from the form onto public.profiles, then email them a
+ * set-password link. These two tables are the only places a student is stored.
+ *
+ * Account creation and the email are deliberately separate steps — Supabase's
+ * own invite mail is rate limited to a couple of messages an hour, so we
+ * generate the link without sending and deliver it over our own SMTP.
+ */
+async function saveStudent(
   adminClient: AdminClient,
-  email: string,
-  profileFields: StudentProfileFields,
+  student: StudentInput,
   origin: string,
   existingByEmail: Map<string, string> | null
-): Promise<{ id: string | null; note?: string }> {
-  const redirectTo = `${origin}/reset-password`;
-  const { data, error } = await adminClient.auth.admin.inviteUserByEmail(email, {
-    redirectTo,
+): Promise<EnsureResult> {
+  const { data, error } = await adminClient.auth.admin.createUser({
+    email: student.email,
+    password: randomBytes(24).toString("base64url"),
+    email_confirm: true,
   });
 
   let userId = data?.user?.id ?? null;
@@ -60,27 +64,70 @@ async function ensureStudentAuthUser(
           .map((u) => [u.email!.toLowerCase(), u.id])
       );
     }
-    userId = existingByEmail.get(email.toLowerCase()) ?? null;
-    if (!userId) return { id: null, note: error.message };
+    userId = existingByEmail.get(student.email.toLowerCase()) ?? null;
+    if (!userId) return { ok: false, error: error.message };
+  }
+  if (!userId) return { ok: false, error: "Could not create the account." };
+
+  // Re-adding an admin's address must never demote them to a student.
+  const { data: existing } = await adminClient
+    .from("profiles")
+    .select("role")
+    .eq("id", userId)
+    .maybeSingle();
+  if (existing?.role === "admin") {
+    return { ok: false, error: `${student.email} belongs to an admin account.` };
   }
 
-  if (userId) {
-    // Insert the profile if missing; never overwrite an existing role.
-    await adminClient.from("profiles").upsert(
-      {
-        id: userId,
-        role: STUDENT_ROLE,
-        full_name: profileFields.fullName,
-        phone: profileFields.phone || null,
-        location: profileFields.location,
-        parent_phone: profileFields.parentPhone || null,
-        parent_email: profileFields.parentEmail,
-      },
-      { onConflict: "id", ignoreDuplicates: true }
-    );
+  const { error: profileErr } = await adminClient.from("profiles").upsert(
+    {
+      id: userId,
+      role: STUDENT_ROLE,
+      full_name: student.name,
+      phone: student.phone || null,
+      class: student.class,
+      school: student.school,
+      location: student.location,
+      parent_phone: student.parent_phone || null,
+      parent_email: student.parent_email,
+    },
+    { onConflict: "id" }
+  );
+  if (profileErr) return { ok: false, error: profileErr.message };
+
+  const emailed = await sendSetPasswordLink(
+    adminClient,
+    student.email,
+    student.name,
+    origin
+  );
+
+  return { ok: true, id: userId, emailed };
+}
+
+/**
+ * Generate a set-password link (no mail sent by Supabase) and deliver it over
+ * our own SMTP. Never throws — a failed email leaves the account intact.
+ */
+async function sendSetPasswordLink(
+  adminClient: AdminClient,
+  email: string,
+  name: string,
+  origin: string
+): Promise<boolean> {
+  const { data, error } = await adminClient.auth.admin.generateLink({
+    type: "recovery",
+    email,
+    options: { redirectTo: `${origin}/reset-password` },
+  });
+
+  const link = data?.properties?.action_link;
+  if (error || !link) {
+    console.error(`Could not generate a set-password link for ${email}`, error);
+    return false;
   }
 
-  return { id: userId };
+  return sendPasswordSetupEmail(email, name, link);
 }
 
 export type StudentActionState =
@@ -175,44 +222,24 @@ export async function addStudent(
   }
 
   const adminClient = createAdminClient();
-  const { id: userId, note } = await ensureStudentAuthUser(
+  const result = await saveStudent(
     adminClient,
-    parsed.data.email,
-    {
-      fullName: parsed.data.name,
-      phone: parsed.data.phone,
-      location: parsed.data.location,
-      parentPhone: parsed.data.parent_phone,
-      parentEmail: parsed.data.parent_email,
-    },
+    parsed.data,
     await siteOrigin(),
     null
   );
 
-  if (userId) {
-    // Class / school for the roster live on an intake row (no scheduled meeting).
-    const { error } = await adminClient.from("new_student_requests").insert({
-      user_id: userId,
-      student_name: parsed.data.name,
-      standard: parsed.data.class,
-      school_name: parsed.data.school,
-      parent_name: parsed.data.name,
-      parent_phone: parsed.data.parent_phone,
-      meeting_at: null,
-    });
-    if (error) return { error: error.message };
-  }
+  if (!result.ok) return { error: result.error };
 
   revalidatePath("/admin/[sid]/[uid]", "layout");
 
-  const suffix = userId
-    ? " An invite to set a password was emailed."
-    : note
-      ? ` Account not created: ${note}`
-      : "";
   return {
     success: true,
-    message: `${parsed.data.name} added to the roster.${suffix}`,
+    message: `${parsed.data.name} added to the roster.${
+      result.emailed
+        ? " A link to set their password was emailed."
+        : " Note: the password email could not be sent — use Reset password to retry."
+    }`,
   };
 }
 
@@ -330,56 +357,30 @@ export async function importStudents(
       .filter((u) => u.email)
       .map((u) => [u.email!.toLowerCase(), u.id])
   );
-  let invited = 0;
-
-  const intakeRows: {
-    user_id: string;
-    student_name: string;
-    standard: string;
-    school_name: string;
-    parent_name: string;
-    parent_phone: string;
-    meeting_at: null;
-  }[] = [];
+  let emailed = 0;
+  let saved = 0;
 
   for (const v of valid) {
-    const { id } = await ensureStudentAuthUser(
-      adminClient,
-      v.email,
-      {
-        fullName: v.name,
-        phone: v.phone,
-        location: v.location,
-        parentPhone: v.parent_phone,
-        parentEmail: v.parent_email,
-      },
-      origin,
-      existingByEmail
-    );
-    if (id) {
-      invited += 1;
-      intakeRows.push({
-        user_id: id,
-        student_name: v.name,
-        standard: v.class,
-        school_name: v.school,
-        parent_name: v.name,
-        parent_phone: v.parent_phone,
-        meeting_at: null,
-      });
+    const result = await saveStudent(adminClient, v, origin, existingByEmail);
+    if (result.ok) {
+      saved += 1;
+      if (result.emailed) emailed += 1;
+    } else {
+      errors.push(`${v.email}: ${result.error}`);
     }
   }
 
-  if (intakeRows.length) {
-    const { error } = await adminClient
-      .from("new_student_requests")
-      .insert(intakeRows);
-    if (error) return { error: error.message };
+  if (saved === 0) {
+    return {
+      error:
+        `No rows could be imported.` +
+        (errors.length ? ` ${errors.slice(0, 3).join("; ")}` : ""),
+    };
   }
 
   revalidatePath("/admin/[sid]/[uid]", "layout");
 
-  let message = `Imported ${valid.length} student${valid.length === 1 ? "" : "s"} (${invited} invite${invited === 1 ? "" : "s"} emailed).`;
+  let message = `Imported ${saved} student${saved === 1 ? "" : "s"} (${emailed} password link${emailed === 1 ? "" : "s"} emailed).`;
   if (errors.length) {
     message += ` Skipped ${errors.length} row${errors.length === 1 ? "" : "s"}: ${errors
       .slice(0, 3)
@@ -399,18 +400,20 @@ export async function sendStudentPasswordReset(
   if (typeof email !== "string" || !email) {
     return { error: "No email on file for this student." };
   }
+  const name = formData.get("name");
 
-  const headersList = await headers();
-  const host = headersList.get("host");
-  const proto =
-    headersList.get("x-forwarded-proto") ??
-    (host?.startsWith("localhost") ? "http" : "https");
+  // Same path as adding a student: generate the link, send it over our own
+  // SMTP, so this isn't throttled by Supabase's built-in mailer.
+  const sent = await sendSetPasswordLink(
+    createAdminClient(),
+    email,
+    typeof name === "string" && name ? name : email,
+    await siteOrigin()
+  );
 
-  const { error } = await auth.supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${proto}://${host}/reset-password`,
-  });
-
-  if (error) return { error: error.message };
+  if (!sent) {
+    return { error: "Could not send the email. Check the mail settings." };
+  }
 
   return { success: true, message: `Password reset link sent to ${email}.` };
 }

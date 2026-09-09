@@ -43,7 +43,7 @@ const templateHref =
       "\nRavi Kumar,8,St. Mary's School,West Mambalam,ravi@example.com,9876543210,parent@example.com,9876500000\n"
   );
 
-function RowResetPassword({ email }: { email: string }) {
+function RowResetPassword({ email, name }: { email: string; name: string }) {
   const [state, formAction, pending] = useActionState(
     sendStudentPasswordReset,
     undefined
@@ -52,6 +52,7 @@ function RowResetPassword({ email }: { email: string }) {
   return (
     <form action={formAction} className="inline-flex items-center gap-2">
       <input type="hidden" name="email" value={email} />
+      <input type="hidden" name="name" value={name} />
       <button
         type="submit"
         disabled={pending || !email}
@@ -307,7 +308,7 @@ export default function StudentManager({ students }: { students: Student[] }) {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-1.5">
-                      <RowResetPassword email={s.email} />
+                      <RowResetPassword email={s.email} name={s.name} />
                       <button
                         type="button"
                         onClick={() => setPendingDelete(s)}
