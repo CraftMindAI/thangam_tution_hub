@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useMemo, useState } from "react";
 import {
   addStudent,
   importStudents,
@@ -8,11 +8,17 @@ import {
   sendStudentPasswordReset,
 } from "@/app/actions/students";
 import { Users, X } from "@/app/components/icons";
-import { STUDENT_CLASSES } from "@/app/lib/students";
+import {
+  STUDENT_CLASSES,
+  STUDENT_TYPES,
+  STUDENT_TYPE_LABELS,
+  type StudentType,
+} from "@/app/lib/students";
 
 export type Student = {
   id: string;
   name: string;
+  type: StudentType;
   class: string;
   school: string;
   location: string | null;
@@ -74,8 +80,41 @@ function RowResetPassword({ email, name }: { email: string; name: string }) {
   );
 }
 
+function TypeBadge({ type }: { type: StudentType }) {
+  const isNew = type === "new_student";
+  return (
+    <span
+      className={`inline-flex whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold ${
+        isNew
+          ? "bg-teal-50 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300"
+          : "bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300"
+      }`}
+    >
+      {STUDENT_TYPE_LABELS[type]}
+    </span>
+  );
+}
+
 export default function StudentManager({ students }: { students: Student[] }) {
   const [mode, setMode] = useState<"manual" | "excel" | null>(null);
+
+  const [nameQuery, setNameQuery] = useState("");
+  const [classFilter, setClassFilter] = useState("");
+  const [typeFilter, setTypeFilter] = useState<StudentType | "">("");
+
+  // `students` arrives sorted (new students first, then alphabetical), and
+  // filtering preserves that order.
+  const visible = useMemo(() => {
+    const q = nameQuery.trim().toLowerCase();
+    return students.filter(
+      (s) =>
+        (!q || s.name.toLowerCase().includes(q)) &&
+        (!classFilter || s.class === classFilter) &&
+        (!typeFilter || s.type === typeFilter)
+    );
+  }, [students, nameQuery, classFilter, typeFilter]);
+
+  const filtersOn = Boolean(nameQuery || classFilter || typeFilter);
 
   const [addState, addAction, addPending] = useActionState(addStudent, undefined);
   const [importState, importAction, importPending] = useActionState(
@@ -263,11 +302,76 @@ export default function StudentManager({ students }: { students: Student[] }) {
         </div>
       )}
 
+      <div className="flex flex-wrap items-end gap-3 rounded-2xl border border-stone-200/70 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-800">
+        <label className="min-w-[200px] flex-1 text-sm font-medium text-slate-700 dark:text-slate-200">
+          Search by name
+          <input
+            type="search"
+            value={nameQuery}
+            onChange={(e) => setNameQuery(e.target.value)}
+            placeholder="Student name"
+            className={inputClass}
+          />
+        </label>
+
+        <label className="text-sm font-medium text-slate-700 dark:text-slate-200">
+          Class
+          <select
+            value={classFilter}
+            onChange={(e) => setClassFilter(e.target.value)}
+            className={inputClass}
+          >
+            <option value="">All classes</option>
+            {STUDENT_CLASSES.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="text-sm font-medium text-slate-700 dark:text-slate-200">
+          Student type
+          <select
+            value={typeFilter}
+            onChange={(e) => setTypeFilter(e.target.value as StudentType | "")}
+            className={inputClass}
+          >
+            <option value="">All types</option>
+            {STUDENT_TYPES.map((t) => (
+              <option key={t} value={t}>
+                {STUDENT_TYPE_LABELS[t]}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <div className="flex items-center gap-3 pb-0.5">
+          <span className="text-sm text-slate-500 dark:text-slate-400">
+            Showing {visible.length} of {students.length}
+          </span>
+          {filtersOn && (
+            <button
+              type="button"
+              onClick={() => {
+                setNameQuery("");
+                setClassFilter("");
+                setTypeFilter("");
+              }}
+              className="rounded-full border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:border-slate-500 hover:text-slate-900 dark:border-slate-600 dark:text-slate-200 dark:hover:border-slate-400 dark:hover:text-white"
+            >
+              Clear filters
+            </button>
+          )}
+        </div>
+      </div>
+
       <div className="overflow-x-auto rounded-2xl border border-stone-200/70 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-800">
-        <table className="w-full min-w-[1120px] text-left text-sm">
+        <table className="w-full min-w-[1240px] text-left text-sm">
           <thead className="border-b border-stone-200/70 text-xs uppercase tracking-wider text-slate-500 dark:border-slate-700 dark:text-slate-400">
             <tr>
               <th className="px-4 py-3">Name</th>
+              <th className="px-4 py-3">Type</th>
               <th className="px-4 py-3">Class</th>
               <th className="px-4 py-3">School</th>
               <th className="px-4 py-3">Location</th>
@@ -279,11 +383,14 @@ export default function StudentManager({ students }: { students: Student[] }) {
             </tr>
           </thead>
           <tbody className="divide-y divide-stone-100 dark:divide-slate-700">
-            {students.length ? (
-              students.map((s) => (
+            {visible.length ? (
+              visible.map((s) => (
                 <tr key={s.id}>
                   <td className="px-4 py-3 font-medium text-slate-800 dark:text-slate-200">
                     {s.name}
+                  </td>
+                  <td className="px-4 py-3">
+                    <TypeBadge type={s.type} />
                   </td>
                   <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
                     {s.class || "—"}
@@ -324,11 +431,15 @@ export default function StudentManager({ students }: { students: Student[] }) {
             ) : (
               <tr>
                 <td
-                  colSpan={9}
+                  colSpan={10}
                   className="px-4 py-10 text-center text-slate-500 dark:text-slate-400"
                 >
                   <Users className="mx-auto h-6 w-6 opacity-50" />
-                  <p className="mt-2">No students yet. Add one above.</p>
+                  <p className="mt-2">
+                    {filtersOn
+                      ? "No students match these filters."
+                      : "No students yet. Add one above."}
+                  </p>
                 </td>
               </tr>
             )}

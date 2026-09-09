@@ -15,6 +15,19 @@ export const STUDENT_CLASSES = [
 
 export type StudentClass = (typeof STUDENT_CLASSES)[number];
 
+export const STUDENT_TYPES = ["new_student", "existing_student"] as const;
+
+/**
+ * Students who signed themselves up on the site are "Online"; students the
+ * admin entered on the roster are "Offline".
+ */
+export type StudentType = (typeof STUDENT_TYPES)[number];
+
+export const STUDENT_TYPE_LABELS: Record<StudentType, string> = {
+  new_student: "Online Student",
+  existing_student: "Offline Student",
+};
+
 /**
  * Coerce a raw class value (from a form or a spreadsheet cell) to one of
  * STUDENT_CLASSES, or "" when it doesn't match.

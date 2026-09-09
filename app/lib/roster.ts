@@ -1,13 +1,14 @@
 import "server-only";
 import { createAdminClient } from "./supabase/admin";
-import { normalizeClass } from "./students";
+import { normalizeClass, STUDENT_TYPES, type StudentType } from "./students";
 
-const STUDENT_ROLES = ["new_student", "existing_student"] as const;
+const STUDENT_ROLES = STUDENT_TYPES;
 
 export type RosterStudent = {
   userId: string;
   name: string;
   email: string;
+  type: StudentType;
   class: string;
   school: string;
   location: string | null;
@@ -28,7 +29,7 @@ export async function getRoster(): Promise<RosterStudent[]> {
     admin
       .from("profiles")
       .select(
-        "id, full_name, phone, class, school, location, parent_phone, parent_email"
+        "id, role, full_name, phone, class, school, location, parent_phone, parent_email"
       )
       .in("role", STUDENT_ROLES as unknown as string[]),
   ]);
@@ -39,17 +40,25 @@ export async function getRoster(): Promise<RosterStudent[]> {
       .map((u) => [u.id, u.email as string])
   );
 
-  return (profiles ?? []).map((p) => ({
-    userId: p.id,
-    name: p.full_name ?? emailById.get(p.id) ?? "",
-    email: emailById.get(p.id) ?? "",
-    class: normalizeClass(p.class ?? ""),
-    school: p.school ?? "",
-    location: p.location ?? null,
-    phone: p.phone ?? null,
-    parent_phone: p.parent_phone ?? null,
-    parent_email: p.parent_email ?? null,
-  }));
+  return (profiles ?? [])
+    .map((p) => ({
+      userId: p.id,
+      name: p.full_name ?? emailById.get(p.id) ?? "",
+      email: emailById.get(p.id) ?? "",
+      type: p.role as StudentType,
+      class: normalizeClass(p.class ?? ""),
+      school: p.school ?? "",
+      location: p.location ?? null,
+      phone: p.phone ?? null,
+      parent_phone: p.parent_phone ?? null,
+      parent_email: p.parent_email ?? null,
+    }))
+    // New students first, then offline students; alphabetical within each.
+    .sort(
+      (a, b) =>
+        (a.type === b.type ? 0 : a.type === "new_student" ? -1 : 1) ||
+        a.name.localeCompare(b.name)
+    );
 }
 
 /** Roster filtered to a single class (used for calendar invite matching). */

@@ -90,11 +90,11 @@ export default async function EnquiryPage() {
             <thead className="border-b border-stone-200/70 text-xs uppercase tracking-wider text-slate-500 dark:border-slate-700 dark:text-slate-400">
               <tr>
                 <th className="px-4 py-3">Student</th>
-                <th className="px-4 py-3">Contacted Person</th>
-                <th className="px-4 py-3">Relationship</th>
+                <th className="px-4 py-3">Parent</th>
                 <th className="px-4 py-3">Standard</th>
-                <th className="px-4 py-3">Follow-up Contact</th>
+                <th className="px-4 py-3">School</th>
                 <th className="px-4 py-3">Meeting</th>
+                <th className="px-4 py-3">Submitted</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-100 dark:divide-slate-700">
@@ -105,20 +105,19 @@ export default async function EnquiryPage() {
                       {r.student_name}
                     </td>
                     <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
-                      {r.contact_person_name}
-                    </td>
-                    <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
-                      {r.relationship_with_student}
+                      {r.parent_name} &middot; {r.parent_phone}
                     </td>
                     <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
                       {r.standard}
                     </td>
                     <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
-                      {r.followup_contact_name} &middot;{" "}
-                      {r.followup_contact_number}
+                      {r.school_name ?? "—"}
                     </td>
                     <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
-                      {formatDateTime(r.meeting_at)}
+                      {r.meeting_at ? formatDateTime(r.meeting_at) : "—"}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-slate-600 dark:text-slate-400">
+                      {formatDateTime(r.created_at)}
                     </td>
                   </tr>
                 ))

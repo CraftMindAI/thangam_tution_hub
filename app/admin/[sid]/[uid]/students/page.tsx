@@ -7,6 +7,7 @@ export default async function StudentManagementPage() {
   const students: Student[] = roster.map((s) => ({
     id: s.userId,
     name: s.name,
+    type: s.type,
     class: s.class,
     school: s.school,
     location: s.location,
@@ -19,18 +20,22 @@ export default async function StudentManagementPage() {
   const stats = [
     { label: "Total Students", value: students.length },
     {
-      label: "Classes",
-      value: new Set(students.map((s) => s.class).filter(Boolean)).size,
+      label: "Online Students",
+      value: students.filter((s) => s.type === "new_student").length,
     },
     {
-      label: "Schools",
-      value: new Set(students.map((s) => s.school).filter(Boolean)).size,
+      label: "Offline Students",
+      value: students.filter((s) => s.type === "existing_student").length,
+    },
+    {
+      label: "Classes",
+      value: new Set(students.map((s) => s.class).filter(Boolean)).size,
     },
   ];
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {stats.map((s) => (
           <div
             key={s.label}
