@@ -67,6 +67,8 @@ export async function signUp(
     id: userId,
     role: "new_student",
     full_name: input.student_name,
+    class: input.standard,
+    school: input.school_name ?? null,
     location: input.location,
     parent_phone: input.parent_phone,
     parent_email: input.parent_email ?? null,
