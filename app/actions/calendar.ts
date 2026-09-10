@@ -8,9 +8,9 @@ import { StreamClient } from "@stream-io/node-sdk";
 import { createClient } from "../lib/supabase/server";
 import { createAdminClient } from "../lib/supabase/admin";
 import { getMailTransport, MAIL_FROM } from "../lib/mailer";
-import { MEETING_TYPES, MEETING_TYPE_LABELS } from "../lib/calendar";
+import { MEETING_TYPES, MEETING_TYPE_LABELS, SEND_TO_OPTIONS } from "../lib/calendar";
 import { STUDENT_CLASSES } from "../lib/students";
-import { getMeetingInvitees, getEnquiryStudents } from "../lib/roster";
+import { getMeetingInvitees, getEnquiryStudents, getStudentsByIds } from "../lib/roster";
 
 export type CalendarActionState =
   | { error: string }
@@ -32,7 +32,7 @@ async function requireAdmin() {
   if (profile?.role !== "admin") {
     return { ok: false as const, error: "Only admins can manage the calendar." };
   }
-  return { ok: true as const, supabase, userId: user.id };
+  return { ok: true as const, supabase, userId: user.id, userEmail: user.email ?? null };
 }
 
 type Supabase = Awaited<ReturnType<typeof createClient>>;
@@ -55,6 +55,7 @@ const eventSchema = z.object({
   duration_minutes: z.coerce.number().int().min(5).max(600),
   class_filter: z.string().trim(),
   enquiry_user_id: z.string().trim(),
+  send_to: z.enum(SEND_TO_OPTIONS).default("all"),
 });
 
 const MAX_OCCURRENCES = 60;
@@ -115,7 +116,7 @@ async function createStreamCall(
   if (!key || !secret) return false;
 
   try {
-    const client = new StreamClient(key, secret);
+    const client = new StreamClient(key, secret, { timeout: 30000 });
     await client.video.call("default", callId).getOrCreate({
       data: { created_by_id: userId, starts_at: startsAt, custom: { title } },
     });
@@ -162,20 +163,46 @@ async function uploadAttachment(
  * invited and the class is ignored. Every other type invites the Offline
  * students it applies to — the whole roster when no class is set, otherwise
  * just that class.
+ *
+ * When send_to is 'selected', only the hand-picked students are invited.
  */
 async function syncEventInvites(
   supabase: Supabase,
   eventId: string,
   classFilter: string | null,
-  enquiryUserId: string | null
+  enquiryUserId: string | null,
+  sendTo: "all" | "selected" = "all",
+  selectedStudentIds: string[] = []
 ): Promise<string[]> {
   await supabase.from("calendar_event_invites").delete().eq("event_id", eventId);
 
-  const invitees = enquiryUserId
-    ? (await getEnquiryStudents())
-        .filter((s) => s.userId === enquiryUserId && s.email)
-        .map((s) => ({ name: s.name, email: s.email }))
-    : await getMeetingInvitees(classFilter);
+  // Also clear previous selected-students join rows.
+  await supabase.from("calendar_event_selected_students").delete().eq("event_id", eventId);
+
+  let invitees: { name: string; email: string }[];
+
+  if (enquiryUserId) {
+    // Inquiry meeting — only the enquiry student.
+    invitees = (await getEnquiryStudents())
+      .filter((s) => s.userId === enquiryUserId && s.email)
+      .map((s) => ({ name: s.name, email: s.email }));
+  } else if (sendTo === "selected" && selectedStudentIds.length > 0) {
+    // Hand-picked students.
+    const students = await getStudentsByIds(selectedStudentIds);
+    invitees = students.map((s) => ({ name: s.name, email: s.email }));
+    // Persist the selection for edit form.
+    const selectRows = selectedStudentIds.map((uid) => ({
+      event_id: eventId,
+      user_id: uid,
+    }));
+    await supabase.from("calendar_event_selected_students").insert(selectRows);
+  } else if (sendTo === "selected") {
+    invitees = [];
+  } else {
+    // All students (filtered by class).
+    invitees = await getMeetingInvitees(classFilter);
+  }
+
   const rows = invitees
     .sort((a, b) => a.name.localeCompare(b.name))
     .map((s) => ({
@@ -224,10 +251,18 @@ async function notifyInvitees(
   ev: NotifyEvent,
   emails: string[],
   origin: string,
-  attachment: { filename: string; content: Buffer } | null
+  attachment: { filename: string; content: Buffer } | null,
+  adminUserEmail?: string | null
 ): Promise<boolean> {
   const transport = getMailTransport();
-  if (!transport || emails.length === 0) return false;
+  if (!transport) return false;
+
+  // Always include the admin email so the admin receives the meeting link too.
+  const adminEmail = MAIL_FROM;
+  const allRecipients = new Set(emails);
+  if (adminEmail) allRecipients.add(adminEmail);
+  if (adminUserEmail) allRecipients.add(adminUserEmail);
+  if (allRecipients.size === 0) return false;
 
   const when = new Date(ev.starts_at).toLocaleString("en-IN", {
     dateStyle: "full",
@@ -247,7 +282,7 @@ async function notifyInvitees(
       ev.series_note ? ` — ${ev.series_note}` : ""
     }`,
     ev.description ? `\n${ev.description}` : "",
-    joinUrl ? `\nJoin: ${joinUrl}` : "",
+    joinUrl ? `\nMeeting Link: ${joinUrl}` : "",
     kind !== "cancelled" && ev.attachment_url
       ? `Attachment: ${ev.attachment_url}`
       : "",
@@ -261,23 +296,34 @@ async function notifyInvitees(
         ev.series_note ? ` &mdash; ${ev.series_note}` : ""
       }</p>
       ${ev.description ? `<p style="margin:12px 0">${ev.description.replace(/\n/g, "<br>")}</p>` : ""}
-      ${joinUrl ? `<p style="margin:16px 0"><a href="${joinUrl}" style="background:#0f766e;color:#fff;padding:10px 18px;border-radius:999px;text-decoration:none;font-weight:600">Join meeting</a></p>` : ""}
+      ${
+        joinUrl
+          ? `<div style="margin:16px 0">
+              <a href="${joinUrl}" style="background:#0f766e;color:#fff;padding:10px 18px;border-radius:999px;text-decoration:none;font-weight:600;display:inline-block">Join meeting</a>
+              <p style="margin:12px 0 4px;color:#475569;font-size:13px"><strong>Meeting Link:</strong></p>
+              <p style="margin:0;word-break:break-all"><a href="${joinUrl}" style="color:#0f766e;text-decoration:underline;font-size:13px">${joinUrl}</a></p>
+            </div>`
+          : ""
+      }
       ${kind !== "cancelled" && ev.attachment_url ? `<p style="margin:8px 0"><a href="${ev.attachment_url}">${ev.attachment_name ?? "Attachment"}</a></p>` : ""}
     </div>`;
 
   try {
-    await transport.sendMail({
+    const recipientList = [...allRecipients];
+    console.log(`[Mailer] Sending "${kind}" email to ${recipientList.length} recipient(s):`, recipientList);
+    const info = await transport.sendMail({
       from: MAIL_FROM,
       to: MAIL_FROM,
-      bcc: emails,
+      bcc: recipientList,
       subject: `${NOTIFY_SUBJECT[kind]}: ${ev.title}`,
       text: textLines.join("\n"),
       html,
       attachments: attachment ? [attachment] : [],
     });
+    console.log(`[Mailer] Email sent successfully! MessageId: ${info.messageId}`);
     return true;
   } catch (err) {
-    console.error(`Failed to send "${kind}" email`, err);
+    console.error(`[Mailer] Failed to send "${kind}" email:`, err);
     return false;
   }
 }
@@ -316,6 +362,7 @@ export async function createCalendarEvent(
     duration_minutes: formData.get("duration_minutes"),
     class_filter: formData.get("class_filter") ?? "",
     enquiry_user_id: formData.get("enquiry_user_id") ?? "",
+    send_to: formData.get("send_to") ?? "all",
   });
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid input." };
@@ -331,6 +378,9 @@ export async function createCalendarEvent(
     parsed.data.meeting_type === "inquiry" && parsed.data.enquiry_user_id
       ? parsed.data.enquiry_user_id
       : null;
+
+  const sendTo = parsed.data.send_to;
+  const selectedStudentIds = formData.getAll("selected_student_ids").map(String).filter(Boolean);
 
   const weekdays = formData.get("repeat_weekdays") === "on";
   const weekends = formData.get("repeat_weekends") === "on";
@@ -379,6 +429,7 @@ export async function createCalendarEvent(
         attachment_url: attachmentUrl,
         attachment_name: attachmentName,
         series_id: seriesId,
+        send_to: sendTo,
         created_by: auth.userId,
       })
       .select("id")
@@ -390,7 +441,7 @@ export async function createCalendarEvent(
     eventIds.push(event.id);
     if (!firstCallId && callCreated) firstCallId = callId;
 
-    const emails = await syncEventInvites(auth.supabase, event.id, classFilter, enquiryUserId);
+    const emails = await syncEventInvites(auth.supabase, event.id, classFilter, enquiryUserId, sendTo, selectedStudentIds);
     emails.forEach((e) => allEmails.add(e));
   }
 
@@ -425,7 +476,8 @@ export async function createCalendarEvent(
     await siteOrigin(),
     attachmentBuffer && attachmentName
       ? { filename: attachmentName, content: attachmentBuffer }
-      : null
+      : null,
+    auth.userEmail
   );
   if (emails.length) {
     for (const eid of eventIds) {
@@ -462,6 +514,7 @@ export async function updateCalendarEvent(
     duration_minutes: formData.get("duration_minutes"),
     class_filter: formData.get("class_filter") ?? "",
     enquiry_user_id: formData.get("enquiry_user_id") ?? "",
+    send_to: formData.get("send_to") ?? "all",
   });
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid input." };
@@ -469,7 +522,7 @@ export async function updateCalendarEvent(
 
   const { data: existing } = await auth.supabase
     .from("calendar_events")
-    .select("call_id, attachment_url, attachment_name")
+    .select("call_id, attachment_url, attachment_name, send_to")
     .eq("id", id).eq("created_by", auth.userId)
     .single();
   if (!existing) return { error: "That meeting no longer exists." };
@@ -484,6 +537,8 @@ export async function updateCalendarEvent(
     parsed.data.meeting_type === "inquiry" && parsed.data.enquiry_user_id
       ? parsed.data.enquiry_user_id
       : null;
+  const sendTo = parsed.data.send_to;
+  const selectedStudentIds = formData.getAll("selected_student_ids").map(String).filter(Boolean);
 
   let attachmentUrl: string | null = existing.attachment_url;
   let attachmentName: string | null = existing.attachment_name;
@@ -509,11 +564,12 @@ export async function updateCalendarEvent(
       enquiry_user_id: enquiryUserId,
       attachment_url: attachmentUrl,
       attachment_name: attachmentName,
+      send_to: sendTo,
     })
     .eq("id", id).eq("created_by", auth.userId);
   if (updateErr) return { error: updateErr.message };
 
-  const emails = await syncEventInvites(auth.supabase, id, classFilter, enquiryUserId);
+  const emails = await syncEventInvites(auth.supabase, id, classFilter, enquiryUserId, sendTo, selectedStudentIds);
   const emailed = await notifyInvitees(
     "updated",
     {
@@ -530,7 +586,8 @@ export async function updateCalendarEvent(
     await siteOrigin(),
     newAttachmentBuffer && attachmentName
       ? { filename: attachmentName, content: newAttachmentBuffer }
-      : null
+      : null,
+    auth.userEmail
   );
   if (emails.length) {
     await markInviteStatus(auth.supabase, id, emailed ? "sent" : "failed");
@@ -596,7 +653,8 @@ export async function rescheduleCalendarEvent(
     { ...existing, starts_at: startsAt.toISOString() },
     emails,
     await siteOrigin(),
-    null
+    null,
+    auth.userEmail
   );
   if (emails.length) {
     await markInviteStatus(
@@ -649,7 +707,8 @@ export async function cancelCalendarEvent(
     existing as NotifyEvent,
     emails,
     await siteOrigin(),
-    null
+    null,
+    auth.userEmail
   );
 
   revalidatePath("/admin/[sid]/[uid]", "layout");
