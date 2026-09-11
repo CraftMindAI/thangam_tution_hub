@@ -105,11 +105,12 @@ function resolveClassFilter(raw: string): string | null {
   return raw && (STUDENT_CLASSES as readonly string[]).includes(raw) ? raw : null;
 }
 
-async function createStreamCall(
+export async function createStreamCall(
   callId: string,
   userId: string,
   startsAt: Date,
-  title: string
+  title: string,
+  durationMinutes: number = 30
 ): Promise<boolean> {
   const key = process.env.NEXT_PUBLIC_STREAM_API_KEY;
   const secret = process.env.STREAM_SECRET_KEY;
@@ -118,7 +119,11 @@ async function createStreamCall(
   try {
     const client = new StreamClient(key, secret, { timeout: 30000 });
     await client.video.call("default", callId).getOrCreate({
-      data: { created_by_id: userId, starts_at: startsAt, custom: { title } },
+      data: {
+        created_by_id: userId,
+        starts_at: startsAt,
+        custom: { title, duration_minutes: durationMinutes },
+      },
     });
     return true;
   } catch (err) {
@@ -412,7 +417,8 @@ export async function createCalendarEvent(
       callId,
       auth.userId,
       start,
-      parsed.data.title
+      parsed.data.title,
+      parsed.data.duration_minutes
     );
 
     const { data: event, error: eventErr } = await auth.supabase
@@ -722,4 +728,44 @@ export async function cancelCalendarEvent(
         : ""
     }`.trim(),
   };
+}
+
+export async function restartMeetingCall(
+  callIdOrEventId: string
+): Promise<{ success: true; callId: string } | { error: string }> {
+  const auth = await requireAdmin();
+  if (!auth.ok) return { error: auth.error };
+
+  const { data: event } = await auth.supabase
+    .from("calendar_events")
+    .select("id, title, starts_at, duration_minutes, call_id")
+    .or(`call_id.eq.${callIdOrEventId},id.eq.${callIdOrEventId}`)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (!event) {
+    return { error: "Event not found." };
+  }
+
+  const newCallId = randomUUID();
+  const created = await createStreamCall(
+    newCallId,
+    auth.userId,
+    new Date(event.starts_at),
+    event.title,
+    event.duration_minutes
+  );
+
+  if (!created) {
+    return { error: "Could not initialize video call session." };
+  }
+
+  await auth.supabase
+    .from("calendar_events")
+    .update({ call_id: newCallId })
+    .eq("id", event.id);
+
+  revalidatePath("/admin", "layout");
+  return { success: true, callId: newCallId };
 }
