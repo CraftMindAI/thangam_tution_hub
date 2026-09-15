@@ -64,20 +64,31 @@ export async function getRoster(): Promise<RosterStudent[]> {
 /**
  * Who gets emailed a meeting invitation.
  *
- * Only Offline students (`existing_student`) are invited — Online sign-ups are
- * enquiries, not enrolled students, so they are never invited, not even when
- * the meeting is set to "All classes". Pass a class to narrow further, or null
- * for every class.
+ * All students (both online and offline) who have an email address.
+ * Pass a class to narrow further, or null for every class.
  */
 export async function getMeetingInvitees(
   cls: string | null
 ): Promise<RosterStudent[]> {
   const roster = await getRoster();
   return roster.filter(
-    (s) =>
-      s.type === "existing_student" && s.email && (!cls || s.class === cls)
+    (s) => s.email && (!cls || s.class === cls)
   );
 }
+
+/**
+ * Fetch specific students by their auth user IDs.
+ * Used when the admin hand-picks students (send_to = 'selected').
+ */
+export async function getStudentsByIds(
+  userIds: string[]
+): Promise<RosterStudent[]> {
+  if (!userIds.length) return [];
+  const roster = await getRoster();
+  const idSet = new Set(userIds);
+  return roster.filter((s) => idSet.has(s.userId) && s.email);
+}
+
 
 export type EnquiryStudent = {
   userId: string;

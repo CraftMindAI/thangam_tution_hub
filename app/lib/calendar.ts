@@ -7,3 +7,12 @@ export const MEETING_TYPE_LABELS: Record<MeetingType, string> = {
   demo: "Demo",
   inquiry: "Inquiry",
 };
+
+export const SEND_TO_OPTIONS = ["all", "selected"] as const;
+
+export type SendTo = (typeof SEND_TO_OPTIONS)[number];
+
+export const SEND_TO_LABELS: Record<SendTo, string> = {
+  all: "All students",
+  selected: "Selected students",
+};
