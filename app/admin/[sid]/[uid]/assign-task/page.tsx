@@ -10,9 +10,9 @@ import {
 import TaskForm from "./TaskForm";
 
 const statusStyles: Record<TaskStatus, string> = {
-  pending: "bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300",
-  in_progress: "bg-teal-50 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300",
-  completed: "bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300",
+  pending: "bg-yellow-50 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300",
+  in_progress: "bg-yellow-50 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300",
+  completed: "bg-stone-100 text-stone-600 dark:bg-stone-700 dark:text-stone-300",
 };
 
 function formatTime(t: string) {
@@ -55,14 +55,14 @@ export default async function AssignTaskPage() {
     <div className="space-y-6">
       <TaskForm admins={adminOptions} />
 
-      <div className="overflow-x-auto rounded-2xl border border-stone-200/70 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-800">
-        <div className="border-b border-stone-200/70 px-4 py-3 text-sm font-semibold text-slate-700 dark:border-slate-700 dark:text-slate-200">
+      <div className="overflow-x-auto rounded-2xl border border-stone-200/70 bg-white shadow-sm dark:border-stone-800 dark:bg-stone-800">
+        <div className="border-b border-stone-200/70 px-4 py-3 text-sm font-semibold text-stone-700 dark:border-stone-700 dark:text-stone-200">
           Assigned Tasks
         </div>
 
         {rows.length ? (
           <table className="w-full min-w-[820px] text-left text-sm">
-            <thead className="border-b border-stone-200/70 text-xs uppercase tracking-wider text-slate-500 dark:border-slate-700 dark:text-slate-400">
+            <thead className="border-b border-stone-200/70 text-xs uppercase tracking-wider text-stone-500 dark:border-stone-700 dark:text-stone-400">
               <tr>
                 <th className="px-4 py-3">Task</th>
                 <th className="px-4 py-3">Assigned To</th>
@@ -71,23 +71,23 @@ export default async function AssignTaskPage() {
                 <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-stone-100 dark:divide-slate-700">
+            <tbody className="divide-y divide-stone-100 dark:divide-stone-700">
               {rows.map((t) => (
                 <tr key={t.id}>
                   <td className="px-4 py-3">
-                    <p className="font-medium text-slate-800 dark:text-slate-200">
+                    <p className="font-medium text-stone-800 dark:text-stone-200">
                       {t.title}
                     </p>
                     {t.notes && (
-                      <p className="mt-0.5 max-w-md text-xs text-slate-500 dark:text-slate-400">
+                      <p className="mt-0.5 max-w-md text-xs text-stone-500 dark:text-stone-400">
                         {t.notes}
                       </p>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
+                  <td className="px-4 py-3 text-stone-600 dark:text-stone-400">
                     {nameById.get(t.assigned_to) ?? "—"}
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-slate-600 dark:text-slate-400">
+                  <td className="px-4 py-3 whitespace-nowrap text-stone-600 dark:text-stone-400">
                     {t.due_date
                       ? `${formatDate(t.due_date)}${t.due_time ? ` · ${formatTime(t.due_time)}` : ""}`
                       : "—"}
@@ -106,7 +106,7 @@ export default async function AssignTaskPage() {
                         <select
                           name="status"
                           defaultValue={t.status}
-                          className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs font-semibold text-slate-700 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200"
+                          className="rounded-lg border border-stone-300 bg-white px-2 py-1.5 text-xs font-semibold text-stone-700 dark:border-stone-600 dark:bg-stone-900 dark:text-stone-200"
                         >
                           {TASK_STATUSES.map((s) => (
                             <option key={s} value={s}>
@@ -116,7 +116,7 @@ export default async function AssignTaskPage() {
                         </select>
                         <button
                           type="submit"
-                          className="ml-1.5 rounded-full border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:border-slate-500 hover:text-slate-900 dark:border-slate-600 dark:text-slate-200 dark:hover:border-slate-400 dark:hover:text-white"
+                          className="ml-1.5 rounded-full border border-stone-300 px-3 py-1.5 text-xs font-semibold text-stone-700 transition-colors hover:border-stone-500 hover:text-stone-900 dark:border-stone-600 dark:text-stone-200 dark:hover:border-stone-400 dark:hover:text-white"
                         >
                           Update
                         </button>
@@ -126,7 +126,7 @@ export default async function AssignTaskPage() {
                         <button
                           type="submit"
                           aria-label={`Delete ${t.title}`}
-                          className="rounded-lg p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/30"
+                          className="rounded-lg p-1.5 text-stone-400 hover:bg-yellow-50 hover:text-yellow-700 dark:hover:bg-yellow-900/30"
                         >
                           <X className="h-4 w-4" />
                         </button>
@@ -138,7 +138,7 @@ export default async function AssignTaskPage() {
             </tbody>
           </table>
         ) : (
-          <p className="px-4 py-6 text-center text-sm text-slate-500 dark:text-slate-400">
+          <p className="px-4 py-6 text-center text-sm text-stone-500 dark:text-stone-400">
             No tasks yet.
           </p>
         )}

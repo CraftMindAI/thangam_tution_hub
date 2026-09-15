@@ -54,7 +54,7 @@ export default async function StudentCalendar() {
 
   return (
     <div className="space-y-6">
-      <p className="text-sm text-slate-600 dark:text-slate-400">
+      <p className="text-sm text-stone-600 dark:text-stone-400">
         Your upcoming classes and meeting invites will appear here.
       </p>
 

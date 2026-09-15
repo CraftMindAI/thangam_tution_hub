@@ -19,7 +19,7 @@ import { ArrowRight } from "@/app/components/icons";
 import { adminBase } from "../_lib/nav";
 
 const inputClass =
-  "mt-1.5 w-full rounded-lg border border-stone-300 bg-stone-50 px-3.5 py-2.5 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-slate-500 focus:ring-2 focus:ring-slate-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-white";
+  "mt-1.5 w-full rounded-lg border border-stone-300 bg-stone-50 px-3.5 py-2.5 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-stone-500 focus:ring-2 focus:ring-stone-500/20 dark:border-stone-700 dark:bg-stone-900 dark:text-white";
 
 export type EditableEvent = {
   id: string;
@@ -136,12 +136,12 @@ export default function EventForm(props: Props) {
   return (
     <form
       action={formAction}
-      className="rounded-2xl border border-stone-200/70 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-800"
+      className="rounded-2xl border border-stone-200/70 bg-white p-6 shadow-sm dark:border-stone-800 dark:bg-stone-800"
     >
       {!inModal && (
         <Link
           href={`${base}/calendar`}
-          className="mb-4 inline-flex items-center gap-1.5 text-sm font-semibold text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+          className="mb-4 inline-flex items-center gap-1.5 text-sm font-semibold text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white"
         >
           <ArrowRight className="h-4 w-4 rotate-180" />
           Back to calendar
@@ -161,12 +161,12 @@ export default function EventForm(props: Props) {
         ))}
 
       {state && "error" in state && (
-        <p className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-900/30 dark:text-red-300">
+        <p className="mb-4 rounded-lg bg-yellow-50 px-3 py-2 text-sm text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
           {state.error}
         </p>
       )}
 
-      <label className="text-sm font-medium text-slate-700 dark:text-slate-200">
+      <label className="text-sm font-medium text-stone-700 dark:text-stone-200">
         Meeting title
         <input
           name="title"
@@ -177,7 +177,7 @@ export default function EventForm(props: Props) {
         />
       </label>
 
-      <label className="mt-4 block text-sm font-medium text-slate-700 dark:text-slate-200">
+      <label className="mt-4 block text-sm font-medium text-stone-700 dark:text-stone-200">
         Description
         <textarea
           name="description"
@@ -189,7 +189,7 @@ export default function EventForm(props: Props) {
       </label>
 
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
-        <label className="text-sm font-medium text-slate-700 dark:text-slate-200">
+        <label className="text-sm font-medium text-stone-700 dark:text-stone-200">
           Meeting type
           <select
             name="meeting_type"
@@ -205,7 +205,7 @@ export default function EventForm(props: Props) {
             ))}
           </select>
         </label>
-        <label className="text-sm font-medium text-slate-700 dark:text-slate-200">
+        <label className="text-sm font-medium text-stone-700 dark:text-stone-200">
           Class
           <select
             name="class_filter"
@@ -220,13 +220,13 @@ export default function EventForm(props: Props) {
               </option>
             ))}
           </select>
-          <span className="mt-1 block text-xs font-normal text-slate-500 dark:text-slate-400">
+          <span className="mt-1 block text-xs font-normal text-stone-500 dark:text-stone-400">
             {isInquiry
               ? "Not used for an inquiry — only the chosen student is invited."
               : "Students with registered emails in this class will be invited."}
           </span>
         </label>
-        <label className="text-sm font-medium text-slate-700 dark:text-slate-200">
+        <label className="text-sm font-medium text-stone-700 dark:text-stone-200">
           Date
           <input
             name="date"
@@ -236,7 +236,7 @@ export default function EventForm(props: Props) {
             className={inputClass}
           />
         </label>
-        <label className="text-sm font-medium text-slate-700 dark:text-slate-200">
+        <label className="text-sm font-medium text-stone-700 dark:text-stone-200">
           Time
           <input
             name="time"
@@ -246,7 +246,7 @@ export default function EventForm(props: Props) {
             className={inputClass}
           />
         </label>
-        <label className="text-sm font-medium text-slate-700 dark:text-slate-200">
+        <label className="text-sm font-medium text-stone-700 dark:text-stone-200">
           Duration (minutes)
           <input
             name="duration_minutes"
@@ -260,7 +260,7 @@ export default function EventForm(props: Props) {
         </label>
 
         {isInquiry && (
-          <label className="text-sm font-medium text-slate-700 dark:text-slate-200">
+          <label className="text-sm font-medium text-stone-700 dark:text-stone-200">
             Student
             <select
               name="enquiry_user_id"
@@ -279,7 +279,7 @@ export default function EventForm(props: Props) {
                 </option>
               ))}
             </select>
-            <span className="mt-1 block text-xs font-normal text-slate-500 dark:text-slate-400">
+            <span className="mt-1 block text-xs font-normal text-stone-500 dark:text-stone-400">
               Students who have raised an enquiry. Only this student is invited.
             </span>
           </label>
@@ -385,54 +385,54 @@ export default function EventForm(props: Props) {
       )}
 
       {props.mode === "create" && (
-        <div className="mt-4 rounded-xl border border-stone-200/70 bg-stone-50 p-4 dark:border-slate-700 dark:bg-slate-900/40">
-          <p className="text-sm font-medium text-slate-700 dark:text-slate-200">
+        <div className="mt-4 rounded-xl border border-stone-200/70 bg-stone-50 p-4 dark:border-stone-700 dark:bg-stone-900/40">
+          <p className="text-sm font-medium text-stone-700 dark:text-stone-200">
             Repeat
           </p>
-          <p className="mt-0.5 text-xs text-slate-400">
+          <p className="mt-0.5 text-xs text-stone-400">
             Creates a separate meeting for each day — cancel or edit one without
             touching the others.
           </p>
           <div className="mt-3 flex flex-wrap gap-4">
-            <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200">
+            <label className="flex items-center gap-2 text-sm text-stone-700 dark:text-stone-200">
               <input
                 name="repeat_weekdays"
                 type="checkbox"
-                className="h-4 w-4 accent-slate-800 dark:accent-teal-500"
+                className="h-4 w-4 accent-stone-800 dark:accent-yellow-500"
               />
               Weekdays (Mon–Fri)
             </label>
-            <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200">
+            <label className="flex items-center gap-2 text-sm text-stone-700 dark:text-stone-200">
               <input
                 name="repeat_weekends"
                 type="checkbox"
-                className="h-4 w-4 accent-slate-800 dark:accent-teal-500"
+                className="h-4 w-4 accent-stone-800 dark:accent-yellow-500"
               />
               Weekends (Sat–Sun)
             </label>
           </div>
-          <label className="mt-3 block text-sm font-medium text-slate-700 dark:text-slate-200">
+          <label className="mt-3 block text-sm font-medium text-stone-700 dark:text-stone-200">
             Repeat until
             <input
               name="repeat_until"
               type="date"
               className={inputClass}
             />
-            <span className="mt-1 block text-xs text-slate-400">
+            <span className="mt-1 block text-xs text-stone-400">
               Optional. Defaults to 4 weeks when a repeat option is selected.
             </span>
           </label>
         </div>
       )}
 
-      <label className="mt-4 block text-sm font-medium text-slate-700 dark:text-slate-200">
+      <label className="mt-4 block text-sm font-medium text-stone-700 dark:text-stone-200">
         Attachment
         <input
           name="attachment"
           type="file"
-          className="mt-1.5 block w-full text-sm text-slate-600 file:mr-3 file:rounded-full file:border-0 file:bg-slate-800 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-slate-700 dark:text-slate-400"
+          className="mt-1.5 block w-full text-sm text-stone-600 file:mr-3 file:rounded-full file:border-0 file:bg-stone-800 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-stone-700 dark:text-stone-400"
         />
-        <span className="mt-1 block text-xs text-slate-400">
+        <span className="mt-1 block text-xs text-stone-400">
           {ev?.attachment_name
             ? `Current: ${ev.attachment_name}. Choose a file to replace it.`
             : "Optional. Sent with the invite email (max 10 MB)."}
@@ -443,7 +443,7 @@ export default function EventForm(props: Props) {
         <button
           type="submit"
           disabled={pending}
-          className="rounded-full bg-gradient-to-r from-slate-700 to-slate-900 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-slate-900/20 transition-transform hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
+          className="rounded-full bg-gradient-to-r from-stone-700 to-stone-900 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-stone-900/20 transition-transform hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
         >
           {pending
             ? "Saving…"
@@ -455,14 +455,14 @@ export default function EventForm(props: Props) {
           <button
             type="button"
             onClick={props.onDone}
-            className="rounded-full border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:border-slate-500 hover:text-slate-900 dark:border-slate-600 dark:text-slate-200 dark:hover:border-slate-400 dark:hover:text-white"
+            className="rounded-full border border-stone-300 px-4 py-2.5 text-sm font-semibold text-stone-700 transition-colors hover:border-stone-500 hover:text-stone-900 dark:border-stone-600 dark:text-stone-200 dark:hover:border-stone-400 dark:hover:text-white"
           >
             Cancel
           </button>
         ) : (
           <Link
             href={`${base}/calendar`}
-            className="rounded-full border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:border-slate-500 hover:text-slate-900 dark:border-slate-600 dark:text-slate-200 dark:hover:border-slate-400 dark:hover:text-white"
+            className="rounded-full border border-stone-300 px-4 py-2.5 text-sm font-semibold text-stone-700 transition-colors hover:border-stone-500 hover:text-stone-900 dark:border-stone-600 dark:text-stone-200 dark:hover:border-stone-400 dark:hover:text-white"
           >
             Cancel
           </Link>

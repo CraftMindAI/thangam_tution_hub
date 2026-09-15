@@ -68,37 +68,37 @@ export default async function CalendarPage({
           <Link
             href={`${panel}/calendar?date=${ymd(addDays(weekStart, -7))}`}
             aria-label="Previous week"
-            className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-300 text-slate-600 hover:border-slate-500 hover:text-slate-900 dark:border-slate-600 dark:text-slate-300 dark:hover:text-white"
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-stone-300 text-stone-600 hover:border-stone-500 hover:text-stone-900 dark:border-stone-600 dark:text-stone-300 dark:hover:text-white"
           >
             <ArrowRight className="h-4 w-4 rotate-180" />
           </Link>
           <Link
             href={`${panel}/calendar?date=${ymd(addDays(weekStart, 7))}`}
             aria-label="Next week"
-            className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-300 text-slate-600 hover:border-slate-500 hover:text-slate-900 dark:border-slate-600 dark:text-slate-300 dark:hover:text-white"
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-stone-300 text-stone-600 hover:border-stone-500 hover:text-stone-900 dark:border-stone-600 dark:text-stone-300 dark:hover:text-white"
           >
             <ArrowRight className="h-4 w-4" />
           </Link>
           <Link
             href={`${panel}/calendar`}
-            className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-semibold text-slate-600 hover:border-slate-500 hover:text-slate-900 dark:border-slate-600 dark:text-slate-300 dark:hover:text-white"
+            className="rounded-lg border border-stone-300 px-3 py-1.5 text-sm font-semibold text-stone-600 hover:border-stone-500 hover:text-stone-900 dark:border-stone-600 dark:text-stone-300 dark:hover:text-white"
           >
             Today
           </Link>
-          <span className="ml-1 text-sm font-semibold text-slate-800 dark:text-slate-200">
+          <span className="ml-1 text-sm font-semibold text-stone-800 dark:text-stone-200">
             {rangeLabel}
           </span>
         </div>
 
         <Link
           href={`${panel}/calendar/add-event`}
-          className="rounded-full bg-gradient-to-r from-slate-700 to-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-slate-900/20 transition-transform hover:scale-[1.02]"
+          className="rounded-full bg-gradient-to-r from-stone-700 to-stone-900 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-stone-900/20 transition-transform hover:scale-[1.02]"
         >
           + Add Event
         </Link>
       </div>
 
-      <p className="text-sm text-slate-500 dark:text-slate-400">
+      <p className="text-sm text-stone-500 dark:text-stone-400">
         Click any time slot to schedule a meeting. Offline students in the
         selected class are emailed an invite — Online sign-ups are not invited.
       </p>

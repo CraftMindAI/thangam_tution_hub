@@ -50,44 +50,44 @@ export default function MeetingPreferenceForm({
   return (
     <form
       action={formAction}
-      className="rounded-2xl border border-stone-200/70 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-800"
+      className="rounded-2xl border border-stone-200/70 bg-white p-6 shadow-sm dark:border-stone-800 dark:bg-stone-800"
     >
       <div className="flex items-center gap-2.5">
-        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-teal-50 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300">
+        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-yellow-50 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300">
           <CalendarClock className="h-5 w-5" />
         </span>
         <div>
-          <h2 className="font-semibold text-slate-900 dark:text-white">
+          <h2 className="font-semibold text-stone-900 dark:text-white">
             Video Meeting Preferences
           </h2>
-          <p className="text-sm text-slate-600 dark:text-slate-400">
+          <p className="text-sm text-stone-600 dark:text-stone-400">
             Applies to every admin-hosted meeting. Admins only.
           </p>
         </div>
       </div>
 
       {state && "error" in state && (
-        <p className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-900/30 dark:text-red-300">
+        <p className="mt-4 rounded-lg bg-yellow-50 px-3 py-2 text-sm text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
           {state.error}
         </p>
       )}
       {state && "success" in state && (
-        <p className="mt-4 rounded-lg bg-teal-50 px-3 py-2 text-sm text-teal-700 dark:bg-teal-900/30 dark:text-teal-300">
+        <p className="mt-4 rounded-lg bg-yellow-50 px-3 py-2 text-sm text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300">
           Meeting Preferences has been saved it will apply for all future meetings.
         </p>
       )}
 
-      <div className="mt-5 divide-y divide-stone-100 dark:divide-slate-700">
+      <div className="mt-5 divide-y divide-stone-100 dark:divide-stone-700">
         {options.map((opt) => (
           <label
             key={opt.name}
             className="flex cursor-pointer items-start justify-between gap-4 py-3.5"
           >
             <span className="text-sm">
-              <span className="font-medium text-slate-800 dark:text-slate-200">
+              <span className="font-medium text-stone-800 dark:text-stone-200">
                 {opt.label}
               </span>
-              <span className="block text-slate-500 dark:text-slate-400">
+              <span className="block text-stone-500 dark:text-stone-400">
                 {opt.hint}
               </span>
             </span>
@@ -95,7 +95,7 @@ export default function MeetingPreferenceForm({
               type="checkbox"
               name={opt.name}
               defaultChecked={preferences[opt.name]}
-              className="mt-1 h-4 w-4 shrink-0 accent-slate-800 dark:accent-teal-500"
+              className="mt-1 h-4 w-4 shrink-0 accent-stone-800 dark:accent-yellow-500"
             />
           </label>
         ))}
@@ -104,7 +104,7 @@ export default function MeetingPreferenceForm({
       <button
         type="submit"
         disabled={pending}
-        className="mt-6 rounded-full bg-gradient-to-r from-slate-700 to-slate-900 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-slate-900/20 transition-transform hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
+        className="mt-6 rounded-full bg-gradient-to-r from-stone-700 to-stone-900 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-stone-900/20 transition-transform hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
       >
         {pending ? "Saving…" : "Save Preferences"}
       </button>

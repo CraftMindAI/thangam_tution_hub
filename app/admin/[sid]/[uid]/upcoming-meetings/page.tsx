@@ -46,9 +46,9 @@ function timeLabel(iso: string) {
 }
 
 const typeBadge: Record<MeetingType, string> = {
-  daily: "bg-teal-50 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300",
-  demo: "bg-amber-50 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
-  inquiry: "bg-sky-50 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300",
+  daily: "bg-yellow-50 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300",
+  demo: "bg-yellow-50 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300",
+  inquiry: "bg-yellow-50 text-yellow-900 dark:bg-yellow-950/40 dark:text-yellow-300",
 };
 
 export default async function UpcomingMeetingsPage({
@@ -133,7 +133,7 @@ export default async function UpcomingMeetingsPage({
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-slate-600 dark:text-slate-400">
+        <p className="text-sm text-stone-600 dark:text-stone-400">
           {dateFilter
             ? "Meetings you scheduled on the selected date."
             : "Meetings you scheduled, from today onward."}
@@ -147,23 +147,23 @@ export default async function UpcomingMeetingsPage({
 
       <form
         method="get"
-        className="flex flex-wrap items-end gap-3 rounded-2xl border border-stone-200/70 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-800"
+        className="flex flex-wrap items-end gap-3 rounded-2xl border border-stone-200/70 bg-white p-4 shadow-sm dark:border-stone-800 dark:bg-stone-800"
       >
-        <label className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+        <label className="text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-400">
           Date
           <input
             type="date"
             name="date"
             defaultValue={dateFilter}
-            className="mt-1 block rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-slate-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+            className="mt-1 block rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm text-stone-900 outline-none focus:border-stone-500 dark:border-stone-700 dark:bg-stone-900 dark:text-white"
           />
         </label>
-        <label className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+        <label className="text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-400">
           Meeting type
           <select
             name="type"
             defaultValue={typeFilter}
-            className="mt-1 block rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-slate-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+            className="mt-1 block rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm text-stone-900 outline-none focus:border-stone-500 dark:border-stone-700 dark:bg-stone-900 dark:text-white"
           >
             <option value="">All types</option>
             {MEETING_TYPES.map((t) => (
@@ -173,12 +173,12 @@ export default async function UpcomingMeetingsPage({
             ))}
           </select>
         </label>
-        <label className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+        <label className="text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-400">
           Class
           <select
             name="class"
             defaultValue={classFilter}
-            className="mt-1 block rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-slate-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+            className="mt-1 block rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm text-stone-900 outline-none focus:border-stone-500 dark:border-stone-700 dark:bg-stone-900 dark:text-white"
           >
             <option value="">All classes</option>
             {STUDENT_CLASSES.map((c) => (
@@ -190,14 +190,14 @@ export default async function UpcomingMeetingsPage({
         </label>
         <button
           type="submit"
-          className="rounded-full bg-gradient-to-r from-slate-700 to-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-slate-900/20"
+          className="rounded-full bg-gradient-to-r from-stone-700 to-stone-900 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-stone-900/20"
         >
           Apply
         </button>
         {hasFilters && (
           <Link
             href={`${panel}/upcoming-meetings`}
-            className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-slate-500 dark:border-slate-600 dark:text-slate-200"
+            className="rounded-full border border-stone-300 px-4 py-2 text-sm font-semibold text-stone-700 hover:border-stone-500 dark:border-stone-600 dark:text-stone-200"
           >
             Clear
           </Link>
@@ -205,7 +205,7 @@ export default async function UpcomingMeetingsPage({
       </form>
 
       {groups.size === 0 ? (
-        <p className="rounded-2xl border border-stone-200/70 bg-white px-4 py-10 text-center text-sm text-slate-500 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-400">
+        <p className="rounded-2xl border border-stone-200/70 bg-white px-4 py-10 text-center text-sm text-stone-500 dark:border-stone-800 dark:bg-stone-800 dark:text-stone-400">
           {hasFilters
             ? "No meetings match these filters."
             : "No upcoming meetings. Use “Add Event” to schedule one."}
@@ -213,24 +213,24 @@ export default async function UpcomingMeetingsPage({
       ) : (
         [...groups.entries()].map(([key, list]) => (
           <section key={key}>
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-teal-700 dark:text-teal-400">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-yellow-700 dark:text-yellow-400">
               {dayHeading(new Date(`${key}T00:00:00`), todayKey, tomorrowKey)}
             </h2>
             <div className="mt-3 space-y-3">
               {list.map((e) => (
                 <div
                   key={e.id}
-                  className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-stone-200/70 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-800"
+                  className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-stone-200/70 bg-white p-4 shadow-sm dark:border-stone-800 dark:bg-stone-800"
                 >
                   <div className="flex items-start gap-3">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-teal-50 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-yellow-50 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300">
                       <CalendarClock className="h-5 w-5" />
                     </span>
                     <div>
-                      <p className="font-medium text-slate-800 dark:text-slate-200">
+                      <p className="font-medium text-stone-800 dark:text-stone-200">
                         {e.title}
                       </p>
-                      <p className="mt-0.5 flex flex-wrap items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                      <p className="mt-0.5 flex flex-wrap items-center gap-2 text-sm text-stone-500 dark:text-stone-400">
                         <span>
                           {timeLabel(e.starts_at)} · {e.duration_minutes} min
                         </span>
@@ -240,7 +240,7 @@ export default async function UpcomingMeetingsPage({
                           {MEETING_TYPE_LABELS[e.meeting_type]}
                         </span>
                         {e.class_filter && (
-                          <span className="rounded-full bg-stone-100 px-2 py-0.5 text-xs font-semibold text-slate-600 dark:bg-slate-700 dark:text-slate-300">
+                          <span className="rounded-full bg-stone-100 px-2 py-0.5 text-xs font-semibold text-stone-600 dark:bg-stone-700 dark:text-stone-300">
                             Class {e.class_filter}
                           </span>
                         )}

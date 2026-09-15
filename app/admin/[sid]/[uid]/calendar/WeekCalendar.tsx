@@ -49,19 +49,19 @@ function minutesLabel(mins: number) {
 }
 
 const typeColor: Record<MeetingType, string> = {
-  daily: "bg-teal-600",
-  demo: "bg-amber-600",
-  inquiry: "bg-sky-600",
+  daily: "bg-yellow-500 text-stone-900",
+  demo: "bg-yellow-500 text-stone-900",
+  inquiry: "bg-yellow-200 text-stone-900",
 };
 
 const typeBadge: Record<MeetingType, string> = {
-  daily: "bg-teal-50 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300",
-  demo: "bg-amber-50 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
-  inquiry: "bg-sky-50 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300",
+  daily: "bg-yellow-50 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300",
+  demo: "bg-yellow-50 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300",
+  inquiry: "bg-yellow-50 text-yellow-900 dark:bg-yellow-950/40 dark:text-yellow-300",
 };
 
 const panelInput =
-  "mt-1.5 w-full rounded-lg border border-stone-300 bg-stone-50 px-3.5 py-2.5 text-sm text-slate-900 outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-white";
+  "mt-1.5 w-full rounded-lg border border-stone-300 bg-stone-50 px-3.5 py-2.5 text-sm text-stone-900 outline-none focus:border-stone-500 focus:ring-2 focus:ring-stone-500/20 dark:border-stone-700 dark:bg-stone-900 dark:text-white";
 
 export default function WeekCalendar({
   weekStartISO,
@@ -103,9 +103,9 @@ export default function WeekCalendar({
   const gridCols = `${GUTTER}px repeat(7, minmax(0, 1fr))`;
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-stone-200/70 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-800">
+    <div className="overflow-hidden rounded-2xl border border-stone-200/70 bg-white shadow-sm dark:border-stone-800 dark:bg-stone-800">
       <div
-        className="grid border-b border-stone-200/70 dark:border-slate-700"
+        className="grid border-b border-stone-200/70 dark:border-stone-700"
         style={{ gridTemplateColumns: gridCols }}
       >
         <div />
@@ -114,10 +114,10 @@ export default function WeekCalendar({
           return (
             <div
               key={i}
-              className={`border-l border-stone-100 py-2 text-center dark:border-slate-800 ${
+              className={`border-l border-stone-100 py-2 text-center dark:border-stone-800 ${
                 isToday
-                  ? "text-teal-700 dark:text-teal-400"
-                  : "text-slate-500 dark:text-slate-400"
+                  ? "text-yellow-700 dark:text-yellow-400"
+                  : "text-stone-500 dark:text-stone-400"
               }`}
             >
               <div className="text-[11px] font-semibold uppercase tracking-wide">
@@ -126,8 +126,8 @@ export default function WeekCalendar({
               <div
                 className={`mx-auto mt-0.5 flex h-7 w-7 items-center justify-center rounded-full text-sm font-bold ${
                   isToday
-                    ? "bg-teal-600 text-white"
-                    : "text-slate-800 dark:text-slate-200"
+                    ? "bg-yellow-600 text-white"
+                    : "text-stone-800 dark:text-stone-200"
                 }`}
               >
                 {d.getDate()}
@@ -143,7 +143,7 @@ export default function WeekCalendar({
             {HOURS.map((h) => (
               <div
                 key={h}
-                className="absolute right-2 -translate-y-2 text-[11px] text-slate-400"
+                className="absolute right-2 -translate-y-2 text-[11px] text-stone-400"
                 style={{ top: h * HOUR_H }}
               >
                 {hourLabel(h)}
@@ -154,7 +154,7 @@ export default function WeekCalendar({
           {days.map((d, di) => (
             <div
               key={di}
-              className="relative border-l border-stone-100 dark:border-slate-800"
+              className="relative border-l border-stone-100 dark:border-stone-800"
               style={{ height: HOUR_H * 24 }}
             >
               {HOURS.map((h) => (
@@ -168,7 +168,7 @@ export default function WeekCalendar({
                         : { day: di, hour: h }
                     )
                   }
-                  className="absolute inset-x-0 border-t border-stone-100 transition-colors hover:bg-teal-50/60 dark:border-slate-800 dark:hover:bg-slate-700/40"
+                  className="absolute inset-x-0 border-t border-stone-100 transition-colors hover:bg-yellow-50/60 dark:border-stone-800 dark:hover:bg-stone-700/40"
                   style={{ top: h * HOUR_H, height: HOUR_H }}
                   aria-label={`Add event ${d.toLocaleDateString("en-IN", {
                     weekday: "long",
@@ -183,7 +183,7 @@ export default function WeekCalendar({
                 >
                   <Link
                     href={`${base}/calendar/add-event?date=${ymd(d)}&hrs=${selected.hour}`}
-                    className="rounded-full bg-slate-900 px-3 py-1 text-xs font-semibold text-white shadow-md hover:bg-slate-700 dark:bg-white dark:text-slate-900"
+                    className="rounded-full bg-stone-900 px-3 py-1 text-xs font-semibold text-white shadow-md hover:bg-stone-700 dark:bg-white dark:text-stone-900"
                   >
                     + Add event
                   </Link>
@@ -198,7 +198,7 @@ export default function WeekCalendar({
                     key={`${e.id}-${di}`}
                     type="button"
                     onClick={() => setOpenId(e.id)}
-                    className={`absolute inset-x-1 z-10 overflow-hidden rounded-md px-2 py-1 text-left text-[11px] leading-tight text-white hover:brightness-110 ${typeColor[e.meeting_type]}`}
+                    className={`absolute inset-x-1 z-10 overflow-hidden rounded-md px-2 py-1 text-left text-[11px] leading-tight hover:brightness-95 ${typeColor[e.meeting_type]}`}
                     style={{ top, height }}
                   >
                     <div className="truncate font-semibold">{e.title}</div>
@@ -262,16 +262,16 @@ function EventPanel({
 
   return (
     <div className="fixed inset-0 z-50">
-      <div className="absolute inset-0 bg-slate-900/40" onClick={onClose} />
-      <aside className="absolute right-0 top-0 flex h-full w-full max-w-sm flex-col border-l border-stone-200/70 bg-white shadow-xl dark:border-slate-800 dark:bg-slate-800">
-        <header className="flex items-start justify-between gap-3 border-b border-stone-200/70 p-5 dark:border-slate-700">
+      <div className="absolute inset-0 bg-stone-900/40" onClick={onClose} />
+      <aside className="absolute right-0 top-0 flex h-full w-full max-w-sm flex-col border-l border-stone-200/70 bg-white shadow-xl dark:border-stone-800 dark:bg-stone-800">
+        <header className="flex items-start justify-between gap-3 border-b border-stone-200/70 p-5 dark:border-stone-700">
           <div>
             <span
               className={`rounded-full px-2 py-0.5 text-xs font-semibold ${typeBadge[event.meeting_type]}`}
             >
               {MEETING_TYPE_LABELS[event.meeting_type]}
             </span>
-            <h3 className="mt-2 text-lg font-bold tracking-tight text-slate-900 dark:text-white">
+            <h3 className="mt-2 text-lg font-bold tracking-tight text-stone-900 dark:text-white">
               {event.title}
             </h3>
           </div>
@@ -279,7 +279,7 @@ function EventPanel({
             <Link
               href={`${base}/calendar/edit/${event.id}`}
               aria-label="Edit meeting"
-              className="rounded-lg p-1.5 text-slate-400 hover:bg-stone-100 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-slate-200"
+              className="rounded-lg p-1.5 text-stone-400 hover:bg-stone-100 hover:text-stone-700 dark:hover:bg-stone-700 dark:hover:text-stone-200"
             >
               <Pencil className="h-4 w-4" />
             </Link>
@@ -287,7 +287,7 @@ function EventPanel({
               type="button"
               onClick={onClose}
               aria-label="Close"
-              className="rounded-lg p-1.5 text-slate-400 hover:bg-stone-100 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-slate-200"
+              className="rounded-lg p-1.5 text-stone-400 hover:bg-stone-100 hover:text-stone-700 dark:hover:bg-stone-700 dark:hover:text-stone-200"
             >
               <X className="h-5 w-5" />
             </button>
@@ -297,26 +297,26 @@ function EventPanel({
         <div className="flex-1 space-y-4 overflow-y-auto p-5 text-sm">
           {mode === "view" && (
             <>
-              <div className="text-slate-600 dark:text-slate-300">
+              <div className="text-stone-600 dark:text-stone-300">
                 {dateStr}
                 <br />
                 {timeStr} · {event.duration_minutes} min
               </div>
               {event.class_filter && (
-                <div className="text-slate-600 dark:text-slate-300">
+                <div className="text-stone-600 dark:text-stone-300">
                   Class {event.class_filter}
                 </div>
               )}
               <div>
-                <p className="font-semibold text-slate-800 dark:text-slate-200">
+                <p className="font-semibold text-stone-800 dark:text-stone-200">
                   Description
                 </p>
-                <p className="mt-1 whitespace-pre-wrap text-slate-600 dark:text-slate-400">
+                <p className="mt-1 whitespace-pre-wrap text-stone-600 dark:text-stone-400">
                   {event.description || "No description."}
                 </p>
               </div>
               <div>
-                <p className="font-semibold text-slate-800 dark:text-slate-200">
+                <p className="font-semibold text-stone-800 dark:text-stone-200">
                   Attachment
                 </p>
                 {event.attachment_url ? (
@@ -324,12 +324,12 @@ function EventPanel({
                     href={event.attachment_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-1 inline-block font-medium text-teal-700 hover:underline dark:text-teal-400"
+                    className="mt-1 inline-block font-medium text-yellow-700 hover:underline dark:text-yellow-400"
                   >
                     {event.attachment_name || "Download attachment"}
                   </a>
                 ) : (
-                  <p className="mt-1 text-slate-400">None</p>
+                  <p className="mt-1 text-stone-400">None</p>
                 )}
               </div>
             </>
@@ -339,11 +339,11 @@ function EventPanel({
             <form action={rescheduleAction} className="space-y-3">
               <input type="hidden" name="id" value={event.id} />
               {rs && "error" in rs && (
-                <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-900/30 dark:text-red-300">
+                <p className="rounded-lg bg-yellow-50 px-3 py-2 text-sm text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
                   {rs.error}
                 </p>
               )}
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-200">
+              <label className="block text-sm font-medium text-stone-700 dark:text-stone-200">
                 New date
                 <input
                   name="date"
@@ -353,7 +353,7 @@ function EventPanel({
                   className={panelInput}
                 />
               </label>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-200">
+              <label className="block text-sm font-medium text-stone-700 dark:text-stone-200">
                 New time
                 <input
                   name="time"
@@ -367,14 +367,14 @@ function EventPanel({
                 <button
                   type="button"
                   onClick={() => setMode("view")}
-                  className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-slate-500 dark:border-slate-600 dark:text-slate-200"
+                  className="rounded-full border border-stone-300 px-4 py-2 text-sm font-semibold text-stone-700 hover:border-stone-500 dark:border-stone-600 dark:text-stone-200"
                 >
                   Back
                 </button>
                 <button
                   type="submit"
                   disabled={rsPending}
-                  className="rounded-full bg-gradient-to-r from-slate-700 to-slate-900 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+                  className="rounded-full bg-gradient-to-r from-stone-700 to-stone-900 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
                 >
                   {rsPending ? "Saving…" : "Save new time"}
                 </button>
@@ -386,11 +386,11 @@ function EventPanel({
             <form action={cancelAction} className="space-y-3">
               <input type="hidden" name="id" value={event.id} />
               {cs && "error" in cs && (
-                <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-900/30 dark:text-red-300">
+                <p className="rounded-lg bg-yellow-50 px-3 py-2 text-sm text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
                   {cs.error}
                 </p>
               )}
-              <p className="text-slate-600 dark:text-slate-300">
+              <p className="text-stone-600 dark:text-stone-300">
                 Cancel <span className="font-semibold">{event.title}</span> for
                 everyone? This removes it from the calendar.
               </p>
@@ -398,14 +398,14 @@ function EventPanel({
                 <button
                   type="button"
                   onClick={() => setMode("view")}
-                  className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-slate-500 dark:border-slate-600 dark:text-slate-200"
+                  className="rounded-full border border-stone-300 px-4 py-2 text-sm font-semibold text-stone-700 hover:border-stone-500 dark:border-stone-600 dark:text-stone-200"
                 >
                   Keep meeting
                 </button>
                 <button
                   type="submit"
                   disabled={csPending}
-                  className="rounded-full bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-60"
+                  className="rounded-full bg-yellow-400 px-4 py-2 text-sm font-semibold text-stone-900 hover:bg-yellow-300 disabled:opacity-60"
                 >
                   {csPending ? "Cancelling…" : "Yes, cancel"}
                 </button>
@@ -415,25 +415,25 @@ function EventPanel({
         </div>
 
         {mode === "view" && (
-          <footer className="flex flex-wrap items-center gap-2 border-t border-stone-200/70 p-4 dark:border-slate-700">
+          <footer className="flex flex-wrap items-center gap-2 border-t border-stone-200/70 p-4 dark:border-stone-700">
             <button
               type="button"
               onClick={() => setMode("cancel")}
-              className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:border-red-400 hover:text-red-600 dark:border-slate-600 dark:text-slate-200"
+              className="rounded-full border border-stone-300 px-4 py-2 text-sm font-semibold text-stone-700 transition-colors hover:border-yellow-400 hover:text-yellow-700 dark:border-stone-600 dark:text-stone-200"
             >
               Cancel
             </button>
             <button
               type="button"
               onClick={() => setMode("reschedule")}
-              className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:border-slate-500 hover:text-slate-900 dark:border-slate-600 dark:text-slate-200 dark:hover:text-white"
+              className="rounded-full border border-stone-300 px-4 py-2 text-sm font-semibold text-stone-700 transition-colors hover:border-stone-500 hover:text-stone-900 dark:border-stone-600 dark:text-stone-200 dark:hover:text-white"
             >
               Reschedule
             </button>
             {event.call_id && (
               <Link
                 href={`/admin/meeting/${event.call_id}`}
-                className="grow rounded-full bg-gradient-to-r from-teal-600 to-emerald-600 px-4 py-2 text-center text-sm font-semibold text-white shadow-md shadow-teal-900/15 transition-transform hover:scale-[1.02]"
+                className="grow rounded-full bg-yellow-400 px-4 py-2 text-center text-sm font-semibold text-stone-900 shadow-md shadow-yellow-500/15 transition-transform hover:bg-yellow-300 hover:scale-[1.02]"
               >
                 Join meeting
               </Link>

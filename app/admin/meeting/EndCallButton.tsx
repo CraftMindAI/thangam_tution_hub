@@ -29,7 +29,7 @@ export default function EndCallButton() {
   return (
     <button
       onClick={endCall}
-      className="rounded-2xl bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700"
+      className="rounded-2xl bg-yellow-400 px-4 py-2 text-sm font-semibold text-stone-900 hover:bg-yellow-300"
     >
       End call for everyone
     </button>

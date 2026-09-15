@@ -37,8 +37,8 @@ export default function StudentShell({
             onClick={() => setMobileOpen(false)}
             className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
               active
-                ? "bg-gradient-to-r from-slate-700 to-slate-900 text-white shadow-sm shadow-slate-900/20"
-                : "text-slate-600 hover:bg-stone-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
+                ? "bg-gradient-to-r from-stone-700 to-stone-900 text-white shadow-sm shadow-stone-900/20"
+                : "text-stone-600 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-stone-800 dark:hover:text-white"
             }`}
           >
             <item.icon className="h-4.5 w-4.5 shrink-0" />
@@ -50,11 +50,11 @@ export default function StudentShell({
   );
 
   return (
-    <div className="flex flex-1 bg-stone-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100">
+    <div className="flex flex-1 bg-stone-50 text-stone-900 dark:bg-stone-900 dark:text-stone-100">
       {/* Desktop sidebar */}
-      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-stone-200/70 bg-white py-5 lg:flex dark:border-slate-800 dark:bg-slate-800">
+      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-stone-200/70 bg-white py-5 lg:flex dark:border-stone-800 dark:bg-stone-800">
         <Link href="/" className="flex items-center gap-2.5 px-6 pb-5">
-          <span className="relative flex h-9 w-9 shrink-0 overflow-hidden rounded-xl shadow-md shadow-slate-900/20">
+          <span className="relative flex h-9 w-9 shrink-0 overflow-hidden rounded-xl shadow-md shadow-stone-900/20">
             <Image
               src="/logo.jpeg"
               alt="Thangam Varahi Tuition Hub"
@@ -63,27 +63,27 @@ export default function StudentShell({
               className="object-cover"
             />
           </span>
-          <span className="text-sm font-extrabold leading-tight tracking-tight text-slate-900 dark:text-white">
+          <span className="text-sm font-extrabold leading-tight tracking-tight text-stone-900 dark:text-white">
             Thangam Varahi
-            <span className="block text-xs font-semibold text-slate-500 dark:text-slate-400">
+            <span className="block text-xs font-semibold text-stone-500 dark:text-stone-400">
               Student Portal
             </span>
           </span>
         </Link>
         {nav}
-        <div className="mt-auto border-t border-stone-200/70 px-3 pt-4 dark:border-slate-700">
+        <div className="mt-auto border-t border-stone-200/70 px-3 pt-4 dark:border-stone-700">
           <div className="px-3 pb-2">
-            <p className="truncate text-sm font-semibold text-slate-800 dark:text-slate-200">
+            <p className="truncate text-sm font-semibold text-stone-800 dark:text-stone-200">
               {studentName}
             </p>
-            <p className="truncate text-xs text-slate-500 dark:text-slate-400">
+            <p className="truncate text-xs text-stone-500 dark:text-stone-400">
               {studentEmail}
             </p>
           </div>
           <form action={signOut}>
             <button
               type="submit"
-              className="w-full rounded-xl px-3 py-2 text-left text-sm font-medium text-slate-600 transition-colors hover:bg-stone-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
+              className="w-full rounded-xl px-3 py-2 text-left text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-stone-800 dark:hover:text-white"
             >
               Sign Out
             </button>
@@ -95,29 +95,29 @@ export default function StudentShell({
       {mobileOpen && (
         <div className="fixed inset-0 z-40 lg:hidden">
           <div
-            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+            className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm"
             onClick={() => setMobileOpen(false)}
           />
-          <aside className="absolute left-0 top-0 flex h-full w-64 flex-col border-r border-stone-200/70 bg-white py-5 dark:border-slate-800 dark:bg-slate-900">
+          <aside className="absolute left-0 top-0 flex h-full w-64 flex-col border-r border-stone-200/70 bg-white py-5 dark:border-stone-800 dark:bg-stone-900">
             <div className="flex items-center justify-between px-6 pb-5">
-              <span className="text-sm font-extrabold tracking-tight text-slate-900 dark:text-white">
+              <span className="text-sm font-extrabold tracking-tight text-stone-900 dark:text-white">
                 Student Portal
               </span>
               <button
                 type="button"
                 onClick={() => setMobileOpen(false)}
                 aria-label="Close menu"
-                className="text-slate-500 hover:text-slate-800 dark:hover:text-white"
+                className="text-stone-500 hover:text-stone-800 dark:hover:text-white"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
             {nav}
-            <div className="mt-auto border-t border-stone-200/70 px-3 pt-4 dark:border-slate-700">
+            <div className="mt-auto border-t border-stone-200/70 px-3 pt-4 dark:border-stone-700">
               <form action={signOut}>
                 <button
                   type="submit"
-                  className="w-full rounded-xl px-3 py-2 text-left text-sm font-medium text-slate-600 hover:bg-stone-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
+                  className="w-full rounded-xl px-3 py-2 text-left text-sm font-medium text-stone-600 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-stone-800 dark:hover:text-white"
                 >
                   Sign Out
                 </button>
@@ -129,16 +129,16 @@ export default function StudentShell({
 
       {/* Main column */}
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-stone-200/70 bg-white/90 px-4 py-3 backdrop-blur sm:px-6 dark:border-slate-800 dark:bg-slate-800/90">
+        <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-stone-200/70 bg-white/90 px-4 py-3 backdrop-blur sm:px-6 dark:border-stone-800 dark:bg-stone-800/90">
           <button
             type="button"
             onClick={() => setMobileOpen(true)}
             aria-label="Open menu"
-            className="rounded-lg p-1.5 text-slate-600 hover:bg-stone-100 lg:hidden dark:text-slate-300 dark:hover:bg-slate-700"
+            className="rounded-lg p-1.5 text-stone-600 hover:bg-stone-100 lg:hidden dark:text-stone-300 dark:hover:bg-stone-700"
           >
             <Menu className="h-5 w-5" />
           </button>
-          <h1 className="text-base font-bold tracking-tight text-slate-900 dark:text-white">
+          <h1 className="text-base font-bold tracking-tight text-stone-900 dark:text-white">
             {pageTitle}
           </h1>
         </header>

@@ -22,7 +22,7 @@ export default function AddEventModal({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="shrink-0 rounded-full bg-gradient-to-r from-slate-700 to-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-slate-900/20 transition-transform hover:scale-[1.02]"
+        className="shrink-0 rounded-full bg-gradient-to-r from-stone-700 to-stone-900 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-stone-900/20 transition-transform hover:scale-[1.02]"
       >
         + Add Event
       </button>
@@ -30,7 +30,7 @@ export default function AddEventModal({
       {open && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
           <div
-            className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-stone-900/50 backdrop-blur-sm"
             onClick={() => setOpen(false)}
           />
           <div className="relative mx-auto my-8 w-full max-w-lg px-4">
@@ -39,7 +39,7 @@ export default function AddEventModal({
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label="Close"
-                className="absolute right-3 top-3 z-10 rounded-lg p-1.5 text-slate-400 hover:bg-stone-100 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-slate-200"
+                className="absolute right-3 top-3 z-10 rounded-lg p-1.5 text-stone-400 hover:bg-stone-100 hover:text-stone-700 dark:hover:bg-stone-700 dark:hover:text-stone-200"
               >
                 <X className="h-5 w-5" />
               </button>
