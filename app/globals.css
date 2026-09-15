@@ -39,6 +39,15 @@ body {
   animation: marquee 22s linear infinite;
 }
 
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 .animate-marquee:hover {
   animation-play-state: paused;
 }

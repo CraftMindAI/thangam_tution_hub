@@ -77,17 +77,23 @@ export default function WeekCalendar({
     d.setDate(d.getDate() + i);
     return d;
   });
-  const todayYmd = ymd(new Date());
+  const now = new Date();
+  const todayYmd = ymd(now);
+  const todayIdx = days.findIndex((d) => ymd(d) === todayYmd);
+  const nowMinutes = now.getHours() * 60 + now.getMinutes();
 
   const [selected, setSelected] = useState<{ day: number; hour: number } | null>(
-    null
+    todayIdx >= 0 ? { day: todayIdx, hour: now.getHours() } : null
   );
   const [openId, setOpenId] = useState<string | null>(null);
   const openEvent = events.find((e) => e.id === openId) ?? null;
+  const [notice, setNotice] = useState<string | null>(null);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: 8 * HOUR_H });
+    const top = Math.max((nowMinutes / 60) * HOUR_H - HOUR_H * 2, 0);
+    scrollRef.current?.scrollTo({ top });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function dayEvents(dayIdx: number) {
@@ -137,7 +143,7 @@ export default function WeekCalendar({
         })}
       </div>
 
-      <div ref={scrollRef} className="max-h-[620px] overflow-y-auto">
+      <div ref={scrollRef} className="no-scrollbar max-h-[380px] overflow-y-auto">
         <div className="grid" style={{ gridTemplateColumns: gridCols }}>
           <div className="relative" style={{ height: HOUR_H * 24 }}>
             {HOURS.map((h) => (
@@ -176,6 +182,16 @@ export default function WeekCalendar({
                 />
               ))}
 
+              {di === todayIdx && (
+                <div
+                  className="pointer-events-none absolute inset-x-0 z-30 flex items-center"
+                  style={{ top: (nowMinutes / 60) * HOUR_H }}
+                >
+                  <span className="h-2 w-2 -translate-x-1 rounded-full bg-red-500" />
+                  <span className="h-px w-full bg-red-500" />
+                </div>
+              )}
+
               {selected && selected.day === di && (
                 <div
                   className="absolute inset-x-0 z-20 flex items-center justify-center"
@@ -183,6 +199,14 @@ export default function WeekCalendar({
                 >
                   <Link
                     href={`${base}/calendar/add-event?date=${ymd(d)}&hrs=${selected.hour}`}
+                    onClick={(ev) => {
+                      const slotTime = new Date(d);
+                      slotTime.setHours(selected.hour, 0, 0, 0);
+                      if (slotTime.getTime() < new Date().getTime()) {
+                        ev.preventDefault();
+                        setNotice("Cannot add event in the past. Please select a future time slot.");
+                      }
+                    }}
                     className="rounded-full bg-stone-900 px-3 py-1 text-xs font-semibold text-white shadow-md hover:bg-stone-700 dark:bg-white dark:text-stone-900"
                   >
                     + Add event
@@ -197,7 +221,13 @@ export default function WeekCalendar({
                   <button
                     key={`${e.id}-${di}`}
                     type="button"
-                    onClick={() => setOpenId(e.id)}
+                    onClick={() => {
+                      if (new Date(e.starts_at).getTime() < new Date().getTime()) {
+                        setNotice("Event link has been expired");
+                        return;
+                      }
+                      setOpenId(e.id);
+                    }}
                     className={`absolute inset-x-1 z-10 overflow-hidden rounded-md px-2 py-1 text-left text-[11px] leading-tight hover:brightness-95 ${typeColor[e.meeting_type]}`}
                     style={{ top, height }}
                   >
@@ -214,6 +244,34 @@ export default function WeekCalendar({
       {openEvent && (
         <EventPanel event={openEvent} onClose={() => setOpenId(null)} />
       )}
+
+      {notice && <NoticeModal message={notice} onClose={() => setNotice(null)} />}
+    </div>
+  );
+}
+
+function NoticeModal({
+  message,
+  onClose,
+}: {
+  message: string;
+  onClose: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-stone-900/40" onClick={onClose} />
+      <div className="relative w-full max-w-sm rounded-2xl border border-stone-200/70 bg-white p-5 text-center shadow-xl dark:border-stone-800 dark:bg-stone-800">
+        <p className="text-sm font-medium text-stone-700 dark:text-stone-200">
+          {message}
+        </p>
+        <button
+          type="button"
+          onClick={onClose}
+          className="mt-4 rounded-full bg-gradient-to-r from-stone-700 to-stone-900 px-4 py-2 text-sm font-semibold text-white"
+        >
+          OK
+        </button>
+      </div>
     </div>
   );
 }
