@@ -44,7 +44,7 @@ export default function ProfileForm({
     `mt-1.5 w-full rounded-2xl border px-4 py-2.5 text-xs font-semibold outline-none transition-colors ${
       locked
         ? "border-stone-200 bg-stone-100 text-stone-500 dark:border-stone-800 dark:bg-stone-900/60 dark:text-stone-400 cursor-not-allowed"
-        : "border-stone-200 bg-stone-50 text-stone-900 placeholder:text-stone-400 focus:border-yellow-400 focus:bg-white dark:border-stone-800 dark:bg-stone-900 dark:text-white dark:focus:border-yellow-400"
+        : "border-stone-200 bg-stone-50 text-stone-900 placeholder:text-stone-400 focus:border-yellow-400 focus:bg-white dark:border-stone-800 dark:bg-stone-900 dark:text-white dark:focus:border-yellow-400 dark:focus:bg-stone-900"
     }`;
 
   return (

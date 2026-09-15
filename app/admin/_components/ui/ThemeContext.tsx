@@ -72,51 +72,24 @@ export function useAdminTheme() {
 }
 
 /**
- * Modern tactile segmented toggle switch for switching between
- * Yellow & Black and Yellow & White.
+ * Icon-only theme toggle button for switching between dark and light themes.
  */
 export function ThemeToggle({ className = "" }: { className?: string }) {
-  const { theme, setTheme } = useAdminTheme();
+  const { theme, toggleTheme } = useAdminTheme();
 
   return (
-    <div
-      className={`inline-flex items-center gap-1 rounded-full p-1 bg-stone-100 border border-stone-200/80 dark:bg-stone-900/90 dark:border-stone-800 ${className}`}
-      role="radiogroup"
-      aria-label="Theme selector"
+    <button
+      type="button"
+      onClick={toggleTheme}
+      aria-label="Toggle theme"
+      title={theme === "yellow-black" ? "Switch to light theme" : "Switch to dark theme"}
+      className={`flex h-9 w-9 items-center justify-center rounded-xl border border-stone-200 bg-white text-stone-700 shadow-sm hover:bg-stone-50 hover:text-stone-900 dark:border-stone-800 dark:bg-stone-900/90 dark:text-stone-300 dark:hover:bg-stone-800 dark:hover:text-white transition-colors ${className}`}
     >
-      <button
-        type="button"
-        role="radio"
-        aria-checked={theme === "yellow-black"}
-        onClick={() => setTheme("yellow-black")}
-        className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-all duration-200 ${
-          theme === "yellow-black"
-            ? "bg-yellow-400 text-stone-950 shadow-sm shadow-yellow-500/25 scale-[1.02]"
-            : "text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200"
-        }`}
-        title="Yellow & Black Theme (Dark)"
-      >
-        <Moon className="h-3.5 w-3.5" />
-        <span className="hidden sm:inline">Yellow & Black</span>
-        <span className="sm:hidden">Black</span>
-      </button>
-
-      <button
-        type="button"
-        role="radio"
-        aria-checked={theme === "yellow-white"}
-        onClick={() => setTheme("yellow-white")}
-        className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-all duration-200 ${
-          theme === "yellow-white"
-            ? "bg-white text-stone-950 shadow-sm border border-stone-200/80 scale-[1.02]"
-            : "text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200"
-        }`}
-        title="Yellow & White Theme (Light)"
-      >
-        <Sun className="h-3.5 w-3.5 text-yellow-500" />
-        <span className="hidden sm:inline">Yellow & White</span>
-        <span className="sm:hidden">White</span>
-      </button>
-    </div>
+      {theme === "yellow-black" ? (
+        <Sun className="h-4 w-4 text-yellow-400" />
+      ) : (
+        <Moon className="h-4 w-4 text-stone-700" />
+      )}
+    </button>
   );
 }
