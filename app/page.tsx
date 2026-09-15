@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import SiteHeader from "./components/SiteHeader";
 import SiteFooter from "./components/SiteFooter";
-import { Eyebrow, Wave, tilts } from "./components/PlayfulUI";
+import { Blobs, Eyebrow, iconBadge } from "./components/PlayfulUI";
 import {
   ArrowRight,
   Award,
@@ -103,47 +103,19 @@ export default function Home() {
     <div className="flex flex-col flex-1 bg-white text-stone-900 dark:bg-stone-900 dark:text-stone-100">
       <SiteHeader />
 
-      <main id="top" className="flex-1 overflow-x-hidden">
+      <main id="top" className="flex-1">
         {/* Hero */}
         <section className="relative overflow-hidden">
-          <div className="pointer-events-none absolute -top-24 -left-24 h-96 w-96 rounded-full bg-yellow-300/30 blur-3xl dark:bg-yellow-500/10" />
-          <div className="pointer-events-none absolute top-1/2 -right-24 h-96 w-96 -translate-y-1/2 rounded-full bg-yellow-200/30 blur-3xl dark:bg-yellow-600/10" />
-          <Sparkles className="pointer-events-none absolute top-24 right-[12%] hidden h-8 w-8 rotate-12 text-yellow-400/70 sm:block" />
-          <Sparkles className="pointer-events-none absolute bottom-10 left-[8%] hidden h-6 w-6 -rotate-12 text-yellow-400/70 sm:block" />
-          <video
-            className="absolute inset-0 h-full w-full object-cover opacity-30 dark:opacity-15"
-            src="/banner-animation.mp4"
-            autoPlay
-            loop
-            muted
-            playsInline
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/90 to-white dark:from-stone-900/80 dark:via-stone-900/90 dark:to-stone-900" />
+          <Blobs />
 
           <div className="relative mx-auto grid max-w-6xl gap-12 px-6 py-20 sm:py-28 md:grid-cols-2 md:items-center">
             <div>
               <Eyebrow>Serving West Mambalam &amp; T-Nagar since 2021</Eyebrow>
               <h1 className="mt-6 text-4xl font-extrabold leading-[1.1] tracking-tight text-stone-900 sm:text-5xl dark:text-white">
                 Practice makes us{" "}
-                <span className="relative inline-block text-yellow-600">
-                  perfect.
-                  <svg
-                    viewBox="0 0 200 16"
-                    preserveAspectRatio="none"
-                    className="absolute -bottom-2 left-0 h-3 w-full text-yellow-300"
-                    aria-hidden
-                  >
-                    <path
-                      d="M2 10 C 40 2, 80 14, 100 8 C 130 1, 160 13, 198 6"
-                      stroke="currentColor"
-                      strokeWidth="5"
-                      fill="none"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </span>
+                <span className="text-yellow-600">perfect.</span>
               </h1>
-              <p className="mt-6 max-w-lg text-lg leading-8 text-stone-600 dark:text-stone-300">
+              <p className="mt-5 max-w-lg text-lg leading-8 text-stone-600 dark:text-stone-300">
                 Best-quality tuition at an affordable, reasonable price for
                 Nursery to 10th Std — with individual attention, disciplined
                 study habits and a genuine focus on every child&apos;s
@@ -152,14 +124,14 @@ export default function Home() {
               <div className="mt-8 flex flex-wrap gap-4">
                 <Link
                   href="/demo"
-                  className="group inline-flex items-center gap-2 rounded-full border-2 border-stone-900 bg-yellow-400 px-6 py-3.5 text-sm font-bold text-stone-900 shadow-[4px_4px_0_0_#1c1917] transition-all hover:-translate-y-0.5 hover:-translate-x-0.5 hover:bg-yellow-300 hover:shadow-[6px_6px_0_0_#1c1917] dark:border-yellow-300"
+                  className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-yellow-300 to-yellow-500 px-6 py-3.5 text-sm font-semibold text-stone-900 shadow-lg shadow-yellow-500/20 transition-transform hover:scale-[1.03]"
                 >
                   Book a Free Demo Class
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                 </Link>
                 <a
                   href="tel:9789214998"
-                  className="inline-flex items-center gap-2 rounded-full border-2 border-stone-900 bg-white px-6 py-3.5 text-sm font-bold text-stone-700 shadow-[4px_4px_0_0_#1c1917] transition-all hover:-translate-y-0.5 hover:-translate-x-0.5 hover:text-yellow-700 hover:shadow-[6px_6px_0_0_#1c1917] dark:border-stone-600 dark:bg-stone-800/50 dark:text-stone-200 dark:hover:text-yellow-300"
+                  className="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-white/80 px-6 py-3.5 text-sm font-semibold text-stone-700 shadow-sm backdrop-blur transition-colors hover:text-yellow-700 dark:border-stone-700 dark:bg-stone-800/60 dark:text-stone-200 dark:hover:text-yellow-300"
                 >
                   <Phone className="h-4 w-4" />
                   97892 14998
@@ -167,20 +139,22 @@ export default function Home() {
               </div>
               <Link
                 href="/#fees"
-                className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-yellow-700 hover:gap-2.5 dark:text-yellow-300"
+                className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-yellow-700 hover:gap-2.5 dark:text-yellow-300"
               >
                 View fee structure
                 <ArrowRight className="h-4 w-4 transition-all" />
               </Link>
             </div>
 
-            <div className="grid grid-cols-2 gap-5">
-              {stats.map(({ label, value, icon: Icon }, i) => (
+            <div className="grid grid-cols-2 gap-4">
+              {stats.map(({ label, value, icon: Icon }) => (
                 <div
                   key={label}
-                  className={`${tilts[i % tilts.length]} rounded-3xl border-2 border-stone-900 bg-white p-5 shadow-[4px_4px_0_0_#1c1917] transition-all hover:rotate-0 hover:-translate-y-1 dark:border-stone-600 dark:bg-stone-800/60`}
+                  className="rounded-3xl bg-white/90 p-5 shadow-md backdrop-blur transition-all hover:-translate-y-1 hover:shadow-lg dark:bg-stone-800/70"
                 >
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-stone-900 bg-yellow-400 text-stone-900 dark:border-stone-600">
+                  <span
+                    className={`flex h-10 w-10 items-center justify-center rounded-2xl ${iconBadge}`}
+                  >
                     <Icon className="h-5 w-5" />
                   </span>
                   <div className="mt-3 text-xl font-extrabold text-stone-900 dark:text-white">
@@ -193,8 +167,6 @@ export default function Home() {
               ))}
             </div>
           </div>
-
-          <Wave className="relative -mb-1 text-yellow-50 dark:text-stone-800" />
         </section>
 
         {/* About teaser */}
@@ -204,10 +176,7 @@ export default function Home() {
             <h2 className="mt-4 text-3xl font-bold tracking-tight text-stone-900 dark:text-white">
               A tuition centre built on trust
             </h2>
-            <div className="relative mt-8 rotate-1 rounded-3xl border-2 border-stone-900 bg-white p-7 text-left shadow-[5px_5px_0_0_#1c1917] dark:border-stone-600 dark:bg-stone-900/60">
-              <span className="absolute -top-3 -left-3 flex h-9 w-9 -rotate-12 items-center justify-center rounded-full border-2 border-stone-900 bg-yellow-400 text-stone-900 dark:border-stone-600">
-                <Sparkles className="h-4 w-4" />
-              </span>
+            <div className="mt-8 rounded-[2rem] bg-white p-8 text-left shadow-lg dark:bg-stone-900/60">
               <p className="text-lg leading-8 text-stone-600 dark:text-stone-300">
                 Thangam Varahi Tuition Hub has been seeded in the land of
                 Chennai since <strong>5th September 2021</strong>, on the
@@ -242,7 +211,7 @@ export default function Home() {
 
             <div className="relative mt-14 flex flex-col gap-10 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
               <div
-                className="absolute top-6 right-8 left-8 hidden border-t-4 border-dashed border-yellow-300 sm:block dark:border-yellow-700"
+                className="absolute top-6 right-8 left-8 hidden h-0.5 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-400 sm:block dark:from-yellow-800 dark:via-yellow-700 dark:to-yellow-800"
                 aria-hidden
               />
               {[
@@ -270,15 +239,15 @@ export default function Home() {
                   icon: Award,
                   desc: "Focused, exam-ready preparation to help every child give their best in boards.",
                 },
-              ].map(({ grade, sub, icon: Icon, desc }, i) => (
+              ].map(({ grade, sub, icon: Icon, desc }) => (
                 <div
                   key={grade}
                   className="group relative flex flex-1 flex-col items-center gap-3 text-center"
                 >
                   <span
-                    className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-2 border-stone-900 bg-yellow-400 text-stone-900 shadow-[3px_3px_0_0_#1c1917] ring-4 ring-white transition-transform group-hover:-rotate-6 group-hover:scale-110 dark:border-stone-600 dark:ring-stone-900 ${tilts[i % tilts.length]}`}
+                    className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-full ring-4 ring-white transition-transform group-hover:scale-110 dark:ring-stone-900 ${iconBadge}`}
                   >
-                    <Icon className="h-5 w-5" />
+                    <Icon className="h-6 w-6" />
                   </span>
                   <span className="text-xs font-semibold uppercase tracking-wider text-yellow-700 dark:text-yellow-400">
                     {sub}
@@ -297,10 +266,10 @@ export default function Home() {
               Subjects Covered
             </h3>
             <div className="mt-6 flex flex-wrap justify-center gap-3">
-              {subjects.map((subject, i) => (
+              {subjects.map((subject) => (
                 <span
                   key={subject}
-                  className={`${tilts[i % tilts.length]} rounded-full border-2 border-dashed border-yellow-300 bg-yellow-50 px-4 py-2 text-sm font-medium text-yellow-800 transition-transform hover:rotate-0 hover:scale-105 dark:border-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300`}
+                  className="rounded-full bg-yellow-100 px-4 py-2 text-sm font-medium text-yellow-800 shadow-sm transition-transform hover:scale-105 dark:bg-yellow-900/30 dark:text-yellow-300"
                 >
                   {subject}
                 </span>
@@ -315,10 +284,10 @@ export default function Home() {
               teach valuable extra-curricular skills.
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-3">
-              {activities.map((activity, i) => (
+              {activities.map((activity) => (
                 <span
                   key={activity}
-                  className={`${tilts[i % tilts.length]} rounded-full border-2 border-yellow-400 bg-yellow-100 px-4 py-2 text-sm font-medium text-yellow-800 transition-transform hover:rotate-0 hover:scale-105 dark:border-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300`}
+                  className="rounded-full bg-yellow-50 px-4 py-2 text-sm font-medium text-yellow-800 shadow-sm transition-transform hover:scale-105 dark:bg-yellow-900/30 dark:text-yellow-300"
                 >
                   {activity}
                 </span>
@@ -328,9 +297,8 @@ export default function Home() {
         </section>
 
         {/* Online Classes */}
-        <section className="relative overflow-hidden bg-yellow-50 py-20 dark:bg-stone-800">
-          <Wave className="absolute top-0 left-0 w-full -translate-y-1/2 rotate-180 text-white dark:text-stone-900" />
-          <div className="relative mx-auto max-w-6xl px-6">
+        <section className="bg-yellow-50 py-20 dark:bg-stone-800">
+          <div className="mx-auto max-w-6xl px-6">
             <div className="text-center">
               <Eyebrow>Class On Air</Eyebrow>
               <h2 className="mt-4 text-3xl font-bold tracking-tight text-stone-900 dark:text-white">
@@ -342,8 +310,8 @@ export default function Home() {
                 unanswered.
               </p>
             </div>
-            <div className="mt-10 grid gap-8 sm:grid-cols-2">
-              <div className="relative -rotate-2 aspect-[4/3] overflow-hidden rounded-3xl border-4 border-white bg-white shadow-[6px_6px_0_0_#1c1917] transition-transform hover:rotate-0 dark:border-stone-900">
+            <div className="mt-10 grid gap-6 sm:grid-cols-2">
+              <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] border-4 border-white shadow-lg dark:border-stone-900">
                 <Image
                   src="/coa.jpg"
                   alt="Live online class in session"
@@ -352,7 +320,7 @@ export default function Home() {
                   className="object-cover"
                 />
               </div>
-              <div className="relative rotate-2 aspect-[4/3] overflow-hidden rounded-3xl border-4 border-white bg-white shadow-[6px_6px_0_0_#1c1917] transition-transform hover:rotate-0 dark:border-stone-900">
+              <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] border-4 border-white shadow-lg dark:border-stone-900">
                 <Image
                   src="/online.avif"
                   alt="Student attending an online tuition session"
@@ -375,12 +343,14 @@ export default function Home() {
               </h2>
             </div>
             <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {features.map((f, i) => (
+              {features.map((f) => (
                 <div
                   key={f.title}
-                  className={`${tilts[i % tilts.length]} group rounded-3xl border-2 border-stone-900 bg-white p-7 shadow-[4px_4px_0_0_#1c1917] transition-all hover:rotate-0 hover:-translate-y-1 dark:border-stone-600 dark:bg-stone-800`}
+                  className="rounded-3xl bg-white p-7 shadow-md transition-all hover:-translate-y-1 hover:shadow-lg dark:bg-stone-800"
                 >
-                  <span className="flex h-11 w-11 items-center justify-center rounded-xl border-2 border-stone-900 bg-yellow-50 text-yellow-700 transition-colors group-hover:bg-yellow-400 dark:border-stone-600 dark:bg-yellow-900/40 dark:text-yellow-300">
+                  <span
+                    className={`flex h-11 w-11 items-center justify-center rounded-2xl ${iconBadge}`}
+                  >
                     <f.icon className="h-5 w-5" />
                   </span>
                   <h3 className="mt-4 font-semibold text-stone-900 dark:text-white">
@@ -396,9 +366,8 @@ export default function Home() {
         </section>
 
         {/* Fees */}
-        <section id="fees" className="relative overflow-hidden bg-yellow-50 py-20 dark:bg-stone-800">
-          <Wave className="absolute top-0 left-0 w-full -translate-y-1/2 rotate-180 text-white dark:text-stone-900" />
-          <div className="relative mx-auto max-w-5xl px-6">
+        <section id="fees" className="bg-yellow-50 py-20 dark:bg-stone-800">
+          <div className="mx-auto max-w-5xl px-6">
             <div className="text-center">
               <Eyebrow>Fee Structure</Eyebrow>
               <h2 className="mt-4 text-3xl font-bold tracking-tight text-stone-900 dark:text-white">
@@ -409,14 +378,14 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {fees.map((row, i) =>
+            <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {fees.map((row) =>
                 row.highlight ? (
                   <div
                     key={row.grade}
-                    className="relative flex rotate-1 flex-col rounded-3xl border-2 border-stone-900 bg-yellow-400 p-6 text-stone-900 shadow-[5px_5px_0_0_#1c1917] transition-all hover:rotate-0 hover:-translate-y-1"
+                    className="relative flex flex-col rounded-3xl bg-gradient-to-br from-yellow-300 to-yellow-500 p-6 text-stone-900 shadow-lg shadow-yellow-500/25 transition-transform hover:-translate-y-1"
                   >
-                    <span className="absolute -top-3 -right-3 -rotate-6 rounded-full border-2 border-stone-900 bg-white px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-stone-900 shadow-[2px_2px_0_0_#1c1917]">
+                    <span className="absolute -top-2.5 right-5 rounded-full bg-stone-900 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">
                       Board Year
                     </span>
                     <span className="text-xs font-semibold uppercase tracking-wider text-stone-700">
@@ -433,7 +402,7 @@ export default function Home() {
                 ) : (
                   <div
                     key={row.grade}
-                    className={`${tilts[i % tilts.length]} flex flex-col rounded-3xl border-2 border-stone-900 bg-white p-6 shadow-[4px_4px_0_0_#1c1917] transition-all hover:rotate-0 hover:-translate-y-1 dark:border-stone-600 dark:bg-stone-800`}
+                    className="flex flex-col rounded-3xl bg-white p-6 shadow-md transition-all hover:-translate-y-1 hover:shadow-lg dark:bg-stone-800"
                   >
                     <span className="text-xs font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500">
                       {row.sub}
@@ -487,7 +456,7 @@ export default function Home() {
                 Tuition Timings
               </h2>
             </div>
-            <div className="mt-10 flex flex-col gap-5 sm:flex-row">
+            <div className="mt-10 grid gap-5 sm:grid-cols-3">
               {[
                 {
                   label: "Monday – Saturday",
@@ -502,12 +471,14 @@ export default function Home() {
                   value: "10:00 AM – 6:00 PM",
                   sub: "Lunch break 12:30 – 2:00 PM",
                 },
-              ].map((t, i) => (
+              ].map((t) => (
                 <div
                   key={t.label}
-                  className={`${tilts[i % tilts.length]} flex-1 rounded-3xl border-2 border-stone-900 bg-white p-7 text-center shadow-[4px_4px_0_0_#1c1917] transition-all hover:rotate-0 hover:-translate-y-1 dark:border-stone-600 dark:bg-stone-900/40`}
+                  className="rounded-3xl bg-white p-7 text-center shadow-md transition-all hover:-translate-y-1 hover:shadow-lg dark:bg-stone-800"
                 >
-                  <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-full border-2 border-stone-900 bg-yellow-50 text-yellow-700 dark:border-stone-600 dark:bg-yellow-900/40 dark:text-yellow-300">
+                  <span
+                    className={`mx-auto flex h-11 w-11 items-center justify-center rounded-2xl ${iconBadge}`}
+                  >
                     <Clock className="h-5 w-5" />
                   </span>
                   <div className="mt-3 font-semibold text-yellow-700 dark:text-yellow-300">
@@ -528,8 +499,7 @@ export default function Home() {
         </section>
 
         {/* Contact */}
-        <section id="contact" className="relative overflow-hidden py-20">
-          <div className="pointer-events-none absolute -bottom-24 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-yellow-300/20 blur-3xl dark:bg-yellow-500/10" />
+        <section id="contact" className="relative overflow-hidden bg-yellow-50 py-20 dark:bg-stone-800">
           <div className="relative mx-auto max-w-4xl px-6">
             <div className="text-center">
               <Eyebrow>Contact</Eyebrow>
@@ -537,8 +507,8 @@ export default function Home() {
                 Visit or contact us
               </h2>
             </div>
-            <div className="mt-10 grid overflow-hidden rounded-[2rem] border-4 border-stone-900 shadow-[6px_6px_0_0_#1c1917] sm:grid-cols-2 dark:border-stone-600">
-              <div className="bg-yellow-400 p-8 text-stone-900">
+            <div className="mt-10 grid overflow-hidden rounded-[2rem] shadow-lg sm:grid-cols-2">
+              <div className="bg-gradient-to-br from-yellow-300 to-yellow-500 p-8 text-stone-900">
                 <h3 className="font-semibold">Find Us</h3>
                 <p className="mt-3 flex items-start gap-2 text-sm leading-6 text-stone-800">
                   <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
@@ -570,7 +540,7 @@ export default function Home() {
                   href="https://wa.me/919789214998"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-5 inline-flex items-center gap-1.5 rounded-full border-2 border-stone-900 bg-white px-4 py-2 text-xs font-bold text-stone-900 transition-colors hover:bg-stone-900/10"
+                  className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-stone-900/10 px-4 py-2 text-xs font-semibold text-stone-900 transition-colors hover:bg-stone-900/20"
                 >
                   Chat with us on WhatsApp
                 </a>
@@ -585,7 +555,7 @@ export default function Home() {
                 </p>
                 <a
                   href="tel:9789214998"
-                  className="inline-flex items-center gap-2 rounded-full border-2 border-stone-900 bg-yellow-400 px-8 py-3.5 text-sm font-bold text-stone-900 shadow-[4px_4px_0_0_#1c1917] transition-all hover:-translate-y-0.5 hover:-translate-x-0.5 hover:bg-yellow-300 hover:shadow-[6px_6px_0_0_#1c1917]"
+                  className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-yellow-300 to-yellow-500 px-8 py-3.5 text-sm font-semibold text-stone-900 shadow-lg shadow-yellow-500/20 transition-transform hover:scale-[1.03]"
                 >
                   Enquire About Admission
                   <ArrowRight className="h-4 w-4" />

@@ -4,15 +4,15 @@ import { useActionState, useState } from "react";
 import Link from "next/link";
 import SiteHeader from "../components/SiteHeader";
 import SiteFooter from "../components/SiteFooter";
-import { Eyebrow } from "../components/PlayfulUI";
+import { Blobs } from "../components/PlayfulUI";
 import { CheckCircle, Eye, EyeOff, GraduationCap } from "../components/icons";
 import { signUp } from "../actions/signup";
 
 const inputClass =
-  "mt-1.5 w-full rounded-xl border-2 border-stone-300 bg-stone-50 px-3.5 py-2.5 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 dark:border-stone-700 dark:bg-stone-900 dark:text-white";
+  "mt-1.5 w-full rounded-xl border border-stone-200 bg-stone-50 px-3.5 py-2.5 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 dark:border-stone-700 dark:bg-stone-900 dark:text-white";
 const errorInputClass =
   "border-yellow-400 focus:border-yellow-500 focus:ring-yellow-500/20 dark:border-yellow-500/70";
-const labelClass = "text-sm font-bold text-stone-700 dark:text-stone-200";
+const labelClass = "text-sm font-medium text-stone-700 dark:text-stone-200";
 
 function FieldError({ messages }: { messages?: string[] }) {
   if (!messages?.length) return null;
@@ -69,10 +69,9 @@ export default function SignUp() {
       <div className="flex flex-1 flex-col bg-white text-stone-900 dark:bg-stone-900 dark:text-stone-100">
         <SiteHeader />
         <main className="relative flex flex-1 items-center justify-center overflow-hidden px-6 py-16">
-          <div className="pointer-events-none absolute -top-24 -left-24 h-96 w-96 rounded-full bg-yellow-300/25 blur-3xl dark:bg-yellow-500/10" />
-          <div className="pointer-events-none absolute -bottom-24 -right-24 h-96 w-96 rounded-full bg-yellow-200/25 blur-3xl dark:bg-yellow-600/10" />
-          <div className="relative w-full max-w-sm rounded-3xl border-2 border-stone-900 bg-white p-8 text-center shadow-[5px_5px_0_0_#1c1917] dark:border-stone-600 dark:bg-stone-800">
-            <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border-2 border-stone-900 bg-yellow-400 text-stone-900 dark:border-stone-600">
+          <Blobs variant="compact" />
+          <div className="relative w-full max-w-sm rounded-[2rem] bg-white p-8 text-center shadow-lg dark:bg-stone-800">
+            <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-yellow-300 to-yellow-500 text-stone-900 shadow-md">
               <CheckCircle className="h-6 w-6" />
             </span>
             <h1 className="mt-4 text-xl font-bold tracking-tight text-stone-900 dark:text-white">
@@ -85,7 +84,7 @@ export default function SignUp() {
             </p>
             <Link
               href="/signin"
-              className="mt-6 inline-flex items-center justify-center rounded-full border-2 border-stone-900 bg-yellow-400 px-6 py-2.5 text-sm font-bold text-stone-900 shadow-[4px_4px_0_0_#1c1917] transition-all hover:-translate-y-0.5 hover:-translate-x-0.5 hover:bg-yellow-300 hover:shadow-[6px_6px_0_0_#1c1917]"
+              className="mt-6 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-yellow-300 to-yellow-500 px-6 py-2.5 text-sm font-semibold text-stone-900 shadow-md transition-transform hover:scale-[1.02]"
             >
               Go to Sign In
             </Link>
@@ -101,18 +100,14 @@ export default function SignUp() {
       <SiteHeader />
 
       <main className="relative flex flex-1 items-center justify-center overflow-hidden px-6 py-16">
-        <div className="pointer-events-none absolute -top-24 -left-24 h-96 w-96 rounded-full bg-yellow-300/25 blur-3xl dark:bg-yellow-500/10" />
-        <div className="pointer-events-none absolute -bottom-24 -right-24 h-96 w-96 rounded-full bg-yellow-200/25 blur-3xl dark:bg-yellow-600/10" />
+        <Blobs variant="compact" />
 
         <div className="relative w-full max-w-lg">
           <div className="flex flex-col items-center text-center">
-            <span className="flex h-12 w-12 items-center justify-center rounded-2xl border-2 border-stone-900 bg-yellow-400 text-stone-900 dark:border-stone-600">
+            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-yellow-300 to-yellow-500 text-stone-900 shadow-md">
               <GraduationCap className="h-6 w-6" />
             </span>
-            <div className="mt-4">
-              <Eyebrow>Student Portal</Eyebrow>
-            </div>
-            <h1 className="mt-3 text-2xl font-bold tracking-tight text-stone-900 dark:text-white">
+            <h1 className="mt-4 text-2xl font-bold tracking-tight text-stone-900 dark:text-white">
               Create Account
             </h1>
             <p className="mt-2 text-sm text-stone-600 dark:text-stone-400">
@@ -122,7 +117,7 @@ export default function SignUp() {
 
           <form
             action={formAction}
-            className="mt-8 rounded-3xl border-2 border-stone-900 bg-white p-6 shadow-[5px_5px_0_0_#1c1917] dark:border-stone-600 dark:bg-stone-800"
+            className="mt-8 rounded-[2rem] bg-white p-6 shadow-lg dark:bg-stone-800"
           >
             {formError && (
               <p className="mb-4 rounded-lg bg-yellow-50 px-3 py-2 text-sm text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
@@ -232,7 +227,7 @@ export default function SignUp() {
             <button
               type="submit"
               disabled={pending}
-              className="mt-6 flex w-full items-center justify-center gap-1.5 rounded-full border-2 border-stone-900 bg-yellow-400 px-4 py-2.5 text-sm font-bold text-stone-900 shadow-[4px_4px_0_0_#1c1917] transition-all hover:-translate-y-0.5 hover:-translate-x-0.5 hover:bg-yellow-300 hover:shadow-[6px_6px_0_0_#1c1917] disabled:pointer-events-none disabled:opacity-60"
+              className="mt-6 flex w-full items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-yellow-300 to-yellow-500 px-4 py-2.5 text-sm font-semibold text-stone-900 shadow-md transition-transform hover:scale-[1.02] disabled:pointer-events-none disabled:opacity-60"
             >
               {pending ? "Creating…" : "Create Account"}
             </button>

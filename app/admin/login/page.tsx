@@ -4,7 +4,7 @@ import { useActionState, useState } from "react";
 import Link from "next/link";
 import SiteHeader from "../../components/SiteHeader";
 import SiteFooter from "../../components/SiteFooter";
-import { Eyebrow } from "../../components/PlayfulUI";
+import { Blobs } from "../../components/PlayfulUI";
 import { Eye, EyeOff, Award } from "../../components/icons";
 import { adminSignIn } from "../../actions/admin";
 
@@ -17,18 +17,14 @@ export default function AdminLogin() {
       <SiteHeader />
 
       <main className="relative flex flex-1 items-center justify-center overflow-hidden px-6 py-16">
-        <div className="pointer-events-none absolute -top-24 -left-24 h-96 w-96 rounded-full bg-yellow-300/25 blur-3xl dark:bg-yellow-500/10" />
-        <div className="pointer-events-none absolute -bottom-24 -right-24 h-96 w-96 rounded-full bg-yellow-200/25 blur-3xl dark:bg-yellow-600/10" />
+        <Blobs variant="compact" />
 
         <div className="relative w-full max-w-sm">
           <div className="flex flex-col items-center text-center">
-            <span className="flex h-12 w-12 items-center justify-center rounded-2xl border-2 border-stone-900 bg-stone-900 text-white shadow-[4px_4px_0_0_#facc15]">
+            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-stone-700 to-stone-900 text-white shadow-md">
               <Award className="h-6 w-6" />
             </span>
-            <div className="mt-4">
-              <Eyebrow>Staff Portal</Eyebrow>
-            </div>
-            <h1 className="mt-3 text-2xl font-bold tracking-tight text-stone-900 dark:text-white">
+            <h1 className="mt-4 text-2xl font-bold tracking-tight text-stone-900 dark:text-white">
               Admin Login
             </h1>
             <p className="mt-2 text-sm text-stone-600 dark:text-stone-400">
@@ -38,7 +34,7 @@ export default function AdminLogin() {
 
           <form
             action={formAction}
-            className="mt-8 rounded-3xl border-2 border-stone-900 bg-white p-6 shadow-[5px_5px_0_0_#1c1917] dark:border-stone-600 dark:bg-stone-800"
+            className="mt-8 rounded-[2rem] bg-white p-6 shadow-lg dark:bg-stone-800"
           >
             {state?.error && (
               <p className="mb-4 rounded-lg bg-yellow-50 px-3 py-2 text-sm text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
@@ -48,7 +44,7 @@ export default function AdminLogin() {
 
             <label
               htmlFor="email"
-              className="text-sm font-bold text-stone-700 dark:text-stone-200"
+              className="text-sm font-medium text-stone-700 dark:text-stone-200"
             >
               Email
             </label>
@@ -59,12 +55,12 @@ export default function AdminLogin() {
               autoComplete="email"
               required
               placeholder="admin@example.com"
-              className="mt-1.5 w-full rounded-xl border-2 border-stone-300 bg-stone-50 px-3.5 py-2.5 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-stone-500 focus:ring-2 focus:ring-stone-500/20 dark:border-stone-700 dark:bg-stone-900 dark:text-white"
+              className="mt-1.5 w-full rounded-xl border border-stone-200 bg-stone-50 px-3.5 py-2.5 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-stone-500 focus:ring-2 focus:ring-stone-500/20 dark:border-stone-700 dark:bg-stone-900 dark:text-white"
             />
 
             <label
               htmlFor="password"
-              className="mt-4 block text-sm font-bold text-stone-700 dark:text-stone-200"
+              className="mt-4 block text-sm font-medium text-stone-700 dark:text-stone-200"
             >
               Password
             </label>
@@ -76,7 +72,7 @@ export default function AdminLogin() {
                 autoComplete="current-password"
                 required
                 placeholder="••••••••"
-                className="w-full rounded-xl border-2 border-stone-300 bg-stone-50 px-3.5 py-2.5 pr-11 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-stone-500 focus:ring-2 focus:ring-stone-500/20 dark:border-stone-700 dark:bg-stone-900 dark:text-white"
+                className="w-full rounded-xl border border-stone-200 bg-stone-50 px-3.5 py-2.5 pr-11 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-stone-500 focus:ring-2 focus:ring-stone-500/20 dark:border-stone-700 dark:bg-stone-900 dark:text-white"
               />
               <button
                 type="button"
@@ -95,7 +91,7 @@ export default function AdminLogin() {
             <button
               type="submit"
               disabled={pending}
-              className="mt-6 flex w-full items-center justify-center gap-1.5 rounded-full border-2 border-stone-900 bg-stone-900 px-4 py-2.5 text-sm font-bold text-white shadow-[4px_4px_0_0_#facc15] transition-all hover:-translate-y-0.5 hover:-translate-x-0.5 hover:shadow-[6px_6px_0_0_#facc15] disabled:pointer-events-none disabled:opacity-60"
+              className="mt-6 flex w-full items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-stone-700 to-stone-900 px-4 py-2.5 text-sm font-semibold text-white shadow-md transition-transform hover:scale-[1.02] disabled:pointer-events-none disabled:opacity-60"
             >
               {pending ? "Signing in…" : "Sign In as Admin"}
             </button>

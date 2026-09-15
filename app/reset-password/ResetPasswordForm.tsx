@@ -11,7 +11,7 @@ export default function ResetPasswordForm() {
   return (
     <form
       action={formAction}
-      className="mt-8 rounded-3xl border-2 border-stone-900 bg-white p-6 shadow-[5px_5px_0_0_#1c1917] dark:border-stone-600 dark:bg-stone-800"
+      className="mt-8 rounded-[2rem] bg-white p-6 shadow-lg dark:bg-stone-800"
     >
       {state?.error && (
         <p className="mb-4 rounded-lg bg-yellow-50 px-3 py-2 text-sm text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
@@ -21,7 +21,7 @@ export default function ResetPasswordForm() {
 
       <label
         htmlFor="password"
-        className="text-sm font-bold text-stone-700 dark:text-stone-200"
+        className="text-sm font-medium text-stone-700 dark:text-stone-200"
       >
         New Password
       </label>
@@ -34,7 +34,7 @@ export default function ResetPasswordForm() {
           required
           minLength={8}
           placeholder="••••••••"
-          className="w-full rounded-xl border-2 border-stone-300 bg-stone-50 px-3.5 py-2.5 pr-11 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-stone-500 focus:ring-2 focus:ring-stone-500/20 dark:border-stone-700 dark:bg-stone-900 dark:text-white"
+          className="w-full rounded-xl border border-stone-200 bg-stone-50 px-3.5 py-2.5 pr-11 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-stone-500 focus:ring-2 focus:ring-stone-500/20 dark:border-stone-700 dark:bg-stone-900 dark:text-white"
         />
         <button
           type="button"
@@ -52,7 +52,7 @@ export default function ResetPasswordForm() {
 
       <label
         htmlFor="confirmPassword"
-        className="mt-4 block text-sm font-bold text-stone-700 dark:text-stone-200"
+        className="mt-4 block text-sm font-medium text-stone-700 dark:text-stone-200"
       >
         Confirm Password
       </label>
@@ -64,13 +64,13 @@ export default function ResetPasswordForm() {
         required
         minLength={8}
         placeholder="••••••••"
-        className="mt-1.5 w-full rounded-xl border-2 border-stone-300 bg-stone-50 px-3.5 py-2.5 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-stone-500 focus:ring-2 focus:ring-stone-500/20 dark:border-stone-700 dark:bg-stone-900 dark:text-white"
+        className="mt-1.5 w-full rounded-xl border border-stone-200 bg-stone-50 px-3.5 py-2.5 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-stone-500 focus:ring-2 focus:ring-stone-500/20 dark:border-stone-700 dark:bg-stone-900 dark:text-white"
       />
 
       <button
         type="submit"
         disabled={pending}
-        className="mt-6 flex w-full items-center justify-center gap-1.5 rounded-full border-2 border-stone-900 bg-stone-900 px-4 py-2.5 text-sm font-bold text-white shadow-[4px_4px_0_0_#facc15] transition-all hover:-translate-y-0.5 hover:-translate-x-0.5 hover:shadow-[6px_6px_0_0_#facc15] disabled:pointer-events-none disabled:opacity-60"
+        className="mt-6 flex w-full items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-stone-700 to-stone-900 px-4 py-2.5 text-sm font-semibold text-white shadow-md transition-transform hover:scale-[1.02] disabled:pointer-events-none disabled:opacity-60"
       >
         {pending ? "Saving…" : "Update Password"}
       </button>

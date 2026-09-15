@@ -92,7 +92,7 @@ export default function SiteHeader() {
               onClick={() => setOpen((v) => !v)}
               aria-label="Toggle menu"
               aria-expanded={open}
-              className="flex h-9 w-9 items-center justify-center rounded-full text-stone-700 hover:bg-yellow-50 md:hidden dark:text-stone-200 dark:hover:bg-stone-800"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-yellow-300 to-yellow-400 text-stone-900 shadow-md shadow-yellow-500/20 ring-1 ring-white/60 transition-transform hover:scale-105 md:hidden"
             >
               {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
