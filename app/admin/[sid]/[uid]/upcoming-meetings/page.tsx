@@ -7,7 +7,7 @@ import {
 } from "@/app/lib/calendar";
 import { STUDENT_CLASSES } from "@/app/lib/students";
 import { CalendarClock, Video } from "@/app/components/icons";
-import { getEnquiryStudents } from "@/app/lib/roster";
+import { getEnquiryStudents, getMeetingInvitees } from "@/app/lib/roster";
 import AddEventModal from "../calendar/AddEventModal";
 
 type EventRow = {
@@ -110,7 +110,16 @@ export default async function UpcomingMeetingsPage({
 
   const { data } = await query;
   const events = (data ?? []) as EventRow[];
-  const enquiryStudents = await getEnquiryStudents();
+  const [enquiryStudents, allOffline] = await Promise.all([
+    getEnquiryStudents(),
+    getMeetingInvitees(null),
+  ]);
+  const allStudents = allOffline.map((s) => ({
+    userId: s.userId,
+    name: s.name,
+    class: s.class,
+    type: s.type,
+  }));
   const hasFilters = Boolean(dateFilter || typeFilter || classFilter);
 
   const groups = new Map<string, EventRow[]>();
@@ -132,6 +141,7 @@ export default async function UpcomingMeetingsPage({
         <AddEventModal
           defaultDate={dateFilter || todayKey}
           enquiryStudents={enquiryStudents}
+          allStudents={allStudents}
         />
       </div>
 
@@ -238,17 +248,35 @@ export default async function UpcomingMeetingsPage({
                     </div>
                   </div>
 
-                  {e.call_id ? (
-                    <Link
-                      href={`/admin/meeting/${e.call_id}`}
-                      className="inline-flex items-center gap-1.5 rounded-full bg-yellow-400 px-4 py-2 text-sm font-semibold text-stone-900 shadow-md shadow-yellow-500/15 transition-transform hover:bg-yellow-300 hover:scale-[1.02]"
-                    >
-                      <Video className="h-4 w-4" />
-                      Join
-                    </Link>
-                  ) : (
-                    <span className="text-xs text-stone-400">No call link</span>
-                  )}
+                  {(() => {
+                    const startMs = new Date(e.starts_at).getTime();
+                    const endMs = startMs + e.duration_minutes * 60 * 1000;
+                    const nowMs = Date.now();
+                    const isLive = nowMs >= startMs && nowMs <= endMs;
+
+                    return (
+                      <div className="flex items-center gap-2">
+                        {isLive && (
+                          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
+                            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                            Live Now
+                          </span>
+                        )}
+
+                        {e.call_id ? (
+                          <Link
+                            href={`/admin/meeting/${e.call_id}`}
+                            className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-teal-600 to-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-teal-900/15 transition-transform hover:scale-[1.02]"
+                          >
+                            <Video className="h-4 w-4" />
+                            {isLive ? "Join Class" : "Join"}
+                          </Link>
+                        ) : (
+                          <span className="text-xs text-slate-400">No call link</span>
+                        )}
+                      </div>
+                    );
+                  })()}
                 </div>
               ))}
             </div>
