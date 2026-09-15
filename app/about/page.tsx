@@ -87,7 +87,7 @@ const rules = [
 
 export default function About() {
   return (
-    <div className="flex flex-col flex-1 bg-stone-950 text-white">
+    <div className="flex flex-col flex-1 bg-zinc-950 text-white">
       <SiteHeader />
 
       <main className="flex-1">
@@ -101,7 +101,7 @@ export default function About() {
               <span className="text-yellow-400">Thangam Varahi</span>{" "}
               Tuition Hub
             </h1>
-            <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-stone-400">
+            <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-zinc-400">
               We welcome you all, our cute children&apos;s, as God&apos;s
               gift &mdash; the line we&apos;ve stood by since the day we
               opened our doors.
@@ -110,13 +110,13 @@ export default function About() {
         </section>
 
         {/* Story */}
-        <section className="bg-stone-900 py-20">
+        <section className="bg-zinc-900 py-20">
           <div className="mx-auto max-w-3xl px-6">
-            <div className="rounded-[2rem] border border-stone-800 bg-stone-950 p-8 shadow-xl shadow-black/30">
+            <div className="rounded-[2rem] border border-zinc-800 bg-zinc-950 p-8 shadow-xl shadow-black/30">
               <h2 className="text-2xl font-bold tracking-tight text-white">
                 Where we started
               </h2>
-              <p className="mt-4 leading-8 text-stone-400">
+              <p className="mt-4 leading-8 text-zinc-400">
                 Thangam Varahi Tuition Hub was seeded in the land of Chennai
                 on <strong className="text-white">5th September 2021</strong>, built on one simple
                 idea: every wage-earning family deserves access to
@@ -126,7 +126,7 @@ export default function About() {
                 how we teach — with clarity and care that shows in our
                 students&apos; results.
               </p>
-              <p className="mt-4 leading-8 text-stone-400">
+              <p className="mt-4 leading-8 text-zinc-400">
                 We are registered with the Government of India as a Micro
                 enterprise under Udyam (Reg. No.{" "}
                 <strong className="text-white">UDYAM-TN-02-0419567</strong>), classified under
@@ -143,8 +143,8 @@ export default function About() {
             <h2 className="text-center text-2xl font-bold tracking-tight text-white">
               Our Tuition Pledge
             </h2>
-            <div className="relative mt-8 space-y-4 rounded-[2rem] bg-gradient-to-br from-yellow-300 to-yellow-500 p-8 leading-8 text-stone-800 shadow-lg shadow-yellow-500/20">
-              <span className="pointer-events-none absolute -top-4 left-6 select-none text-6xl font-serif text-stone-900/20">
+            <div className="relative mt-8 space-y-4 rounded-[2rem] bg-gradient-to-br from-yellow-300 to-yellow-500 p-8 leading-8 text-zinc-800 shadow-lg shadow-yellow-500/20">
+              <span className="pointer-events-none absolute -top-4 left-6 select-none text-6xl font-serif text-zinc-900/20">
                 &ldquo;
               </span>
               <p>
@@ -171,14 +171,14 @@ export default function About() {
         </section>
 
         {/* How we teach */}
-        <section className="bg-stone-900 py-20">
+        <section className="bg-zinc-900 py-20">
           <div className="mx-auto max-w-6xl px-6">
             <div className="text-center">
               <Eyebrow>Our Approach</Eyebrow>
               <h2 className="mt-4 text-2xl font-bold tracking-tight text-white">
                 How We Teach
               </h2>
-              <p className="mx-auto mt-3 max-w-2xl text-stone-400">
+              <p className="mx-auto mt-3 max-w-2xl text-zinc-400">
                 None of this is complicated. It&apos;s just followed
                 consistently, for every child, every day.
               </p>
@@ -187,7 +187,7 @@ export default function About() {
               {values.map((v) => (
                 <div
                   key={v.title}
-                  className="rounded-3xl border border-stone-800 bg-stone-950 p-6 shadow-md shadow-black/20 transition-all hover:-translate-y-1 hover:border-yellow-500/30"
+                  className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6 shadow-md shadow-black/20 transition-all hover:-translate-y-1 hover:border-yellow-500/30"
                 >
                   <span
                     className={`flex h-11 w-11 items-center justify-center rounded-2xl ${iconBadge}`}
@@ -197,7 +197,7 @@ export default function About() {
                   <h3 className="mt-4 font-semibold text-white">
                     {v.title}
                   </h3>
-                  <p className="mt-1.5 text-sm leading-6 text-stone-400">
+                  <p className="mt-1.5 text-sm leading-6 text-zinc-400">
                     {v.desc}
                   </p>
                 </div>
@@ -214,7 +214,7 @@ export default function About() {
               <h2 className="mt-4 text-2xl font-bold tracking-tight text-white">
                 How We Track Every Child&apos;s Progress
               </h2>
-              <p className="mx-auto mt-3 max-w-2xl text-stone-400">
+              <p className="mx-auto mt-3 max-w-2xl text-zinc-400">
                 Paperwork parents can actually see — not just promises.
               </p>
             </div>
@@ -222,7 +222,7 @@ export default function About() {
               {tracking.map((t) => (
                 <div
                   key={t.title}
-                  className="rounded-3xl border border-stone-800 bg-stone-900 p-6 shadow-md shadow-black/20 transition-all hover:-translate-y-1 hover:border-yellow-500/30"
+                  className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6 shadow-md shadow-black/20 transition-all hover:-translate-y-1 hover:border-yellow-500/30"
                 >
                   <span
                     className={`flex h-11 w-11 items-center justify-center rounded-2xl ${iconBadge}`}
@@ -232,7 +232,7 @@ export default function About() {
                   <h3 className="mt-4 font-semibold text-white">
                     {t.title}
                   </h3>
-                  <p className="mt-2 text-sm leading-6 text-stone-400">
+                  <p className="mt-2 text-sm leading-6 text-zinc-400">
                     {t.desc}
                   </p>
                 </div>
@@ -242,20 +242,20 @@ export default function About() {
         </section>
 
         {/* Centre rules */}
-        <section className="bg-stone-900 py-20">
+        <section className="bg-zinc-900 py-20">
           <div className="mx-auto max-w-3xl px-6">
             <div className="text-center">
               <Eyebrow>Life at the Centre</Eyebrow>
               <h2 className="mt-4 text-2xl font-bold tracking-tight text-white">
                 Centre Rules
               </h2>
-              <p className="mx-auto mt-3 max-w-xl text-stone-400">
+              <p className="mx-auto mt-3 max-w-xl text-zinc-400">
                 Simple rules, followed by every child, so the room stays calm
                 and every child gets a fair shot at focus.
               </p>
             </div>
-            <div className="mt-10 rounded-[2rem] border border-stone-800 bg-stone-950 p-8 shadow-xl shadow-black/30">
-              <ul className="grid gap-3 text-sm text-stone-400 sm:grid-cols-2">
+            <div className="mt-10 rounded-[2rem] border border-zinc-800 bg-zinc-950 p-8 shadow-xl shadow-black/30">
+              <ul className="grid gap-3 text-sm text-zinc-400 sm:grid-cols-2">
                 {rules.map((item) => (
                   <li key={item} className="flex items-start gap-2">
                     <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-yellow-400" />
@@ -277,21 +277,21 @@ export default function About() {
             <h2 className="mt-4 text-2xl font-bold tracking-tight text-white">
               Want to see it for yourself?
             </h2>
-            <p className="mt-3 text-stone-400">
+            <p className="mt-3 text-zinc-400">
               Visit us in West Mambalam, or call to ask about admission for
               your child.
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-4">
               <a
                 href="tel:9789214998"
-                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-yellow-300 to-yellow-500 px-6 py-3 text-sm font-semibold text-stone-900 shadow-lg shadow-yellow-500/20 transition-transform hover:scale-[1.03]"
+                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-yellow-300 to-yellow-500 px-6 py-3 text-sm font-semibold text-zinc-900 shadow-lg shadow-yellow-500/20 transition-transform hover:scale-[1.03]"
               >
                 Call: 97892 14998
                 <ArrowRight className="h-4 w-4" />
               </a>
               <Link
                 href="/#fees"
-                className="inline-flex items-center rounded-full border border-stone-700 bg-stone-900 px-6 py-3 text-sm font-semibold text-stone-200 transition-colors hover:text-yellow-300"
+                className="inline-flex items-center rounded-full border border-zinc-700 bg-zinc-900 px-6 py-3 text-sm font-semibold text-zinc-200 transition-colors hover:text-yellow-300"
               >
                 View Fee Structure
               </Link>

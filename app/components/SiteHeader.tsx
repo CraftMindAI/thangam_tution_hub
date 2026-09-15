@@ -15,8 +15,8 @@ export default function SiteHeader() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-30 bg-white dark:bg-stone-900">
-      <div className="hidden bg-yellow-500 text-stone-900 md:block">
+    <header className="sticky top-0 z-30 bg-zinc-950">
+      <div className="hidden bg-yellow-400 text-zinc-900 md:block">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-1.5 text-xs font-semibold">
           <div className="flex items-center gap-5">
             <a
@@ -38,10 +38,10 @@ export default function SiteHeader() {
         </div>
       </div>
 
-      <div className="border-b border-yellow-100 bg-white/90 backdrop-blur-lg dark:border-stone-800 dark:bg-stone-900/90">
+      <div className="border-b border-zinc-800 bg-zinc-950/90 backdrop-blur-lg">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-3.5">
           <Link href="/" className="flex items-center gap-2.5">
-            <span className="relative flex h-9 w-9 shrink-0 overflow-hidden rounded-xl shadow-md shadow-yellow-900/10">
+            <span className="relative flex h-9 w-9 shrink-0 overflow-hidden rounded-xl shadow-md shadow-black/40 ring-1 ring-yellow-400/30">
               <Image
                 src="/logo.jpeg"
                 alt="Thangam Varahi Tuition Hub"
@@ -52,10 +52,10 @@ export default function SiteHeader() {
               />
             </span>
             <span className="flex flex-col leading-tight">
-              <span className="text-sm font-extrabold tracking-tight text-stone-900 sm:text-base dark:text-white">
+              <span className="text-sm font-extrabold tracking-tight text-white sm:text-base">
                 Thangam Varahi
               </span>
-              <span className="text-[11px] font-medium text-yellow-600 dark:text-yellow-400">
+              <span className="text-[11px] font-medium text-yellow-400">
                 Tuition Hub
               </span>
             </span>
@@ -66,7 +66,7 @@ export default function SiteHeader() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="rounded-full px-3.5 py-2 text-stone-600 transition-colors hover:bg-yellow-50 hover:text-yellow-800 dark:text-stone-300 dark:hover:bg-stone-800 dark:hover:text-yellow-300"
+                className="rounded-full px-3.5 py-2 text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-yellow-300"
               >
                 {item.label}
               </Link>
@@ -76,14 +76,14 @@ export default function SiteHeader() {
           <div className="flex items-center gap-2">
             <Link
               href="/signin"
-              className="hidden shrink-0 items-center gap-1.5 rounded-full border border-stone-300 px-4 py-2 text-sm font-semibold text-stone-700 transition-colors hover:border-yellow-500 hover:text-yellow-700 sm:flex dark:border-stone-700 dark:text-stone-200 dark:hover:border-yellow-500 dark:hover:text-yellow-300"
+              className="hidden shrink-0 items-center gap-1.5 rounded-full border border-zinc-700 px-4 py-2 text-sm font-semibold text-zinc-200 transition-colors hover:border-yellow-400 hover:text-yellow-300 sm:flex"
             >
               <User className="h-3.5 w-3.5" />
               Sign In
             </Link>
             <Link
               href="/signup"
-              className="hidden shrink-0 items-center gap-1.5 rounded-full bg-yellow-500 px-4 py-2 text-sm font-semibold text-stone-900 shadow-md shadow-yellow-900/15 transition-colors hover:bg-yellow-400 sm:flex"
+              className="hidden shrink-0 items-center gap-1.5 rounded-full bg-yellow-400 px-4 py-2 text-sm font-semibold text-zinc-900 shadow-md shadow-black/20 transition-colors hover:bg-yellow-300 sm:flex"
             >
               Sign Up
             </Link>
@@ -92,7 +92,7 @@ export default function SiteHeader() {
               onClick={() => setOpen((v) => !v)}
               aria-label="Toggle menu"
               aria-expanded={open}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-yellow-300 to-yellow-400 text-stone-900 shadow-md shadow-yellow-500/20 ring-1 ring-white/60 transition-transform hover:scale-105 md:hidden"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-yellow-300 to-yellow-400 text-zinc-900 shadow-md shadow-black/30 ring-1 ring-white/40 transition-transform hover:scale-105 md:hidden"
             >
               {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
@@ -101,13 +101,13 @@ export default function SiteHeader() {
       </div>
 
       {open && (
-        <nav className="flex flex-col gap-1 border-t border-yellow-100 bg-white px-6 py-3 text-sm font-medium md:hidden dark:border-stone-800 dark:bg-stone-900">
+        <nav className="flex flex-col gap-1 border-t border-zinc-800 bg-zinc-950 px-6 py-3 text-sm font-medium md:hidden">
           {nav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               onClick={() => setOpen(false)}
-              className="rounded-lg px-3 py-2.5 text-stone-700 hover:bg-yellow-50 hover:text-yellow-800 dark:text-stone-300 dark:hover:bg-stone-800 dark:hover:text-yellow-300"
+              className="rounded-lg px-3 py-2.5 text-zinc-300 hover:bg-zinc-800 hover:text-yellow-300"
             >
               {item.label}
             </Link>
@@ -115,7 +115,7 @@ export default function SiteHeader() {
           <Link
             href="/signin"
             onClick={() => setOpen(false)}
-            className="mt-1 flex items-center justify-center gap-1.5 rounded-full border border-stone-300 px-4 py-2.5 font-semibold text-stone-700 dark:border-stone-700 dark:text-stone-200"
+            className="mt-1 flex items-center justify-center gap-1.5 rounded-full border border-zinc-700 px-4 py-2.5 font-semibold text-zinc-200"
           >
             <User className="h-3.5 w-3.5" />
             Sign In
@@ -123,7 +123,7 @@ export default function SiteHeader() {
           <Link
             href="/signup"
             onClick={() => setOpen(false)}
-            className="flex items-center justify-center gap-1.5 rounded-full bg-yellow-500 px-4 py-2.5 font-semibold text-stone-900"
+            className="flex items-center justify-center gap-1.5 rounded-full bg-yellow-400 px-4 py-2.5 font-semibold text-zinc-900"
           >
             Sign Up
           </Link>
