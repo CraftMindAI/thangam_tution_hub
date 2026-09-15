@@ -146,26 +146,52 @@ export default function Home() {
               </Link>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              {stats.map(({ label, value, icon: Icon }) => (
-                <div
-                  key={label}
-                  className="rounded-3xl bg-white/90 p-5 shadow-md backdrop-blur transition-all hover:-translate-y-1 hover:shadow-lg dark:bg-stone-800/70"
-                >
-                  <span
-                    className={`flex h-10 w-10 items-center justify-center rounded-2xl ${iconBadge}`}
-                  >
-                    <Icon className="h-5 w-5" />
+            <div className="relative">
+              <div className="relative -rotate-2 aspect-[4/3] w-full overflow-hidden rounded-[2rem] border-4 border-white bg-white shadow-xl dark:border-stone-900">
+                <Image
+                  src="/landing.jpg"
+                  alt="Student attending an online tuition class at Thangam Varahi Tuition Hub"
+                  fill
+                  sizes="(min-width: 768px) 40vw, 100vw"
+                  className="object-cover"
+                  priority
+                />
+              </div>
+              <span className="absolute -bottom-5 -left-5 flex items-center gap-2 rounded-2xl border-4 border-white bg-white px-4 py-3 shadow-lg dark:border-stone-900 dark:bg-stone-800">
+                <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${iconBadge}`}>
+                  <GraduationCap className="h-4.5 w-4.5" />
+                </span>
+                <span className="leading-tight">
+                  <span className="block text-sm font-extrabold text-stone-900 dark:text-white">
+                    Nursery – 10th
                   </span>
-                  <div className="mt-3 text-xl font-extrabold text-stone-900 dark:text-white">
-                    {value}
-                  </div>
-                  <div className="mt-0.5 text-xs font-medium text-stone-500 dark:text-stone-400">
-                    {label}
-                  </div>
-                </div>
-              ))}
+                  <span className="block text-xs text-stone-500 dark:text-stone-400">
+                    every grade, one roof
+                  </span>
+                </span>
+              </span>
             </div>
+          </div>
+
+          <div className="relative mx-auto mt-16 grid max-w-6xl grid-cols-2 gap-4 px-6 pb-16 sm:grid-cols-4 sm:pb-24">
+            {stats.map(({ label, value, icon: Icon }) => (
+              <div
+                key={label}
+                className="rounded-3xl bg-white/90 p-5 shadow-md backdrop-blur transition-all hover:-translate-y-1 hover:shadow-lg dark:bg-stone-800/70"
+              >
+                <span
+                  className={`flex h-10 w-10 items-center justify-center rounded-2xl ${iconBadge}`}
+                >
+                  <Icon className="h-5 w-5" />
+                </span>
+                <div className="mt-3 text-xl font-extrabold text-stone-900 dark:text-white">
+                  {value}
+                </div>
+                <div className="mt-0.5 text-xs font-medium text-stone-500 dark:text-stone-400">
+                  {label}
+                </div>
+              </div>
+            ))}
           </div>
         </section>
 
