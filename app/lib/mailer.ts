@@ -50,8 +50,8 @@ export async function sendPasswordSetupEmail(
   const html = `<div style="font-family:system-ui,sans-serif;font-size:14px;line-height:1.6">
       <p style="margin:0 0 12px">Hi ${name},</p>
       <p style="margin:0 0 12px">An account has been created for you at <strong>Thangam Varahi Tuition Hub</strong>.</p>
-      <p style="margin:16px 0"><a href="${link}" style="background:#0f766e;color:#fff;padding:10px 18px;border-radius:999px;text-decoration:none;font-weight:600">Set your password</a></p>
-      <p style="margin:12px 0 0;color:#64748b;font-size:12px">If the button doesn't work, copy this link into your browser:<br>${link}</p>
+      <p style="margin:16px 0"><a href="${link}" style="background:#eab308;color:#111827;padding:10px 18px;border-radius:999px;text-decoration:none;font-weight:600">Set your password</a></p>
+      <p style="margin:12px 0 0;color:#78716c;font-size:12px">If the button doesn't work, copy this link into your browser:<br>${link}</p>
     </div>`;
 
   try {

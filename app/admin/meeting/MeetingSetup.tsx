@@ -40,7 +40,7 @@ export default function MeetingSetup({
 
   if (callTimeNotArrived) {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-slate-950 px-6 text-center text-white">
+      <div className="flex h-screen w-full items-center justify-center bg-stone-950 px-6 text-center text-white">
         Your meeting has not started yet. It is scheduled for{" "}
         {callStartsAt.toLocaleString()}
       </div>
@@ -49,14 +49,14 @@ export default function MeetingSetup({
 
   if (callHasEnded) {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-slate-950 px-6 text-center text-white">
+      <div className="flex h-screen w-full items-center justify-center bg-stone-950 px-6 text-center text-white">
         This call has ended.
       </div>
     );
   }
 
   return (
-    <div className="flex h-screen w-full flex-col items-center justify-center gap-4 bg-slate-950 text-white">
+    <div className="flex h-screen w-full flex-col items-center justify-center gap-4 bg-stone-950 text-white">
       <h1 className="text-center text-2xl font-bold">Meeting Setup</h1>
       <VideoPreview />
       <div className="flex h-16 items-center justify-center gap-3">
@@ -75,7 +75,7 @@ export default function MeetingSetup({
           call.join();
           setIsSetupComplete(true);
         }}
-        className="rounded-full bg-gradient-to-r from-teal-600 to-emerald-600 px-6 py-2.5 text-sm font-semibold text-white shadow-md shadow-teal-900/20 transition-transform hover:scale-[1.02]"
+        className="rounded-full bg-yellow-400 px-6 py-2.5 text-sm font-semibold text-stone-900 shadow-md shadow-yellow-500/20 transition-transform hover:bg-yellow-300 hover:scale-[1.02]"
       >
         Join Meeting
       </button>

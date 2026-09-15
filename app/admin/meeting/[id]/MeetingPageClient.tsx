@@ -13,7 +13,7 @@ function MeetingContent({ callId }: { callId: string }) {
 
   if (isCallLoading) {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-slate-950 text-white">
+      <div className="flex h-screen w-full items-center justify-center bg-stone-950 text-white">
         Loading meeting…
       </div>
     );
@@ -21,7 +21,7 @@ function MeetingContent({ callId }: { callId: string }) {
 
   if (!call) {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-slate-950 text-white">
+      <div className="flex h-screen w-full items-center justify-center bg-stone-950 text-white">
         Meeting not found.
       </div>
     );

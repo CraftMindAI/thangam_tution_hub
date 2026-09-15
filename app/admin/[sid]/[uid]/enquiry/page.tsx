@@ -40,13 +40,13 @@ export default async function EnquiryPage() {
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-slate-600 dark:text-slate-400">
+      <p className="text-sm text-stone-600 dark:text-stone-400">
         Enquiries submitted by students from their portal, newest first.
       </p>
 
-      <div className="overflow-x-auto rounded-2xl border border-stone-200/70 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-800">
+      <div className="overflow-x-auto rounded-2xl border border-stone-200/70 bg-white shadow-sm dark:border-stone-800 dark:bg-stone-800">
         <table className="w-full min-w-[860px] text-left text-sm">
-          <thead className="border-b border-stone-200/70 text-xs uppercase tracking-wider text-slate-500 dark:border-slate-700 dark:text-slate-400">
+          <thead className="border-b border-stone-200/70 text-xs uppercase tracking-wider text-stone-500 dark:border-stone-700 dark:text-stone-400">
             <tr>
               <th className="px-4 py-3">Student</th>
               <th className="px-4 py-3">Title</th>
@@ -55,30 +55,30 @@ export default async function EnquiryPage() {
               <th className="px-4 py-3">Submitted</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-stone-100 dark:divide-slate-700">
+          <tbody className="divide-y divide-stone-100 dark:divide-stone-700">
             {enquiries?.length ? (
               enquiries.map((e) => (
                 <tr key={e.id}>
                   <td className="px-4 py-3">
-                    <p className="font-medium text-slate-800 dark:text-slate-200">
+                    <p className="font-medium text-stone-800 dark:text-stone-200">
                       {nameById.get(e.user_id) ||
                         emailById.get(e.user_id) ||
                         "Student"}
                     </p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                    <p className="text-xs text-stone-500 dark:text-stone-400">
                       {emailById.get(e.user_id) ?? "—"}
                     </p>
                   </td>
-                  <td className="px-4 py-3 font-medium text-slate-800 dark:text-slate-200">
+                  <td className="px-4 py-3 font-medium text-stone-800 dark:text-stone-200">
                     {e.title}
                   </td>
-                  <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
+                  <td className="px-4 py-3 text-stone-600 dark:text-stone-400">
                     {e.subject}
                   </td>
-                  <td className="max-w-md px-4 py-3 text-slate-600 dark:text-slate-400">
+                  <td className="max-w-md px-4 py-3 text-stone-600 dark:text-stone-400">
                     {e.description}
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-slate-600 dark:text-slate-400">
+                  <td className="px-4 py-3 whitespace-nowrap text-stone-600 dark:text-stone-400">
                     {formatDateTime(e.created_at)}
                   </td>
                 </tr>
@@ -87,7 +87,7 @@ export default async function EnquiryPage() {
               <tr>
                 <td
                   colSpan={5}
-                  className="px-4 py-10 text-center text-slate-500 dark:text-slate-400"
+                  className="px-4 py-10 text-center text-stone-500 dark:text-stone-400"
                 >
                   <Inbox className="mx-auto h-6 w-6 opacity-50" />
                   <p className="mt-2">No enquiries yet.</p>

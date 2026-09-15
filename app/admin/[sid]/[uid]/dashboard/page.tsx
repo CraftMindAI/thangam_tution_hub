@@ -31,9 +31,9 @@ function formatDate(d: string) {
 }
 
 const statusStyles: Record<TaskStatus, string> = {
-  pending: "bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300",
-  in_progress: "bg-teal-50 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300",
-  completed: "bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300",
+  pending: "bg-yellow-50 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300",
+  in_progress: "bg-yellow-50 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300",
+  completed: "bg-stone-100 text-stone-600 dark:bg-stone-700 dark:text-stone-300",
 };
 
 type MeetingRow = {
@@ -56,9 +56,9 @@ function Panel({
   children: React.ReactNode;
 }) {
   return (
-    <section className="flex flex-col rounded-2xl border border-stone-200/70 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-800">
-      <div className="flex items-center justify-between gap-3 border-b border-stone-200/70 px-4 py-3 dark:border-slate-700">
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-teal-700 dark:text-teal-400">
+    <section className="flex flex-col rounded-2xl border border-stone-200/70 bg-white shadow-sm dark:border-stone-800 dark:bg-stone-800">
+      <div className="flex items-center justify-between gap-3 border-b border-stone-200/70 px-4 py-3 dark:border-stone-700">
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-yellow-700 dark:text-yellow-400">
           {title}
         </h2>
         {action}
@@ -132,7 +132,7 @@ export default async function AdminDashboard({
   ];
 
   const linkClass =
-    "text-sm font-semibold text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white";
+    "text-sm font-semibold text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white";
 
   return (
     <div className="space-y-8">
@@ -141,15 +141,15 @@ export default async function AdminDashboard({
           <Link
             key={s.label}
             href={s.href}
-            className="rounded-2xl border border-stone-200/70 bg-white p-5 shadow-sm transition-colors hover:border-slate-300 dark:border-slate-800 dark:bg-slate-800 dark:hover:border-slate-700"
+            className="rounded-2xl border border-stone-200/70 bg-white p-5 shadow-sm transition-colors hover:border-stone-300 dark:border-stone-800 dark:bg-stone-800 dark:hover:border-stone-700"
           >
-            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-teal-50 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-50 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300">
               <s.icon className="h-5 w-5" />
             </span>
-            <p className="mt-3 text-2xl font-bold text-slate-900 dark:text-white">
+            <p className="mt-3 text-2xl font-bold text-stone-900 dark:text-white">
               {s.value}
             </p>
-            <p className="text-sm text-slate-600 dark:text-slate-400">{s.label}</p>
+            <p className="text-sm text-stone-600 dark:text-stone-400">{s.label}</p>
           </Link>
         ))}
       </div>
@@ -163,29 +163,29 @@ export default async function AdminDashboard({
         }
       >
         {meetings.length ? (
-          <ul className="divide-y divide-stone-100 dark:divide-slate-700">
+          <ul className="divide-y divide-stone-100 dark:divide-stone-700">
             {meetings.map((m) => (
               <li
                 key={m.id}
                 className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 text-sm"
               >
                 <div className="min-w-0">
-                  <p className="font-medium text-slate-800 dark:text-slate-200">
+                  <p className="font-medium text-stone-800 dark:text-stone-200">
                     {m.title}
                   </p>
-                  <p className="text-slate-500 dark:text-slate-400">
+                  <p className="text-stone-500 dark:text-stone-400">
                     {MEETING_TYPE_LABELS[m.meeting_type]} &middot;{" "}
                     {m.duration_minutes} min
                   </p>
                 </div>
                 <div className="flex shrink-0 items-center gap-3">
-                  <span className="text-slate-600 dark:text-slate-400">
+                  <span className="text-stone-600 dark:text-stone-400">
                     {formatDateTime(m.starts_at)}
                   </span>
                   {m.call_id && (
                     <Link
                       href={`/admin/meeting/${m.call_id}`}
-                      className="rounded-full bg-gradient-to-r from-teal-600 to-emerald-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm"
+                      className="rounded-full bg-yellow-400 px-3 py-1.5 text-xs font-semibold text-stone-900 shadow-sm hover:bg-yellow-300"
                     >
                       Join
                     </Link>
@@ -196,13 +196,13 @@ export default async function AdminDashboard({
           </ul>
         ) : (
           <div className="px-4 py-8 text-center">
-            <CalendarClock className="mx-auto h-6 w-6 text-slate-400 opacity-60" />
-            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+            <CalendarClock className="mx-auto h-6 w-6 text-stone-400 opacity-60" />
+            <p className="mt-2 text-sm text-stone-500 dark:text-stone-400">
               No upcoming meetings scheduled.
             </p>
             <Link
               href={`${panel}/calendar/add-event`}
-              className="mt-4 inline-block rounded-full bg-gradient-to-r from-slate-700 to-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-slate-900/20 transition-transform hover:scale-[1.02]"
+              className="mt-4 inline-block rounded-full bg-gradient-to-r from-stone-700 to-stone-900 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-stone-900/20 transition-transform hover:scale-[1.02]"
             >
               + Schedule Meeting
             </Link>
@@ -220,19 +220,19 @@ export default async function AdminDashboard({
           }
         >
           {enquiries?.length ? (
-            <ul className="divide-y divide-stone-100 dark:divide-slate-700">
+            <ul className="divide-y divide-stone-100 dark:divide-stone-700">
               {enquiries.map((r) => (
                 <li key={r.id} className="px-4 py-3 text-sm">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="font-medium text-slate-800 dark:text-slate-200">
+                      <p className="font-medium text-stone-800 dark:text-stone-200">
                         {r.title}
                       </p>
-                      <p className="text-slate-500 dark:text-slate-400">
+                      <p className="text-stone-500 dark:text-stone-400">
                         {r.subject}
                       </p>
                     </div>
-                    <span className="shrink-0 text-xs text-slate-500 dark:text-slate-400">
+                    <span className="shrink-0 text-xs text-stone-500 dark:text-stone-400">
                       {formatDateTime(r.created_at)}
                     </span>
                   </div>
@@ -241,8 +241,8 @@ export default async function AdminDashboard({
             </ul>
           ) : (
             <div className="px-4 py-8 text-center">
-              <Inbox className="mx-auto h-6 w-6 text-slate-400 opacity-60" />
-              <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+              <Inbox className="mx-auto h-6 w-6 text-stone-400 opacity-60" />
+              <p className="mt-2 text-sm text-stone-500 dark:text-stone-400">
                 No enquiries yet.
               </p>
             </div>
@@ -260,15 +260,15 @@ export default async function AdminDashboard({
           }
         >
           {tasks.length ? (
-            <ul className="divide-y divide-stone-100 dark:divide-slate-700">
+            <ul className="divide-y divide-stone-100 dark:divide-stone-700">
               {tasks.map((t) => (
                 <li key={t.id} className="px-4 py-3 text-sm">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="font-medium text-slate-800 dark:text-slate-200">
+                      <p className="font-medium text-stone-800 dark:text-stone-200">
                         {t.title}
                       </p>
-                      <p className="text-slate-500 dark:text-slate-400">
+                      <p className="text-stone-500 dark:text-stone-400">
                         {t.due_date ? `Due ${formatDate(t.due_date)}` : "No due date"}
                       </p>
                     </div>
@@ -283,13 +283,13 @@ export default async function AdminDashboard({
             </ul>
           ) : (
             <div className="px-4 py-8 text-center">
-              <ClipboardList className="mx-auto h-6 w-6 text-slate-400 opacity-60" />
-              <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+              <ClipboardList className="mx-auto h-6 w-6 text-stone-400 opacity-60" />
+              <p className="mt-2 text-sm text-stone-500 dark:text-stone-400">
                 No tasks yet.
               </p>
               <Link
                 href={`${panel}/assign-task`}
-                className="mt-4 inline-block rounded-full bg-gradient-to-r from-slate-700 to-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-slate-900/20 transition-transform hover:scale-[1.02]"
+                className="mt-4 inline-block rounded-full bg-gradient-to-r from-stone-700 to-stone-900 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-stone-900/20 transition-transform hover:scale-[1.02]"
               >
                 + Add Task
               </Link>

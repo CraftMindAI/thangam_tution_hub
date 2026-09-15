@@ -55,40 +55,40 @@ export default async function DashboardView({ userId }: { userId: string }) {
   return (
     <div className="space-y-8">
       <div>
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-teal-700 dark:bg-teal-900/30 dark:text-teal-300">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-yellow-50 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300">
           {role ? roleLabels[role] ?? role : "Student"}
         </span>
-        <h2 className="mt-3 text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+        <h2 className="mt-3 text-xl font-bold tracking-tight text-stone-900 dark:text-white">
           Welcome, {displayName}!
         </h2>
-        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+        <p className="mt-1 text-sm text-stone-600 dark:text-stone-400">
           Here&apos;s a quick overview of your account.
         </p>
       </div>
 
-      <div className="inline-flex w-auto flex-col rounded-2xl border border-stone-200/70 bg-white px-6 py-5 shadow-sm dark:border-slate-800 dark:bg-slate-800">
-        <p className="text-3xl font-bold leading-tight text-slate-900 dark:text-white">
+      <div className="inline-flex w-auto flex-col rounded-2xl border border-stone-200/70 bg-white px-6 py-5 shadow-sm dark:border-stone-800 dark:bg-stone-800">
+        <p className="text-3xl font-bold leading-tight text-stone-900 dark:text-white">
           {enquiries?.length ?? 0}
         </p>
-        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">Total Enquiries</p>
+        <p className="mt-1 text-sm text-stone-600 dark:text-stone-400">Total Enquiries</p>
       </div>
 
       <section>
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-teal-700 dark:text-teal-400">
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-yellow-700 dark:text-yellow-400">
             Your Enquiries
           </h2>
           <Link
             href="/student/enquiry"
-            className="text-sm font-semibold text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+            className="text-sm font-semibold text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white"
           >
             Submit new
           </Link>
         </div>
 
-        <div className="mt-3 overflow-x-auto rounded-2xl border border-stone-200/70 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-800">
+        <div className="mt-3 overflow-x-auto rounded-2xl border border-stone-200/70 bg-white shadow-sm dark:border-stone-800 dark:bg-stone-800">
           <table className="w-full min-w-[640px] text-left text-sm">
-            <thead className="border-b border-stone-200/70 text-xs uppercase tracking-wider text-slate-500 dark:border-slate-700 dark:text-slate-400">
+            <thead className="border-b border-stone-200/70 text-xs uppercase tracking-wider text-stone-500 dark:border-stone-700 dark:text-stone-400">
               <tr>
                 <th className="px-4 py-3">Title</th>
                 <th className="px-4 py-3">Subject</th>
@@ -96,20 +96,20 @@ export default async function DashboardView({ userId }: { userId: string }) {
                 <th className="px-4 py-3">Submitted</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-stone-100 dark:divide-slate-700">
+            <tbody className="divide-y divide-stone-100 dark:divide-stone-700">
               {enquiries?.length ? (
                 enquiries.map((e) => (
                   <tr key={e.id}>
-                    <td className="px-4 py-3 font-medium text-slate-800 dark:text-slate-200">
+                    <td className="px-4 py-3 font-medium text-stone-800 dark:text-stone-200">
                       {e.title}
                     </td>
-                    <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
+                    <td className="px-4 py-3 text-stone-600 dark:text-stone-400">
                       {e.subject}
                     </td>
-                    <td className="max-w-xs px-4 py-3 text-slate-600 dark:text-slate-400">
+                    <td className="max-w-xs px-4 py-3 text-stone-600 dark:text-stone-400">
                       {e.description}
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-slate-600 dark:text-slate-400">
+                    <td className="px-4 py-3 whitespace-nowrap text-stone-600 dark:text-stone-400">
                       {formatDateTime(e.created_at)}
                     </td>
                   </tr>
@@ -118,7 +118,7 @@ export default async function DashboardView({ userId }: { userId: string }) {
                 <tr>
                   <td
                     colSpan={4}
-                    className="px-4 py-6 text-center text-slate-500 dark:text-slate-400"
+                    className="px-4 py-6 text-center text-stone-500 dark:text-stone-400"
                   >
                     You haven&apos;t submitted any enquiries yet.
                   </td>

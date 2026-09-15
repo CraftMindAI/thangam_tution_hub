@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, User, X } from "./icons";
+import { Mail, Menu, Phone, User, X } from "./icons";
 
 const nav = [
   { href: "/about", label: "About Us" },
@@ -15,75 +15,99 @@ export default function SiteHeader() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-30 border-b border-stone-200/70 bg-stone-50/80 backdrop-blur-lg dark:border-slate-800 dark:bg-slate-900/80">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-3.5">
-        <Link href="/" className="flex items-center gap-2.5">
-          <span className="relative flex h-9 w-9 shrink-0 overflow-hidden rounded-xl shadow-md shadow-teal-900/10">
-            <Image
-              src="/logo.jpeg"
-              alt="Thangam Varahi Tuition Hub"
-              fill
-              sizes="36px"
-              className="object-cover"
-              priority
-            />
-          </span>
-          <span className="flex flex-col leading-tight">
-            <span className="text-sm font-extrabold tracking-tight text-slate-900 sm:text-base dark:text-white">
-              Thangam Varahi
-            </span>
-            <span className="text-[11px] font-medium text-teal-700 dark:text-teal-400">
-              Tuition Hub
-            </span>
-          </span>
-        </Link>
-
-        <nav className="hidden gap-1 text-sm font-medium md:flex">
-          {nav.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="rounded-full px-3.5 py-2 text-slate-600 transition-colors hover:bg-teal-50 hover:text-teal-800 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-teal-300"
+    <header className="sticky top-0 z-30 bg-white dark:bg-stone-900">
+      <div className="hidden bg-yellow-500 text-stone-900 md:block">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-1.5 text-xs font-semibold">
+          <div className="flex items-center gap-5">
+            <a
+              href="tel:9789214998"
+              className="flex items-center gap-1.5 hover:text-white"
             >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+              <Phone className="h-3.5 w-3.5" />
+              97892 14998
+            </a>
+            <a
+              href="mailto:thangamvarahituitionhub247365@gmail.com"
+              className="flex items-center gap-1.5 hover:text-white"
+            >
+              <Mail className="h-3.5 w-3.5" />
+              thangamvarahituitionhub247365@gmail.com
+            </a>
+          </div>
+          <span>West Mambalam, T-Nagar, Chennai — Since 2021</span>
+        </div>
+      </div>
 
-        <div className="flex items-center gap-2">
-          <Link
-            href="/signin"
-            className="hidden shrink-0 items-center gap-1.5 rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:border-teal-600 hover:text-teal-700 sm:flex dark:border-slate-700 dark:text-slate-200 dark:hover:border-teal-500 dark:hover:text-teal-300"
-          >
-            <User className="h-3.5 w-3.5" />
-            Sign In
+      <div className="border-b border-yellow-100 bg-white/90 backdrop-blur-lg dark:border-stone-800 dark:bg-stone-900/90">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-3.5">
+          <Link href="/" className="flex items-center gap-2.5">
+            <span className="relative flex h-9 w-9 shrink-0 overflow-hidden rounded-xl shadow-md shadow-yellow-900/10">
+              <Image
+                src="/logo.jpeg"
+                alt="Thangam Varahi Tuition Hub"
+                fill
+                sizes="36px"
+                className="object-cover"
+                priority
+              />
+            </span>
+            <span className="flex flex-col leading-tight">
+              <span className="text-sm font-extrabold tracking-tight text-stone-900 sm:text-base dark:text-white">
+                Thangam Varahi
+              </span>
+              <span className="text-[11px] font-medium text-yellow-600 dark:text-yellow-400">
+                Tuition Hub
+              </span>
+            </span>
           </Link>
-          <Link
-            href="/signup"
-            className="hidden shrink-0 items-center gap-1.5 rounded-full bg-teal-600 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-teal-900/15 transition-colors hover:bg-teal-700 sm:flex"
-          >
-            Sign Up
-          </Link>
-          <button
-            type="button"
-            onClick={() => setOpen((v) => !v)}
-            aria-label="Toggle menu"
-            aria-expanded={open}
-            className="flex h-9 w-9 items-center justify-center rounded-full text-slate-700 hover:bg-stone-200/70 md:hidden dark:text-slate-200 dark:hover:bg-slate-800"
-          >
-            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
+
+          <nav className="hidden gap-1 text-sm font-medium md:flex">
+            {nav.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="rounded-full px-3.5 py-2 text-stone-600 transition-colors hover:bg-yellow-50 hover:text-yellow-800 dark:text-stone-300 dark:hover:bg-stone-800 dark:hover:text-yellow-300"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-2">
+            <Link
+              href="/signin"
+              className="hidden shrink-0 items-center gap-1.5 rounded-full border border-stone-300 px-4 py-2 text-sm font-semibold text-stone-700 transition-colors hover:border-yellow-500 hover:text-yellow-700 sm:flex dark:border-stone-700 dark:text-stone-200 dark:hover:border-yellow-500 dark:hover:text-yellow-300"
+            >
+              <User className="h-3.5 w-3.5" />
+              Sign In
+            </Link>
+            <Link
+              href="/signup"
+              className="hidden shrink-0 items-center gap-1.5 rounded-full bg-yellow-500 px-4 py-2 text-sm font-semibold text-stone-900 shadow-md shadow-yellow-900/15 transition-colors hover:bg-yellow-400 sm:flex"
+            >
+              Sign Up
+            </Link>
+            <button
+              type="button"
+              onClick={() => setOpen((v) => !v)}
+              aria-label="Toggle menu"
+              aria-expanded={open}
+              className="flex h-9 w-9 items-center justify-center rounded-full text-stone-700 hover:bg-yellow-50 md:hidden dark:text-stone-200 dark:hover:bg-stone-800"
+            >
+              {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
         </div>
       </div>
 
       {open && (
-        <nav className="flex flex-col gap-1 border-t border-stone-200/70 bg-stone-50 px-6 py-3 text-sm font-medium md:hidden dark:border-slate-800 dark:bg-slate-900">
+        <nav className="flex flex-col gap-1 border-t border-yellow-100 bg-white px-6 py-3 text-sm font-medium md:hidden dark:border-stone-800 dark:bg-stone-900">
           {nav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               onClick={() => setOpen(false)}
-              className="rounded-lg px-3 py-2.5 text-slate-700 hover:bg-teal-50 hover:text-teal-800 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-teal-300"
+              className="rounded-lg px-3 py-2.5 text-stone-700 hover:bg-yellow-50 hover:text-yellow-800 dark:text-stone-300 dark:hover:bg-stone-800 dark:hover:text-yellow-300"
             >
               {item.label}
             </Link>
@@ -91,7 +115,7 @@ export default function SiteHeader() {
           <Link
             href="/signin"
             onClick={() => setOpen(false)}
-            className="mt-1 flex items-center justify-center gap-1.5 rounded-full border border-slate-300 px-4 py-2.5 font-semibold text-slate-700 dark:border-slate-700 dark:text-slate-200"
+            className="mt-1 flex items-center justify-center gap-1.5 rounded-full border border-stone-300 px-4 py-2.5 font-semibold text-stone-700 dark:border-stone-700 dark:text-stone-200"
           >
             <User className="h-3.5 w-3.5" />
             Sign In
@@ -99,7 +123,7 @@ export default function SiteHeader() {
           <Link
             href="/signup"
             onClick={() => setOpen(false)}
-            className="flex items-center justify-center gap-1.5 rounded-full bg-teal-600 px-4 py-2.5 font-semibold text-white"
+            className="flex items-center justify-center gap-1.5 rounded-full bg-yellow-500 px-4 py-2.5 font-semibold text-stone-900"
           >
             Sign Up
           </Link>

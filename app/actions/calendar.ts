@@ -261,7 +261,7 @@ async function notifyInvitees(
         ev.series_note ? ` &mdash; ${ev.series_note}` : ""
       }</p>
       ${ev.description ? `<p style="margin:12px 0">${ev.description.replace(/\n/g, "<br>")}</p>` : ""}
-      ${joinUrl ? `<p style="margin:16px 0"><a href="${joinUrl}" style="background:#0f766e;color:#fff;padding:10px 18px;border-radius:999px;text-decoration:none;font-weight:600">Join meeting</a></p>` : ""}
+      ${joinUrl ? `<p style="margin:16px 0"><a href="${joinUrl}" style="background:#eab308;color:#111827;padding:10px 18px;border-radius:999px;text-decoration:none;font-weight:600">Join meeting</a></p>` : ""}
       ${kind !== "cancelled" && ev.attachment_url ? `<p style="margin:8px 0"><a href="${ev.attachment_url}">${ev.attachment_name ?? "Attachment"}</a></p>` : ""}
     </div>`;
 

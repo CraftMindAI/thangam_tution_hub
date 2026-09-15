@@ -4,19 +4,20 @@ import { useActionState, useState } from "react";
 import Link from "next/link";
 import SiteHeader from "../components/SiteHeader";
 import SiteFooter from "../components/SiteFooter";
+import { Eyebrow } from "../components/PlayfulUI";
 import { CheckCircle, Eye, EyeOff, GraduationCap } from "../components/icons";
 import { signUp } from "../actions/signup";
 
 const inputClass =
-  "mt-1.5 w-full rounded-lg border border-stone-300 bg-stone-50 px-3.5 py-2.5 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-white";
+  "mt-1.5 w-full rounded-xl border-2 border-stone-300 bg-stone-50 px-3.5 py-2.5 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 dark:border-stone-700 dark:bg-stone-900 dark:text-white";
 const errorInputClass =
-  "border-red-400 focus:border-red-500 focus:ring-red-500/20 dark:border-red-500/70";
-const labelClass = "text-sm font-medium text-slate-700 dark:text-slate-200";
+  "border-yellow-400 focus:border-yellow-500 focus:ring-yellow-500/20 dark:border-yellow-500/70";
+const labelClass = "text-sm font-bold text-stone-700 dark:text-stone-200";
 
 function FieldError({ messages }: { messages?: string[] }) {
   if (!messages?.length) return null;
   return (
-    <p className="mt-1 text-xs text-red-600 dark:text-red-400">{messages[0]}</p>
+    <p className="mt-1 text-xs text-yellow-700 dark:text-yellow-400">{messages[0]}</p>
   );
 }
 
@@ -40,7 +41,7 @@ function Field({
       <label htmlFor={name} className={labelClass}>
         {label}
         {!required && (
-          <span className="ml-1 text-xs font-normal text-slate-400">(optional)</span>
+          <span className="ml-1 text-xs font-normal text-stone-400">(optional)</span>
         )}
       </label>
       <input
@@ -65,24 +66,26 @@ export default function SignUp() {
 
   if (state && "success" in state) {
     return (
-      <div className="flex flex-1 flex-col bg-stone-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100">
+      <div className="flex flex-1 flex-col bg-white text-stone-900 dark:bg-stone-900 dark:text-stone-100">
         <SiteHeader />
-        <main className="flex flex-1 items-center justify-center px-6 py-16">
-          <div className="w-full max-w-sm rounded-2xl border border-stone-200/70 bg-white p-8 text-center shadow-sm dark:border-slate-800 dark:bg-slate-800">
-            <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-teal-50 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300">
+        <main className="relative flex flex-1 items-center justify-center overflow-hidden px-6 py-16">
+          <div className="pointer-events-none absolute -top-24 -left-24 h-96 w-96 rounded-full bg-yellow-300/25 blur-3xl dark:bg-yellow-500/10" />
+          <div className="pointer-events-none absolute -bottom-24 -right-24 h-96 w-96 rounded-full bg-yellow-200/25 blur-3xl dark:bg-yellow-600/10" />
+          <div className="relative w-full max-w-sm rounded-3xl border-2 border-stone-900 bg-white p-8 text-center shadow-[5px_5px_0_0_#1c1917] dark:border-stone-600 dark:bg-stone-800">
+            <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border-2 border-stone-900 bg-yellow-400 text-stone-900 dark:border-stone-600">
               <CheckCircle className="h-6 w-6" />
             </span>
-            <h1 className="mt-4 text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+            <h1 className="mt-4 text-xl font-bold tracking-tight text-stone-900 dark:text-white">
               Thank you!
             </h1>
-            <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+            <p className="mt-2 text-sm text-stone-600 dark:text-stone-400">
               {state.needsConfirmation
                 ? "Your account has been created and your details have been received. Please check your email to confirm your account before signing in."
                 : "Your account has been created and your details have been received."}
             </p>
             <Link
               href="/signin"
-              className="mt-6 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-teal-600 to-emerald-600 px-6 py-2.5 text-sm font-semibold text-white shadow-md shadow-teal-900/15 transition-transform hover:scale-[1.02]"
+              className="mt-6 inline-flex items-center justify-center rounded-full border-2 border-stone-900 bg-yellow-400 px-6 py-2.5 text-sm font-bold text-stone-900 shadow-[4px_4px_0_0_#1c1917] transition-all hover:-translate-y-0.5 hover:-translate-x-0.5 hover:bg-yellow-300 hover:shadow-[6px_6px_0_0_#1c1917]"
             >
               Go to Sign In
             </Link>
@@ -94,34 +97,40 @@ export default function SignUp() {
   }
 
   return (
-    <div className="flex flex-1 flex-col bg-stone-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100">
+    <div className="flex flex-1 flex-col bg-white text-stone-900 dark:bg-stone-900 dark:text-stone-100">
       <SiteHeader />
 
-      <main className="flex flex-1 items-center justify-center px-6 py-16">
-        <div className="w-full max-w-lg">
+      <main className="relative flex flex-1 items-center justify-center overflow-hidden px-6 py-16">
+        <div className="pointer-events-none absolute -top-24 -left-24 h-96 w-96 rounded-full bg-yellow-300/25 blur-3xl dark:bg-yellow-500/10" />
+        <div className="pointer-events-none absolute -bottom-24 -right-24 h-96 w-96 rounded-full bg-yellow-200/25 blur-3xl dark:bg-yellow-600/10" />
+
+        <div className="relative w-full max-w-lg">
           <div className="flex flex-col items-center text-center">
-            <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white shadow-md shadow-teal-900/10">
+            <span className="flex h-12 w-12 items-center justify-center rounded-2xl border-2 border-stone-900 bg-yellow-400 text-stone-900 dark:border-stone-600">
               <GraduationCap className="h-6 w-6" />
             </span>
-            <h1 className="mt-4 text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+            <div className="mt-4">
+              <Eyebrow>Student Portal</Eyebrow>
+            </div>
+            <h1 className="mt-3 text-2xl font-bold tracking-tight text-stone-900 dark:text-white">
               Create Account
             </h1>
-            <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+            <p className="mt-2 text-sm text-stone-600 dark:text-stone-400">
               Sign up to get started with Thangam Varahi Tuition Hub.
             </p>
           </div>
 
           <form
             action={formAction}
-            className="mt-8 rounded-2xl border border-stone-200/70 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-800"
+            className="mt-8 rounded-3xl border-2 border-stone-900 bg-white p-6 shadow-[5px_5px_0_0_#1c1917] dark:border-stone-600 dark:bg-stone-800"
           >
             {formError && (
-              <p className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-900/30 dark:text-red-300">
+              <p className="mb-4 rounded-lg bg-yellow-50 px-3 py-2 text-sm text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
                 {formError}
               </p>
             )}
 
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-teal-700 dark:text-teal-400">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-yellow-700 dark:text-yellow-400">
               Account Details
             </h2>
             <Field label="Email" name="email" type="email" errors={errors?.email} />
@@ -144,7 +153,7 @@ export default function SignUp() {
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
                   aria-label={showPassword ? "Hide password" : "Show password"}
-                  className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                  className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-stone-400 hover:text-stone-600 dark:hover:text-stone-300"
                 >
                   {showPassword ? (
                     <EyeOff className="h-4.5 w-4.5" />
@@ -175,7 +184,7 @@ export default function SignUp() {
               <FieldError messages={errors?.confirmPassword} />
             </div>
 
-            <h2 className="mt-6 text-sm font-semibold uppercase tracking-wider text-teal-700 dark:text-teal-400">
+            <h2 className="mt-6 text-sm font-semibold uppercase tracking-wider text-yellow-700 dark:text-yellow-400">
               Student Details
             </h2>
             <Field
@@ -197,7 +206,7 @@ export default function SignUp() {
               inputProps={{ placeholder: "Area / locality" }}
             />
 
-            <h2 className="mt-6 text-sm font-semibold uppercase tracking-wider text-teal-700 dark:text-teal-400">
+            <h2 className="mt-6 text-sm font-semibold uppercase tracking-wider text-yellow-700 dark:text-yellow-400">
               Parent Details
             </h2>
             <Field label="Parent's Name" name="parent_name" errors={errors?.parent_name} />
@@ -223,17 +232,17 @@ export default function SignUp() {
             <button
               type="submit"
               disabled={pending}
-              className="mt-6 flex w-full items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-teal-600 to-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-teal-900/15 transition-transform hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
+              className="mt-6 flex w-full items-center justify-center gap-1.5 rounded-full border-2 border-stone-900 bg-yellow-400 px-4 py-2.5 text-sm font-bold text-stone-900 shadow-[4px_4px_0_0_#1c1917] transition-all hover:-translate-y-0.5 hover:-translate-x-0.5 hover:bg-yellow-300 hover:shadow-[6px_6px_0_0_#1c1917] disabled:pointer-events-none disabled:opacity-60"
             >
               {pending ? "Creating…" : "Create Account"}
             </button>
           </form>
 
-          <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
+          <p className="mt-6 text-center text-sm text-stone-600 dark:text-stone-400">
             Already have an account?{" "}
             <Link
               href="/signin"
-              className="font-semibold text-teal-700 hover:underline dark:text-teal-400"
+              className="font-semibold text-yellow-700 hover:underline dark:text-yellow-400"
             >
               Sign In
             </Link>

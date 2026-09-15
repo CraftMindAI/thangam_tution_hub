@@ -39,12 +39,12 @@ export default async function StudentManagementPage() {
         {stats.map((s) => (
           <div
             key={s.label}
-            className="rounded-2xl border border-stone-200/70 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-800"
+            className="rounded-2xl border border-stone-200/70 bg-white p-4 shadow-sm dark:border-stone-800 dark:bg-stone-800"
           >
-            <p className="text-2xl font-bold text-slate-900 dark:text-white">
+            <p className="text-2xl font-bold text-stone-900 dark:text-white">
               {s.value}
             </p>
-            <p className="text-sm text-slate-600 dark:text-slate-400">
+            <p className="text-sm text-stone-600 dark:text-stone-400">
               {s.label}
             </p>
           </div>

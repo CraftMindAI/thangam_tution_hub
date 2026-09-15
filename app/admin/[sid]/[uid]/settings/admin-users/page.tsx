@@ -27,26 +27,26 @@ export default async function AdminUsersPage() {
     <div className="space-y-6">
       <CreateAdminForm />
 
-      <div className="overflow-x-auto rounded-2xl border border-stone-200/70 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-800">
+      <div className="overflow-x-auto rounded-2xl border border-stone-200/70 bg-white shadow-sm dark:border-stone-800 dark:bg-stone-800">
         <table className="w-full min-w-[560px] text-left text-sm">
-          <thead className="border-b border-stone-200/70 text-xs uppercase tracking-wider text-slate-500 dark:border-slate-700 dark:text-slate-400">
+          <thead className="border-b border-stone-200/70 text-xs uppercase tracking-wider text-stone-500 dark:border-stone-700 dark:text-stone-400">
             <tr>
               <th className="px-4 py-3">Name</th>
               <th className="px-4 py-3">Email</th>
               <th className="px-4 py-3">Phone</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-stone-100 dark:divide-slate-700">
+          <tbody className="divide-y divide-stone-100 dark:divide-stone-700">
             {admins?.length ? (
               admins.map((a) => (
                 <tr key={a.id}>
-                  <td className="px-4 py-3 font-medium text-slate-800 dark:text-slate-200">
+                  <td className="px-4 py-3 font-medium text-stone-800 dark:text-stone-200">
                     {a.full_name ?? "—"}
                   </td>
-                  <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
+                  <td className="px-4 py-3 text-stone-600 dark:text-stone-400">
                     {emailById.get(a.id) ?? "—"}
                   </td>
-                  <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
+                  <td className="px-4 py-3 text-stone-600 dark:text-stone-400">
                     {a.phone ?? "—"}
                   </td>
                 </tr>
@@ -55,7 +55,7 @@ export default async function AdminUsersPage() {
               <tr>
                 <td
                   colSpan={3}
-                  className="px-4 py-6 text-center text-slate-500 dark:text-slate-400"
+                  className="px-4 py-6 text-center text-stone-500 dark:text-stone-400"
                 >
                   No admin users found.
                 </td>

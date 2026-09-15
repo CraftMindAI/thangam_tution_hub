@@ -31,7 +31,7 @@ export default function MeetingRoom() {
 
   if (callingState !== CallingState.JOINED) {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-slate-950 text-white">
+      <div className="flex h-screen w-full items-center justify-center bg-stone-950 text-white">
         Joining…
       </div>
     );
@@ -50,7 +50,7 @@ export default function MeetingRoom() {
   }
 
   return (
-    <section className="relative h-screen w-full overflow-hidden bg-slate-950 pt-4 text-white">
+    <section className="relative h-screen w-full overflow-hidden bg-stone-950 pt-4 text-white">
       <div className="relative flex size-full items-center justify-center">
         <div className="flex size-full max-w-[1000px] items-center">
           {callLayout}
@@ -62,7 +62,7 @@ export default function MeetingRoom() {
         )}
       </div>
 
-      <div className="fixed bottom-0 flex w-full flex-wrap items-center justify-center gap-3 bg-slate-950/80 p-3 backdrop-blur">
+      <div className="fixed bottom-0 flex w-full flex-wrap items-center justify-center gap-3 bg-stone-950/80 p-3 backdrop-blur">
         <CallControls onLeave={() => router.push("/admin")} />
 
         <select
