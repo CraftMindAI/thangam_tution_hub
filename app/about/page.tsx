@@ -110,30 +110,34 @@ export default function About() {
         </section>
 
         {/* Story */}
-        <section className="bg-yellow-50 py-20 dark:bg-stone-800">
-          <div className="mx-auto max-w-3xl px-6">
-            <div className="rounded-[2rem] bg-white p-8 shadow-lg dark:bg-stone-900/60">
-              <h2 className="text-2xl font-bold tracking-tight text-stone-900 dark:text-white">
-                Where we started
-              </h2>
-              <p className="mt-4 leading-8 text-stone-600 dark:text-stone-300">
-                Thangam Varahi Tuition Hub was seeded in the land of Chennai
-                on <strong>5th September 2021</strong>, built on one simple
-                idea: every wage-earning family deserves access to
-                best-quality tutoring at an affordable, reasonable price.
-                Since then we have taught a wide variety of children, from
-                Nursery through 10th Std, gathering experience and refining
-                how we teach — with clarity and care that shows in our
-                students&apos; results.
-              </p>
-              <p className="mt-4 leading-8 text-stone-600 dark:text-stone-300">
-                We are registered with the Government of India as a Micro
-                enterprise under Udyam (Reg. No.{" "}
-                <strong>UDYAM-TN-02-0419567</strong>), classified under
-                academic tutoring services &mdash; a small but meaningful
-                marker of how seriously we take this work.
-              </p>
-            </div>
+        <section className="relative overflow-hidden bg-yellow-50 py-24 dark:bg-stone-800">
+          <span
+            className="pointer-events-none absolute top-2 left-1/2 -translate-x-1/2 select-none text-[9rem] leading-none font-black text-yellow-500/10 sm:text-[13rem] dark:text-yellow-300/5"
+            aria-hidden
+          >
+            2021
+          </span>
+          <div className="relative mx-auto max-w-2xl px-6 text-center">
+            <h2 className="text-2xl font-bold tracking-tight text-stone-900 sm:text-3xl dark:text-white">
+              Where we started
+            </h2>
+            <p className="mt-5 leading-8 text-stone-700 dark:text-stone-300">
+              Thangam Varahi Tuition Hub was seeded in the land of Chennai
+              on <strong>5th September 2021</strong>, built on one simple
+              idea: every wage-earning family deserves access to
+              best-quality tutoring at an affordable, reasonable price.
+              Since then we have taught a wide variety of children, from
+              Nursery through 10th Std, gathering experience and refining
+              how we teach — with clarity and care that shows in our
+              students&apos; results.
+            </p>
+            <p className="mt-4 leading-8 text-stone-700 dark:text-stone-300">
+              We are registered with the Government of India as a Micro
+              enterprise under Udyam (Reg. No.{" "}
+              <strong>UDYAM-TN-02-0419567</strong>), classified under
+              academic tutoring services &mdash; a small but meaningful
+              marker of how seriously we take this work.
+            </p>
           </div>
         </section>
 
@@ -171,8 +175,8 @@ export default function About() {
         </section>
 
         {/* How we teach */}
-        <section className="bg-yellow-50 py-20 dark:bg-stone-800">
-          <div className="mx-auto max-w-6xl px-6">
+        <section className="py-20">
+          <div className="mx-auto max-w-5xl px-6">
             <div className="text-center">
               <Eyebrow>Our Approach</Eyebrow>
               <h2 className="mt-4 text-2xl font-bold tracking-tight text-stone-900 dark:text-white">
@@ -183,23 +187,23 @@ export default function About() {
                 consistently, for every child, every day.
               </p>
             </div>
-            <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {values.map((v) => (
+            <div className="mt-14 grid gap-x-12 gap-y-10 sm:grid-cols-2">
+              {values.map((v, i) => (
                 <div
                   key={v.title}
-                  className="rounded-3xl bg-white p-6 shadow-md transition-all hover:-translate-y-1 hover:shadow-lg dark:bg-stone-900"
+                  className="flex gap-5 border-t border-stone-200 pt-6 dark:border-stone-800"
                 >
-                  <span
-                    className={`flex h-11 w-11 items-center justify-center rounded-2xl ${iconBadge}`}
-                  >
-                    <v.icon className="h-5 w-5" />
+                  <span className="text-3xl font-black tabular-nums text-yellow-400/70 dark:text-yellow-500/30">
+                    {String(i + 1).padStart(2, "0")}
                   </span>
-                  <h3 className="mt-4 font-semibold text-stone-900 dark:text-white">
-                    {v.title}
-                  </h3>
-                  <p className="mt-1.5 text-sm leading-6 text-stone-600 dark:text-stone-400">
-                    {v.desc}
-                  </p>
+                  <div>
+                    <h3 className="font-semibold text-stone-900 dark:text-white">
+                      {v.title}
+                    </h3>
+                    <p className="mt-1.5 text-sm leading-6 text-stone-600 dark:text-stone-400">
+                      {v.desc}
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -207,8 +211,8 @@ export default function About() {
         </section>
 
         {/* Tracking progress */}
-        <section className="py-20">
-          <div className="mx-auto max-w-6xl px-6">
+        <section className="bg-yellow-50 py-20 dark:bg-stone-800">
+          <div className="mx-auto max-w-5xl px-6">
             <div className="text-center">
               <Eyebrow>Progress Tracking</Eyebrow>
               <h2 className="mt-4 text-2xl font-bold tracking-tight text-stone-900 dark:text-white">
@@ -218,12 +222,9 @@ export default function About() {
                 Paperwork parents can actually see — not just promises.
               </p>
             </div>
-            <div className="mt-10 grid gap-6 sm:grid-cols-3">
+            <div className="mt-10 flex flex-col divide-y divide-stone-200 overflow-hidden rounded-[2rem] border border-stone-200 bg-white sm:flex-row sm:divide-x sm:divide-y-0 dark:divide-stone-700 dark:border-stone-700 dark:bg-stone-900/40">
               {tracking.map((t) => (
-                <div
-                  key={t.title}
-                  className="rounded-3xl bg-white p-6 shadow-md transition-all hover:-translate-y-1 hover:shadow-lg dark:bg-stone-800"
-                >
+                <div key={t.title} className="flex-1 p-8">
                   <span
                     className={`flex h-11 w-11 items-center justify-center rounded-2xl ${iconBadge}`}
                   >
@@ -242,7 +243,7 @@ export default function About() {
         </section>
 
         {/* Centre rules */}
-        <section className="bg-yellow-50 py-20 dark:bg-stone-800">
+        <section className="py-20">
           <div className="mx-auto max-w-3xl px-6">
             <div className="text-center">
               <Eyebrow>Life at the Centre</Eyebrow>
@@ -254,16 +255,14 @@ export default function About() {
                 and every child gets a fair shot at focus.
               </p>
             </div>
-            <div className="mt-10 rounded-[2rem] bg-white p-8 shadow-lg dark:bg-stone-900/60">
-              <ul className="grid gap-3 text-sm text-stone-600 sm:grid-cols-2 dark:text-stone-400">
-                {rules.map((item) => (
-                  <li key={item} className="flex items-start gap-2">
-                    <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-yellow-600 dark:text-yellow-400" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <ul className="mx-auto mt-10 grid max-w-2xl gap-x-8 gap-y-4 text-sm text-stone-600 sm:grid-cols-2 dark:text-stone-400">
+              {rules.map((item) => (
+                <li key={item} className="flex items-start gap-2.5 border-t border-stone-200 pt-4 dark:border-stone-800">
+                  <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-yellow-600 dark:text-yellow-400" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         </section>
 
