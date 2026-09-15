@@ -6,9 +6,15 @@ import {
   type MeetingType,
 } from "@/app/lib/calendar";
 import { STUDENT_CLASSES } from "@/app/lib/students";
-import { CalendarClock, Video } from "@/app/components/icons";
+import { CalendarClock, Video, Filter } from "@/app/components/icons";
 import { getEnquiryStudents, getMeetingInvitees } from "@/app/lib/roster";
 import AddEventModal from "../calendar/AddEventModal";
+import {
+  AdminPageHeader,
+  AdminCard,
+  AdminBadge,
+  AdminButton,
+} from "../_components/ui";
 
 type EventRow = {
   id: string;
@@ -45,10 +51,10 @@ function timeLabel(iso: string) {
   });
 }
 
-const typeBadge: Record<MeetingType, string> = {
-  daily: "bg-yellow-50 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300",
-  demo: "bg-yellow-50 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300",
-  inquiry: "bg-yellow-50 text-yellow-900 dark:bg-yellow-950/40 dark:text-yellow-300",
+const typeBadgeVariant: Record<MeetingType, "yellow" | "dark" | "gray"> = {
+  daily: "yellow",
+  demo: "dark",
+  inquiry: "gray",
 };
 
 export default async function UpcomingMeetingsPage({
@@ -130,155 +136,201 @@ export default async function UpcomingMeetingsPage({
     else groups.set(key, [e]);
   }
 
+  const inputClasses =
+    "mt-1.5 block w-full rounded-2xl border border-stone-200 bg-stone-50 px-3.5 py-2.5 text-xs font-semibold text-stone-900 outline-none transition-colors focus:border-yellow-400 focus:bg-white dark:border-stone-800 dark:bg-stone-900 dark:text-white dark:focus:border-yellow-400";
+
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-stone-600 dark:text-stone-400">
-          {dateFilter
-            ? "Meetings you scheduled on the selected date."
-            : "Meetings you scheduled, from today onward."}
-        </p>
-        <AddEventModal
-          defaultDate={dateFilter || todayKey}
-          enquiryStudents={enquiryStudents}
-          allStudents={allStudents}
-        />
-      </div>
-
-      <form
-        method="get"
-        className="flex flex-wrap items-end gap-3 rounded-2xl border border-stone-200/70 bg-white p-4 shadow-sm dark:border-stone-800 dark:bg-stone-800"
-      >
-        <label className="text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-400">
-          Date
-          <input
-            type="date"
-            name="date"
-            defaultValue={dateFilter}
-            className="mt-1 block rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm text-stone-900 outline-none focus:border-stone-500 dark:border-stone-700 dark:bg-stone-900 dark:text-white"
+    <div className="space-y-8">
+      {/* Page Header */}
+      <AdminPageHeader
+        title="Upcoming Meetings"
+        subtitle={
+          dateFilter
+            ? "Meetings scheduled for the selected date."
+            : "All upcoming live classes and sessions from today onward."
+        }
+        actions={
+          <AddEventModal
+            defaultDate={dateFilter || todayKey}
+            enquiryStudents={enquiryStudents}
+            allStudents={allStudents}
           />
-        </label>
-        <label className="text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-400">
-          Meeting type
-          <select
-            name="type"
-            defaultValue={typeFilter}
-            className="mt-1 block rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm text-stone-900 outline-none focus:border-stone-500 dark:border-stone-700 dark:bg-stone-900 dark:text-white"
-          >
-            <option value="">All types</option>
-            {MEETING_TYPES.map((t) => (
-              <option key={t} value={t}>
-                {MEETING_TYPE_LABELS[t]}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-400">
-          Class
-          <select
-            name="class"
-            defaultValue={classFilter}
-            className="mt-1 block rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm text-stone-900 outline-none focus:border-stone-500 dark:border-stone-700 dark:bg-stone-900 dark:text-white"
-          >
-            <option value="">All classes</option>
-            {STUDENT_CLASSES.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-        </label>
-        <button
-          type="submit"
-          className="rounded-full bg-gradient-to-r from-stone-700 to-stone-900 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-stone-900/20"
-        >
-          Apply
-        </button>
-        {hasFilters && (
-          <Link
-            href={`${panel}/upcoming-meetings`}
-            className="rounded-full border border-stone-300 px-4 py-2 text-sm font-semibold text-stone-700 hover:border-stone-500 dark:border-stone-600 dark:text-stone-200"
-          >
-            Clear
-          </Link>
-        )}
-      </form>
+        }
+      />
 
+      {/* Filter Form Card */}
+      <AdminCard className="p-5 sm:p-6">
+        <form
+          method="get"
+          className="flex flex-wrap items-end gap-4"
+        >
+          <div className="flex-1 min-w-[160px]">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+              Filter Date
+              <input
+                type="date"
+                name="date"
+                defaultValue={dateFilter}
+                className={inputClasses}
+              />
+            </label>
+          </div>
+
+          <div className="flex-1 min-w-[160px]">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+              Meeting Type
+              <select
+                name="type"
+                defaultValue={typeFilter}
+                className={inputClasses}
+              >
+                <option value="">All Types</option>
+                {MEETING_TYPES.map((t) => (
+                  <option key={t} value={t}>
+                    {MEETING_TYPE_LABELS[t]}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+
+          <div className="flex-1 min-w-[160px]">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+              Student Class
+              <select
+                name="class"
+                defaultValue={classFilter}
+                className={inputClasses}
+              >
+                <option value="">All Classes</option>
+                {STUDENT_CLASSES.map((c) => (
+                  <option key={c} value={c}>
+                    Class {c}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+
+          <div className="flex items-center gap-2 pt-2 sm:pt-0">
+            <button
+              type="submit"
+              className="inline-flex items-center justify-center gap-1.5 rounded-full bg-yellow-400 px-5 py-2.5 text-xs font-bold text-stone-950 shadow-sm shadow-yellow-500/20 hover:bg-yellow-300 transition-colors"
+            >
+              <Filter className="h-3.5 w-3.5" />
+              Apply Filters
+            </button>
+
+            {hasFilters && (
+              <Link
+                href={`${panel}/upcoming-meetings`}
+                className="inline-flex items-center justify-center rounded-full border border-stone-300 px-4 py-2.5 text-xs font-bold text-stone-700 hover:bg-stone-100 dark:border-stone-700 dark:text-stone-300 dark:hover:bg-stone-800 transition-colors"
+              >
+                Clear
+              </Link>
+            )}
+          </div>
+        </form>
+      </AdminCard>
+
+      {/* Grouped Day Sessions */}
       {groups.size === 0 ? (
-        <p className="rounded-2xl border border-stone-200/70 bg-white px-4 py-10 text-center text-sm text-stone-500 dark:border-stone-800 dark:bg-stone-800 dark:text-stone-400">
-          {hasFilters
-            ? "No meetings match these filters."
-            : "No upcoming meetings. Use “Add Event” to schedule one."}
-        </p>
+        <AdminCard className="p-12 text-center">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-stone-100 dark:bg-stone-800 text-stone-400">
+            <CalendarClock className="h-7 w-7" />
+          </div>
+          <p className="mt-4 text-base font-bold text-stone-800 dark:text-stone-200">
+            {hasFilters
+              ? "No scheduled meetings match your filters"
+              : "No upcoming meetings found"}
+          </p>
+          <p className="mt-1 text-xs text-stone-500 dark:text-stone-400 max-w-sm mx-auto">
+            {hasFilters
+              ? "Try resetting the filters or choosing another date."
+              : "Use the schedule button to set up your next live class session."}
+          </p>
+        </AdminCard>
       ) : (
         [...groups.entries()].map(([key, list]) => (
-          <section key={key}>
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-yellow-700 dark:text-yellow-400">
-              {dayHeading(new Date(`${key}T00:00:00`), todayKey, tomorrowKey)}
-            </h2>
-            <div className="mt-3 space-y-3">
-              {list.map((e) => (
-                <div
-                  key={e.id}
-                  className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-stone-200/70 bg-white p-4 shadow-sm dark:border-stone-800 dark:bg-stone-800"
-                >
-                  <div className="flex items-start gap-3">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-yellow-50 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300">
-                      <CalendarClock className="h-5 w-5" />
-                    </span>
-                    <div>
-                      <p className="font-medium text-stone-800 dark:text-stone-200">
-                        {e.title}
-                      </p>
-                      <p className="mt-0.5 flex flex-wrap items-center gap-2 text-sm text-stone-500 dark:text-stone-400">
-                        <span>
-                          {timeLabel(e.starts_at)} · {e.duration_minutes} min
-                        </span>
-                        <span
-                          className={`rounded-full px-2 py-0.5 text-xs font-semibold ${typeBadge[e.meeting_type]}`}
-                        >
-                          {MEETING_TYPE_LABELS[e.meeting_type]}
-                        </span>
-                        {e.class_filter && (
-                          <span className="rounded-full bg-stone-100 px-2 py-0.5 text-xs font-semibold text-stone-600 dark:bg-stone-700 dark:text-stone-300">
-                            Class {e.class_filter}
+          <section key={key} className="space-y-4">
+            <div className="flex items-center gap-3">
+              <span className="h-2 w-2 rounded-full bg-yellow-400" />
+              <h2 className="text-xs font-extrabold uppercase tracking-widest text-stone-900 dark:text-yellow-400">
+                {dayHeading(new Date(`${key}T00:00:00`), todayKey, tomorrowKey)}
+              </h2>
+              <span className="text-xs font-semibold text-stone-400">
+                ({list.length} {list.length === 1 ? "session" : "sessions"})
+              </span>
+            </div>
+
+            <div className="grid gap-3">
+              {list.map((e) => {
+                const startMs = new Date(e.starts_at).getTime();
+                const endMs = startMs + e.duration_minutes * 60 * 1000;
+                const nowMs = Date.now();
+                const isLive = nowMs >= startMs && nowMs <= endMs;
+
+                return (
+                  <AdminCard
+                    key={e.id}
+                    className="p-5 flex flex-wrap items-center justify-between gap-4 transition-all hover:border-yellow-400/50"
+                  >
+                    <div className="flex items-start gap-4 min-w-0">
+                      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-yellow-400/15 text-yellow-600 dark:bg-yellow-400/20 dark:text-yellow-400 font-black">
+                        <CalendarClock className="h-6 w-6" />
+                      </span>
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <p className="text-base font-bold text-stone-900 dark:text-white">
+                            {e.title}
+                          </p>
+                          {isLive && (
+                            <AdminBadge variant="live" pulse>
+                              Live Now
+                            </AdminBadge>
+                          )}
+                        </div>
+
+                        <div className="mt-1 flex flex-wrap items-center gap-2.5 text-xs text-stone-500 dark:text-stone-400">
+                          <span className="font-semibold text-stone-700 dark:text-stone-300">
+                            {timeLabel(e.starts_at)}
                           </span>
-                        )}
-                      </p>
-                    </div>
-                  </div>
+                          <span>&middot;</span>
+                          <span>{e.duration_minutes} mins</span>
 
-                  {(() => {
-                    const startMs = new Date(e.starts_at).getTime();
-                    const endMs = startMs + e.duration_minutes * 60 * 1000;
-                    const nowMs = Date.now();
-                    const isLive = nowMs >= startMs && nowMs <= endMs;
+                          <AdminBadge variant={typeBadgeVariant[e.meeting_type]}>
+                            {MEETING_TYPE_LABELS[e.meeting_type]}
+                          </AdminBadge>
 
-                    return (
-                      <div className="flex items-center gap-2">
-                        {isLive && (
-                          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
-                            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                            Live Now
-                          </span>
-                        )}
-
-                        {e.call_id ? (
-                          <Link
-                            href={`/admin/meeting/${e.call_id}`}
-                            className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-teal-600 to-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-teal-900/15 transition-transform hover:scale-[1.02]"
-                          >
-                            <Video className="h-4 w-4" />
-                            {isLive ? "Join Class" : "Join"}
-                          </Link>
-                        ) : (
-                          <span className="text-xs text-slate-400">No call link</span>
-                        )}
+                          {e.class_filter && (
+                            <AdminBadge variant="gray">
+                              Class {e.class_filter}
+                            </AdminBadge>
+                          )}
+                        </div>
                       </div>
-                    );
-                  })()}
-                </div>
-              ))}
+                    </div>
+
+                    <div className="flex items-center gap-3 ml-auto sm:ml-0">
+                      {e.call_id ? (
+                        <Link href={`/admin/meeting/${e.call_id}`}>
+                          <AdminButton
+                            size="sm"
+                            icon={Video}
+                            className={isLive ? "animate-pulse" : ""}
+                          >
+                            {isLive ? "Join Class Now" : "Join Video Call"}
+                          </AdminButton>
+                        </Link>
+                      ) : (
+                        <span className="text-xs font-medium text-stone-400">
+                          No Call Link
+                        </span>
+                      )}
+                    </div>
+                  </AdminCard>
+                );
+              })}
             </div>
           </section>
         ))

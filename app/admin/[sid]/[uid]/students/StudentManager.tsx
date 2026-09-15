@@ -7,13 +7,20 @@ import {
   deleteStudent,
   sendStudentPasswordReset,
 } from "@/app/actions/students";
-import { Users, X } from "@/app/components/icons";
+import { Users, X, Plus, Download, Search } from "@/app/components/icons";
 import {
   STUDENT_CLASSES,
   STUDENT_TYPES,
   STUDENT_TYPE_LABELS,
   type StudentType,
 } from "@/app/lib/students";
+import {
+  AdminCard,
+  AdminBadge,
+  AdminButton,
+  AdminTableContainer,
+  tableClasses,
+} from "../_components/ui";
 
 export type Student = {
   id: string;
@@ -29,7 +36,7 @@ export type Student = {
 };
 
 const inputClass =
-  "mt-1.5 w-full rounded-lg border border-stone-300 bg-stone-50 px-3.5 py-2.5 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-stone-500 focus:ring-2 focus:ring-stone-500/20 dark:border-stone-700 dark:bg-stone-900 dark:text-white";
+  "mt-1.5 w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-2.5 text-xs font-semibold text-stone-900 outline-none placeholder:text-stone-400 focus:border-yellow-400 focus:bg-white dark:border-stone-800 dark:bg-stone-900 dark:text-white dark:focus:border-yellow-400 transition-colors";
 
 const TEMPLATE_COLUMNS = [
   "Name",
@@ -59,39 +66,26 @@ function RowResetPassword({ email, name }: { email: string; name: string }) {
     <form action={formAction} className="inline-flex items-center gap-2">
       <input type="hidden" name="email" value={email} />
       <input type="hidden" name="name" value={name} />
-      <button
+      <AdminButton
         type="submit"
-        disabled={pending || !email}
-        className="rounded-full border border-stone-300 px-3 py-1.5 text-xs font-semibold text-stone-700 transition-colors hover:border-stone-500 hover:text-stone-900 disabled:cursor-not-allowed disabled:opacity-50 dark:border-stone-600 dark:text-stone-200 dark:hover:border-stone-400 dark:hover:text-white"
+        variant="outline"
+        size="sm"
+        loading={pending}
+        disabled={!email}
       >
-        {pending ? "Sending…" : "Reset password"}
-      </button>
+        Reset Pass
+      </AdminButton>
       {state && "success" in state && (
-        <span className="text-xs font-medium text-yellow-600 dark:text-yellow-400">
+        <span className="text-[11px] font-bold text-yellow-600 dark:text-yellow-400">
           Sent
         </span>
       )}
       {state && "error" in state && (
-        <span className="text-xs font-medium text-yellow-700 dark:text-yellow-400">
+        <span className="text-[11px] font-bold text-red-500">
           {state.error}
         </span>
       )}
     </form>
-  );
-}
-
-function TypeBadge({ type }: { type: StudentType }) {
-  const isNew = type === "new_student";
-  return (
-    <span
-      className={`inline-flex whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold ${
-        isNew
-          ? "bg-yellow-50 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300"
-          : "bg-stone-100 text-stone-600 dark:bg-stone-700 dark:text-stone-300"
-      }`}
-    >
-      {STUDENT_TYPE_LABELS[type]}
-    </span>
   );
 }
 
@@ -102,8 +96,6 @@ export default function StudentManager({ students }: { students: Student[] }) {
   const [classFilter, setClassFilter] = useState("");
   const [typeFilter, setTypeFilter] = useState<StudentType | "">("");
 
-  // `students` arrives sorted (new students first, then alphabetical), and
-  // filtering preserves that order.
   const visible = useMemo(() => {
     const q = nameQuery.trim().toLowerCase();
     return students.filter(
@@ -124,7 +116,6 @@ export default function StudentManager({ students }: { students: Student[] }) {
 
   const [pendingDelete, setPendingDelete] = useState<Student | null>(null);
 
-  // Remount each form (clearing its fields) after a successful submit.
   const [manualKey, setManualKey] = useState(0);
   const [excelKey, setExcelKey] = useState(0);
 
@@ -142,285 +133,400 @@ export default function StudentManager({ students }: { students: Student[] }) {
     if (importState && "success" in importState) setExcelKey((k) => k + 1);
   }
 
-  const modeBtn = (active: boolean) =>
-    `rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
-      active
-        ? "bg-gradient-to-r from-stone-700 to-stone-900 text-white shadow-md shadow-stone-900/20"
-        : "border border-stone-300 text-stone-700 hover:border-stone-500 hover:text-stone-900 dark:border-stone-600 dark:text-stone-200 dark:hover:border-stone-400 dark:hover:text-white"
-    }`;
-
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap justify-end gap-3">
-        <button
-          type="button"
-          onClick={() => setMode(mode === "manual" ? null : "manual")}
-          className={modeBtn(mode === "manual")}
-        >
-          + Add Student
-        </button>
-        <button
-          type="button"
-          onClick={() => setMode(mode === "excel" ? null : "excel")}
-          className={modeBtn(mode === "excel")}
-        >
-          Import from Excel
-        </button>
+      {/* Top Action Toggle Buttons */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-bold uppercase tracking-wider text-stone-400">
+            Actions:
+          </span>
+          <AdminButton
+            variant={mode === "manual" ? "primary" : "outline"}
+            size="sm"
+            onClick={() => setMode(mode === "manual" ? null : "manual")}
+            icon={Plus}
+          >
+            Add Student
+          </AdminButton>
+          <AdminButton
+            variant={mode === "excel" ? "primary" : "outline"}
+            size="sm"
+            onClick={() => setMode(mode === "excel" ? null : "excel")}
+            icon={Download}
+          >
+            Import Excel
+          </AdminButton>
+        </div>
+
+        <span className="text-xs font-semibold text-stone-500 dark:text-stone-400">
+          Total in Roster: <strong className="text-stone-900 dark:text-white">{students.length}</strong>
+        </span>
       </div>
 
+      {/* Manual or Excel Form Panels */}
       {mode && (
-        <div className="rounded-2xl border border-stone-200/70 bg-white p-6 shadow-sm dark:border-stone-800 dark:bg-stone-800">
+        <AdminCard className="p-6 sm:p-8 animate-in fade-in slide-in-from-top-3 duration-200">
           {mode === "manual" ? (
             <form key={manualKey} action={addAction}>
-            {addState && "error" in addState && (
-              <p className="mb-3 rounded-lg bg-yellow-50 px-3 py-2 text-sm text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
-                {addState.error}
-              </p>
-            )}
-            {addState && "success" in addState && (
-              <p className="mb-3 rounded-lg bg-yellow-50 px-3 py-2 text-sm text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300">
-                {addState.message}
-              </p>
-            )}
+              <div className="flex items-center justify-between gap-4 mb-5">
+                <div>
+                  <h3 className="text-base font-extrabold text-stone-900 dark:text-white">
+                    Add Single Student
+                  </h3>
+                  <p className="text-xs text-stone-500 dark:text-stone-400">
+                    Register a new student directly into the active roster.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setMode(null)}
+                  className="rounded-xl p-2 text-stone-400 hover:bg-stone-100 hover:text-stone-700 dark:hover:bg-stone-800 dark:hover:text-stone-200"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
 
-            <div className="grid gap-3 sm:grid-cols-2">
-              <label className="text-sm font-medium text-stone-700 dark:text-stone-200">
-                Name
-                <input name="name" required className={inputClass} />
-              </label>
-              <label className="text-sm font-medium text-stone-700 dark:text-stone-200">
-                Class
-                <select name="class" required defaultValue="" className={inputClass}>
-                  <option value="" disabled>
-                    Select class
-                  </option>
-                  {STUDENT_CLASSES.map((c) => (
-                    <option key={c} value={c}>
-                      {c}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label className="text-sm font-medium text-stone-700 dark:text-stone-200">
-                School
-                <input name="school" required className={inputClass} />
-              </label>
-              <label className="text-sm font-medium text-stone-700 dark:text-stone-200">
-                Location
+              {addState && "error" in addState && (
+                <div className="mb-4 rounded-2xl bg-yellow-400/20 p-3.5 text-xs font-bold text-yellow-800 dark:text-yellow-300 border border-yellow-400/40">
+                  {addState.error}
+                </div>
+              )}
+              {addState && "success" in addState && (
+                <div className="mb-4 rounded-2xl bg-emerald-500/15 p-3.5 text-xs font-bold text-emerald-700 dark:text-emerald-300 border border-emerald-500/20">
+                  {addState.message}
+                </div>
+              )}
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+                    Full Name
+                    <input name="name" required className={inputClass} placeholder="Student full name" />
+                  </label>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+                    Class / Grade
+                    <select name="class" required defaultValue="" className={inputClass}>
+                      <option value="" disabled>
+                        Select Class
+                      </option>
+                      {STUDENT_CLASSES.map((c) => (
+                        <option key={c} value={c}>
+                          Class {c}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+                    School Name
+                    <input name="school" required className={inputClass} placeholder="School name" />
+                  </label>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+                    Location / Area
+                    <input
+                      name="location"
+                      required
+                      placeholder="e.g. West Mambalam"
+                      className={inputClass}
+                    />
+                  </label>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+                    Student Email
+                    <input
+                      name="email"
+                      type="email"
+                      required
+                      placeholder="student@example.com"
+                      className={inputClass}
+                    />
+                  </label>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+                    Student Phone
+                    <input name="phone" type="tel" required placeholder="10-digit mobile" className={inputClass} />
+                  </label>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+                    Parent Email <span className="font-normal text-stone-400">(optional)</span>
+                    <input name="parent_email" type="email" placeholder="parent@example.com" className={inputClass} />
+                  </label>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+                    Parent Phone
+                    <input
+                      name="parent_phone"
+                      type="tel"
+                      required
+                      placeholder="10-digit parent mobile"
+                      className={inputClass}
+                    />
+                  </label>
+                </div>
+              </div>
+
+              <div className="mt-6 flex justify-end gap-3">
+                <AdminButton
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setMode(null)}
+                >
+                  Cancel
+                </AdminButton>
+                <AdminButton
+                  type="submit"
+                  size="sm"
+                  loading={addPending}
+                >
+                  Save Student
+                </AdminButton>
+              </div>
+            </form>
+          ) : (
+            <form key={excelKey} action={importAction}>
+              <div className="flex items-center justify-between gap-4 mb-4">
+                <div>
+                  <h3 className="text-base font-extrabold text-stone-900 dark:text-white">
+                    Bulk Import Students (Excel / CSV)
+                  </h3>
+                  <p className="text-xs text-stone-500 dark:text-stone-400">
+                    Upload a spreadsheet with student records to import multiple entries at once.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setMode(null)}
+                  className="rounded-xl p-2 text-stone-400 hover:bg-stone-100 hover:text-stone-700 dark:hover:bg-stone-800 dark:hover:text-stone-200"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              {importState && "error" in importState && (
+                <div className="mb-4 rounded-2xl bg-yellow-400/20 p-3.5 text-xs font-bold text-yellow-800 dark:text-yellow-300 border border-yellow-400/40">
+                  {importState.error}
+                </div>
+              )}
+              {importState && "success" in importState && (
+                <div className="mb-4 rounded-2xl bg-emerald-500/15 p-3.5 text-xs font-bold text-emerald-700 dark:text-emerald-300 border border-emerald-500/20">
+                  {importState.message}
+                </div>
+              )}
+
+              <div className="rounded-2xl bg-stone-50 p-4 dark:bg-stone-900/60 border border-stone-200/70 dark:border-stone-800/80">
+                <p className="text-xs text-stone-600 dark:text-stone-300">
+                  Required columns in the first row:
+                </p>
+                <p className="mt-1 font-mono text-[11px] font-bold text-yellow-700 dark:text-yellow-400">
+                  {TEMPLATE_COLUMNS.join(" · ")}
+                </p>
+                <div className="mt-3 flex items-center justify-between">
+                  <span className="text-[11px] text-stone-400">
+                    Supported formats: .xlsx, .xls, .csv
+                  </span>
+                  <a
+                    href={templateHref}
+                    download="students-template.csv"
+                    className="inline-flex items-center gap-1.5 text-xs font-bold text-yellow-700 dark:text-yellow-400 hover:underline"
+                  >
+                    <Download className="h-3.5 w-3.5" />
+                    Download CSV Template
+                  </a>
+                </div>
+              </div>
+
+              <div className="mt-4">
                 <input
-                  name="location"
+                  name="file"
+                  type="file"
                   required
-                  placeholder="Area / locality"
-                  className={inputClass}
+                  accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv"
+                  className="block w-full text-xs text-stone-600 file:mr-3 file:rounded-full file:border-0 file:bg-yellow-400 file:px-4 file:py-2.5 file:text-xs file:font-bold file:text-stone-950 hover:file:bg-yellow-300 dark:text-stone-400 cursor-pointer"
                 />
-              </label>
-              <label className="text-sm font-medium text-stone-700 dark:text-stone-200">
-                Email
-                <input
-                  name="email"
-                  type="email"
-                  required
-                  className={inputClass}
-                />
-              </label>
-              <label className="text-sm font-medium text-stone-700 dark:text-stone-200">
-                Phone
-                <input name="phone" type="tel" required className={inputClass} />
-              </label>
-              <label className="text-sm font-medium text-stone-700 dark:text-stone-200">
-                Parent email{" "}
-                <span className="font-normal text-stone-400">(optional)</span>
-                <input name="parent_email" type="email" className={inputClass} />
-              </label>
-              <label className="text-sm font-medium text-stone-700 dark:text-stone-200">
-                Parent phone
-                <input
-                  name="parent_phone"
-                  type="tel"
-                  required
-                  className={inputClass}
-                />
-              </label>
-            </div>
+              </div>
 
-            <button
-              type="submit"
-              disabled={addPending}
-              className="mt-5 rounded-full bg-gradient-to-r from-stone-700 to-stone-900 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-stone-900/20 transition-transform hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
-            >
-              {addPending ? "Saving…" : "Save Student"}
-            </button>
-          </form>
-        ) : (
-          <form key={excelKey} action={importAction}>
-            {importState && "error" in importState && (
-              <p className="mb-3 rounded-lg bg-yellow-50 px-3 py-2 text-sm text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
-                {importState.error}
-              </p>
-            )}
-            {importState && "success" in importState && (
-              <p className="mb-3 rounded-lg bg-yellow-50 px-3 py-2 text-sm text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300">
-                {importState.message}
-              </p>
-            )}
-
-            <p className="text-sm text-stone-600 dark:text-stone-400">
-              Upload a <code>.xlsx</code>, <code>.xls</code> or <code>.csv</code>{" "}
-              file. First row must be headers:
-            </p>
-            <p className="mt-1 text-sm font-medium text-stone-700 dark:text-stone-200">
-              {TEMPLATE_COLUMNS.join(" · ")}
-            </p>
-            <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">
-              Class must be LKG, UKG or 1–10.
-            </p>
-            <a
-              href={templateHref}
-              download="students-template.csv"
-              className="mt-1 inline-block text-sm font-semibold text-yellow-700 hover:underline dark:text-yellow-400"
-            >
-              Download template
-            </a>
-
-            <input
-              name="file"
-              type="file"
-              required
-              accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv"
-              className="mt-4 block w-full text-sm text-stone-600 file:mr-3 file:rounded-full file:border-0 file:bg-stone-800 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-stone-700 dark:text-stone-400"
-            />
-
-            <button
-              type="submit"
-              disabled={importPending}
-              className="mt-5 rounded-full bg-gradient-to-r from-stone-700 to-stone-900 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-stone-900/20 transition-transform hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
-            >
-              {importPending ? "Importing…" : "Import Students"}
-            </button>
-          </form>
+              <div className="mt-6 flex justify-end gap-3">
+                <AdminButton
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setMode(null)}
+                >
+                  Cancel
+                </AdminButton>
+                <AdminButton
+                  type="submit"
+                  size="sm"
+                  loading={importPending}
+                >
+                  Import Students
+                </AdminButton>
+              </div>
+            </form>
           )}
-        </div>
+        </AdminCard>
       )}
 
-      <div className="flex flex-wrap items-end gap-3 rounded-2xl border border-stone-200/70 bg-white p-4 shadow-sm dark:border-stone-800 dark:bg-stone-800">
-        <label className="min-w-[200px] flex-1 text-sm font-medium text-stone-700 dark:text-stone-200">
-          Search by name
-          <input
-            type="search"
-            value={nameQuery}
-            onChange={(e) => setNameQuery(e.target.value)}
-            placeholder="Student name"
-            className={inputClass}
-          />
-        </label>
+      {/* Filter Toolbar Card */}
+      <AdminCard className="p-5 sm:p-6">
+        <div className="flex flex-wrap items-end gap-4">
+          <div className="min-w-[220px] flex-1">
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+              Search By Name
+              <div className="relative mt-1.5">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400" />
+                <input
+                  type="search"
+                  value={nameQuery}
+                  onChange={(e) => setNameQuery(e.target.value)}
+                  placeholder="Search student name…"
+                  className={`${inputClass} !mt-0 pl-10`}
+                />
+              </div>
+            </label>
+          </div>
 
-        <label className="text-sm font-medium text-stone-700 dark:text-stone-200">
-          Class
-          <select
-            value={classFilter}
-            onChange={(e) => setClassFilter(e.target.value)}
-            className={inputClass}
-          >
-            <option value="">All classes</option>
-            {STUDENT_CLASSES.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-        </label>
+          <div className="min-w-[140px]">
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+              Grade / Class
+              <select
+                value={classFilter}
+                onChange={(e) => setClassFilter(e.target.value)}
+                className={inputClass}
+              >
+                <option value="">All Classes</option>
+                {STUDENT_CLASSES.map((c) => (
+                  <option key={c} value={c}>
+                    Class {c}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
 
-        <label className="text-sm font-medium text-stone-700 dark:text-stone-200">
-          Student type
-          <select
-            value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value as StudentType | "")}
-            className={inputClass}
-          >
-            <option value="">All types</option>
-            {STUDENT_TYPES.map((t) => (
-              <option key={t} value={t}>
-                {STUDENT_TYPE_LABELS[t]}
-              </option>
-            ))}
-          </select>
-        </label>
+          <div className="min-w-[140px]">
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+              Batch Type
+              <select
+                value={typeFilter}
+                onChange={(e) => setTypeFilter(e.target.value as StudentType | "")}
+                className={inputClass}
+              >
+                <option value="">All Types</option>
+                {STUDENT_TYPES.map((t) => (
+                  <option key={t} value={t}>
+                    {STUDENT_TYPE_LABELS[t]}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
 
-        <div className="flex items-center gap-3 pb-0.5">
-          <span className="text-sm text-stone-500 dark:text-stone-400">
-            Showing {visible.length} of {students.length}
-          </span>
-          {filtersOn && (
-            <button
-              type="button"
-              onClick={() => {
-                setNameQuery("");
-                setClassFilter("");
-                setTypeFilter("");
-              }}
-              className="rounded-full border border-stone-300 px-3 py-1.5 text-xs font-semibold text-stone-700 transition-colors hover:border-stone-500 hover:text-stone-900 dark:border-stone-600 dark:text-stone-200 dark:hover:border-stone-400 dark:hover:text-white"
-            >
-              Clear filters
-            </button>
-          )}
+          <div className="flex items-center gap-2 pt-2 sm:pt-0">
+            <span className="text-xs font-semibold text-stone-500 dark:text-stone-400">
+              Showing {visible.length} of {students.length}
+            </span>
+            {filtersOn && (
+              <AdminButton
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setNameQuery("");
+                  setClassFilter("");
+                  setTypeFilter("");
+                }}
+              >
+                Reset
+              </AdminButton>
+            )}
+          </div>
         </div>
-      </div>
+      </AdminCard>
 
-      <div className="overflow-x-auto rounded-2xl border border-stone-200/70 bg-white shadow-sm dark:border-stone-800 dark:bg-stone-800">
-        <table className="w-full min-w-[1240px] text-left text-sm">
-          <thead className="border-b border-stone-200/70 text-xs uppercase tracking-wider text-stone-500 dark:border-stone-700 dark:text-stone-400">
+      {/* Student Roster Table */}
+      <AdminTableContainer
+        header={
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-extrabold uppercase tracking-wider text-stone-900 dark:text-yellow-400">
+              Student Directory ({visible.length})
+            </h2>
+          </div>
+        }
+      >
+        <table className={tableClasses.table}>
+          <thead className={tableClasses.thead}>
             <tr>
-              <th className="px-4 py-3">Name</th>
-              <th className="px-4 py-3">Type</th>
-              <th className="px-4 py-3">Class</th>
-              <th className="px-4 py-3">School</th>
-              <th className="px-4 py-3">Location</th>
-              <th className="px-4 py-3">Email</th>
-              <th className="px-4 py-3">Phone</th>
-              <th className="px-4 py-3">Parent Email</th>
-              <th className="px-4 py-3">Parent Phone</th>
-              <th className="px-4 py-3 text-right">Actions</th>
+              <th className={tableClasses.th}>Student Name</th>
+              <th className={tableClasses.th}>Batch</th>
+              <th className={tableClasses.th}>Grade</th>
+              <th className={tableClasses.th}>School</th>
+              <th className={tableClasses.th}>Location</th>
+              <th className={tableClasses.th}>Contact Email & Phone</th>
+              <th className={tableClasses.th}>Parent Contact</th>
+              <th className={`${tableClasses.th} text-right`}>Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-stone-100 dark:divide-stone-700">
+          <tbody className={tableClasses.tbody}>
             {visible.length ? (
               visible.map((s) => (
-                <tr key={s.id}>
-                  <td className="px-4 py-3 font-medium text-stone-800 dark:text-stone-200">
-                    {s.name}
+                <tr key={s.id} className={tableClasses.tr}>
+                  <td className={tableClasses.td}>
+                    <p className="font-extrabold text-stone-900 dark:text-white">
+                      {s.name}
+                    </p>
                   </td>
-                  <td className="px-4 py-3">
-                    <TypeBadge type={s.type} />
+                  <td className={tableClasses.td}>
+                    <AdminBadge variant={s.type === "new_student" ? "yellow" : "dark"}>
+                      {STUDENT_TYPE_LABELS[s.type]}
+                    </AdminBadge>
                   </td>
-                  <td className="px-4 py-3 text-stone-600 dark:text-stone-400">
-                    {s.class || "—"}
+                  <td className={tableClasses.td}>
+                    <span className="font-bold text-xs text-stone-700 dark:text-stone-300">
+                      {s.class || "—"}
+                    </span>
                   </td>
-                  <td className="px-4 py-3 text-stone-600 dark:text-stone-400">
-                    {s.school || "—"}
+                  <td className={tableClasses.td}>
+                    <span className="text-xs text-stone-600 dark:text-stone-300">
+                      {s.school || "—"}
+                    </span>
                   </td>
-                  <td className="px-4 py-3 text-stone-600 dark:text-stone-400">
-                    {s.location ?? "—"}
+                  <td className={tableClasses.td}>
+                    <span className="text-xs text-stone-500 dark:text-stone-400">
+                      {s.location ?? "—"}
+                    </span>
                   </td>
-                  <td className="px-4 py-3 text-stone-600 dark:text-stone-400">
-                    {s.email}
+                  <td className={tableClasses.td}>
+                    <p className="text-xs font-semibold text-stone-800 dark:text-stone-200">
+                      {s.email}
+                    </p>
+                    <p className="text-[11px] text-stone-500 dark:text-stone-400">
+                      {s.phone}
+                    </p>
                   </td>
-                  <td className="px-4 py-3 text-stone-600 dark:text-stone-400">
-                    {s.phone}
+                  <td className={tableClasses.td}>
+                    <p className="text-xs text-stone-700 dark:text-stone-300">
+                      {s.parent_phone || s.parent_email || "—"}
+                    </p>
                   </td>
-                  <td className="px-4 py-3 text-stone-600 dark:text-stone-400">
-                    {s.parent_email ?? "—"}
-                  </td>
-                  <td className="px-4 py-3 text-stone-600 dark:text-stone-400">
-                    {s.parent_phone ?? "—"}
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center justify-end gap-1.5">
+                  <td className={`${tableClasses.td} text-right`}>
+                    <div className="flex items-center justify-end gap-2">
                       <RowResetPassword email={s.email} name={s.name} />
                       <button
                         type="button"
                         onClick={() => setPendingDelete(s)}
                         aria-label={`Remove ${s.name}`}
-                        className="rounded-lg p-1.5 text-stone-400 hover:bg-yellow-50 hover:text-yellow-700 dark:hover:bg-yellow-900/30"
+                        className="rounded-xl p-2 text-stone-400 hover:bg-red-500/10 hover:text-red-600 transition-colors"
                       >
                         <X className="h-4 w-4" />
                       </button>
@@ -431,58 +537,66 @@ export default function StudentManager({ students }: { students: Student[] }) {
             ) : (
               <tr>
                 <td
-                  colSpan={10}
-                  className="px-4 py-10 text-center text-stone-500 dark:text-stone-400"
+                  colSpan={8}
+                  className="py-14 text-center text-stone-500 dark:text-stone-400"
                 >
-                  <Users className="mx-auto h-6 w-6 opacity-50" />
-                  <p className="mt-2">
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-stone-100 dark:bg-stone-800 text-stone-400">
+                    <Users className="h-6 w-6" />
+                  </div>
+                  <p className="mt-3 text-sm font-bold text-stone-800 dark:text-stone-200">
                     {filtersOn
-                      ? "No students match these filters."
-                      : "No students yet. Add one above."}
+                      ? "No students match the current filters"
+                      : "No students currently in the directory"}
+                  </p>
+                  <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
+                    Add a student or import via Excel above.
                   </p>
                 </td>
               </tr>
             )}
           </tbody>
         </table>
-      </div>
+      </AdminTableContainer>
 
+      {/* Delete Confirmation Modal */}
       {pendingDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div
-            className="absolute inset-0 bg-stone-900/50 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm"
             onClick={() => setPendingDelete(null)}
           />
-          <div className="relative w-full max-w-sm rounded-2xl border border-stone-200/70 bg-white p-6 shadow-xl dark:border-stone-800 dark:bg-stone-800">
-            <h3 className="font-semibold text-stone-900 dark:text-white">
-              Delete student?
+          <div className="relative w-full max-w-sm rounded-[28px] border border-stone-200/90 bg-white p-6 shadow-2xl dark:border-stone-800 dark:bg-[#14151b]">
+            <h3 className="text-lg font-extrabold text-stone-900 dark:text-white">
+              Delete Student?
             </h3>
-            <p className="mt-2 text-sm text-stone-600 dark:text-stone-400">
+            <p className="mt-2 text-xs text-stone-600 dark:text-stone-300 leading-relaxed">
               This will permanently remove{" "}
-              <span className="font-semibold text-stone-800 dark:text-stone-200">
+              <strong className="text-stone-900 dark:text-white">
                 {pendingDelete.name}
-              </span>{" "}
-              from the roster.
+              </strong>{" "}
+              from the active roster and revoke portal access.
             </p>
-            <div className="mt-5 flex justify-end gap-3">
-              <button
+            <div className="mt-6 flex justify-end gap-2.5">
+              <AdminButton
                 type="button"
+                variant="outline"
+                size="sm"
                 onClick={() => setPendingDelete(null)}
-                className="rounded-full border border-stone-300 px-4 py-2.5 text-sm font-semibold text-stone-700 transition-colors hover:border-stone-500 hover:text-stone-900 dark:border-stone-600 dark:text-stone-200 dark:hover:border-stone-400 dark:hover:text-white"
               >
                 Cancel
-              </button>
+              </AdminButton>
               <form
                 action={deleteStudent}
                 onSubmit={() => setPendingDelete(null)}
               >
                 <input type="hidden" name="id" value={pendingDelete.id} />
-                <button
+                <AdminButton
                   type="submit"
-                  className="rounded-full bg-yellow-400 px-4 py-2.5 text-sm font-semibold text-stone-900 shadow-md shadow-yellow-500/20 transition-transform hover:scale-[1.02] hover:bg-yellow-300"
+                  variant="danger"
+                  size="sm"
                 >
-                  Delete
-                </button>
+                  Delete Student
+                </AdminButton>
               </form>
             </div>
           </div>

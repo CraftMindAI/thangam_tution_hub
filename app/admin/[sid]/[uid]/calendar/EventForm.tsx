@@ -15,11 +15,12 @@ import {
   type SendTo,
 } from "@/app/lib/calendar";
 import { STUDENT_CLASSES } from "@/app/lib/students";
-import { ArrowRight } from "@/app/components/icons";
+import { ArrowRight, CalendarClock } from "@/app/components/icons";
 import { adminBase } from "../_lib/nav";
+import { AdminButton } from "../_components/ui";
 
 const inputClass =
-  "mt-1.5 w-full rounded-lg border border-stone-300 bg-stone-50 px-3.5 py-2.5 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-stone-500 focus:ring-2 focus:ring-stone-500/20 dark:border-stone-700 dark:bg-stone-900 dark:text-white";
+  "mt-1.5 w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-2.5 text-xs font-semibold text-stone-900 outline-none placeholder:text-stone-400 focus:border-yellow-400 focus:bg-white dark:border-stone-800 dark:bg-stone-900 dark:text-white dark:focus:border-yellow-400 transition-colors";
 
 export type EditableEvent = {
   id: string;
@@ -51,14 +52,9 @@ type Props = (
   | { mode: "create"; defaultDate: string; defaultTime: string }
   | { mode: "edit"; event: EditableEvent }
 ) & {
-  /** Students who have raised an enquiry — offered when type is "inquiry". */
   enquiryStudents: EnquiryOption[];
-  /** All offline students — shown when send_to is "selected". */
   allStudents: StudentOption[];
-  /** Pre-selected student IDs (edit mode with send_to = 'selected'). */
   defaultSelectedStudentIds?: string[];
-  /** When set, the form is shown inside a modal: on success it calls this
-   *  and refreshes instead of navigating to the calendar page. */
   onDone?: () => void;
 };
 
@@ -136,17 +132,31 @@ export default function EventForm(props: Props) {
   return (
     <form
       action={formAction}
-      className="rounded-2xl border border-stone-200/70 bg-white p-6 shadow-sm dark:border-stone-800 dark:bg-stone-800"
+      className="rounded-[28px] border border-stone-200/90 bg-white p-6 sm:p-8 shadow-2xl dark:border-stone-800/80 dark:bg-[#14151b]"
     >
       {!inModal && (
         <Link
           href={`${base}/calendar`}
-          className="mb-4 inline-flex items-center gap-1.5 text-sm font-semibold text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white"
+          className="mb-5 inline-flex items-center gap-1.5 text-xs font-bold text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white"
         >
           <ArrowRight className="h-4 w-4 rotate-180" />
           Back to calendar
         </Link>
       )}
+
+      <div className="flex items-center gap-3 mb-6">
+        <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-yellow-400 text-stone-950 shadow-md">
+          <CalendarClock className="h-6 w-6" />
+        </span>
+        <div>
+          <h2 className="text-xl font-extrabold tracking-tight text-stone-900 dark:text-white">
+            {isEdit ? "Edit Scheduled Meeting" : "Schedule New Session"}
+          </h2>
+          <p className="text-xs text-stone-500 dark:text-stone-400">
+            Configure meeting parameters and student invitations.
+          </p>
+        </div>
+      </div>
 
       {isEdit && <input type="hidden" name="id" value={ev!.id} />}
       <input type="hidden" name="send_to" value={sendTo} />
@@ -161,312 +171,298 @@ export default function EventForm(props: Props) {
         ))}
 
       {state && "error" in state && (
-        <p className="mb-4 rounded-lg bg-yellow-50 px-3 py-2 text-sm text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
+        <div className="mb-5 rounded-2xl bg-yellow-400/20 p-3.5 text-xs font-bold text-yellow-800 dark:text-yellow-300 border border-yellow-400/40">
           {state.error}
-        </p>
+        </div>
       )}
 
-      <label className="text-sm font-medium text-stone-700 dark:text-stone-200">
-        Meeting title
-        <input
-          name="title"
-          required
-          defaultValue={ev?.title ?? ""}
-          placeholder="e.g. Class 8 daily session"
-          className={inputClass}
-        />
-      </label>
-
-      <label className="mt-4 block text-sm font-medium text-stone-700 dark:text-stone-200">
-        Description
-        <textarea
-          name="description"
-          rows={3}
-          defaultValue={ev?.description ?? ""}
-          placeholder="Agenda, what to prepare, etc."
-          className={inputClass}
-        />
-      </label>
-
-      <div className="mt-4 grid gap-4 sm:grid-cols-2">
-        <label className="text-sm font-medium text-stone-700 dark:text-stone-200">
-          Meeting type
-          <select
-            name="meeting_type"
-            required
-            value={meetingType}
-            onChange={(e) => setMeetingType(e.target.value as MeetingType)}
-            className={inputClass}
-          >
-            {MEETING_TYPES.map((t) => (
-              <option key={t} value={t}>
-                {MEETING_TYPE_LABELS[t]}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="text-sm font-medium text-stone-700 dark:text-stone-200">
-          Class
-          <select
-            name="class_filter"
-            defaultValue={ev?.class_filter ?? ""}
-            disabled={isInquiry}
-            className={`${inputClass} disabled:opacity-50`}
-          >
-            <option value="">All classes</option>
-            {STUDENT_CLASSES.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-          <span className="mt-1 block text-xs font-normal text-stone-500 dark:text-stone-400">
-            {isInquiry
-              ? "Not used for an inquiry — only the chosen student is invited."
-              : "Students with registered emails in this class will be invited."}
-          </span>
-        </label>
-        <label className="text-sm font-medium text-stone-700 dark:text-stone-200">
-          Date
+      <div className="space-y-4">
+        <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+          Meeting Title
           <input
-            name="date"
-            type="date"
+            name="title"
             required
-            defaultValue={defaultDate}
-            className={inputClass}
-          />
-        </label>
-        <label className="text-sm font-medium text-stone-700 dark:text-stone-200">
-          Time
-          <input
-            name="time"
-            type="time"
-            required
-            defaultValue={defaultTime}
-            className={inputClass}
-          />
-        </label>
-        <label className="text-sm font-medium text-stone-700 dark:text-stone-200">
-          Duration (minutes)
-          <input
-            name="duration_minutes"
-            type="number"
-            min={5}
-            max={600}
-            required
-            defaultValue={ev?.duration_minutes ?? 30}
+            defaultValue={ev?.title ?? ""}
+            placeholder="e.g. Class 8 Mathematics & Science Session"
             className={inputClass}
           />
         </label>
 
-        {isInquiry && (
-          <label className="text-sm font-medium text-stone-700 dark:text-stone-200">
-            Student
+        <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+          Session Description & Agenda
+          <textarea
+            name="description"
+            rows={3}
+            defaultValue={ev?.description ?? ""}
+            placeholder="Topics to cover, practice worksheets, etc."
+            className={inputClass}
+          />
+        </label>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+            Meeting Type
             <select
-              name="enquiry_user_id"
+              name="meeting_type"
               required
-              defaultValue={ev?.enquiry_user_id ?? ""}
+              value={meetingType}
+              onChange={(e) => setMeetingType(e.target.value as MeetingType)}
               className={inputClass}
             >
-              <option value="" disabled>
-                {props.enquiryStudents.length
-                  ? "Select a student"
-                  : "No enquiries yet"}
-              </option>
-              {props.enquiryStudents.map((s) => (
-                <option key={s.userId} value={s.userId}>
-                  {s.name} — {s.latestTitle}
+              {MEETING_TYPES.map((t) => (
+                <option key={t} value={t}>
+                  {MEETING_TYPE_LABELS[t]}
                 </option>
               ))}
             </select>
-            <span className="mt-1 block text-xs font-normal text-stone-500 dark:text-stone-400">
-              Students who have raised an enquiry. Only this student is invited.
+          </label>
+
+          <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+            Target Class
+            <select
+              name="class_filter"
+              defaultValue={ev?.class_filter ?? ""}
+              disabled={isInquiry}
+              className={`${inputClass} disabled:opacity-50`}
+            >
+              <option value="">All Classes</option>
+              {STUDENT_CLASSES.map((c) => (
+                <option key={c} value={c}>
+                  Class {c}
+                </option>
+              ))}
+            </select>
+            <span className="mt-1 block text-[11px] font-normal text-stone-400">
+              {isInquiry
+                ? "Not applicable for inquiry sessions."
+                : "Students with emails in this class will be invited."}
             </span>
           </label>
-        )}
-      </div>
 
-      {/* Send invite to — selector */}
-      {!isInquiry && (
-        <div className="mt-4 rounded-xl border border-stone-200/70 bg-stone-50 p-4 dark:border-slate-700 dark:bg-slate-900/40">
-          <p className="text-sm font-medium text-slate-700 dark:text-slate-200">
-            Send invite to
-          </p>
-          <p className="mt-0.5 text-xs text-slate-400">
-            Meeting link email will also be sent to admin.
-          </p>
-          <div className="mt-3 flex flex-wrap gap-4">
-            {(["all", "selected"] as const).map((opt) => (
-              <label
-                key={opt}
-                className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200"
-              >
-                <input
-                  type="radio"
-                  checked={sendTo === opt}
-                  onChange={() => setSendTo(opt)}
-                  className="h-4 w-4 accent-slate-800 dark:accent-teal-500"
-                />
-                {SEND_TO_LABELS[opt]}
-              </label>
-            ))}
-          </div>
-
-          {sendTo === "selected" && (
-            <div className="mt-3">
-              <div className="flex items-center gap-2">
-                <input
-                  type="text"
-                  value={studentSearch}
-                  onChange={(e) => setStudentSearch(e.target.value)}
-                  placeholder="Search students…"
-                  className={`${inputClass} !mt-0`}
-                />
-                <button
-                  type="button"
-                  onClick={selectAll}
-                  className="shrink-0 rounded-lg border border-slate-300 px-2.5 py-2 text-xs font-semibold text-slate-600 hover:border-slate-500 hover:text-slate-900 dark:border-slate-600 dark:text-slate-300 dark:hover:text-white"
-                >
-                  All
-                </button>
-                <button
-                  type="button"
-                  onClick={deselectAll}
-                  className="shrink-0 rounded-lg border border-slate-300 px-2.5 py-2 text-xs font-semibold text-slate-600 hover:border-slate-500 hover:text-slate-900 dark:border-slate-600 dark:text-slate-300 dark:hover:text-white"
-                >
-                  None
-                </button>
-              </div>
-              <p className="mt-1.5 text-xs text-slate-400">
-                {selectedIds.size} of {props.allStudents.length} selected
-              </p>
-              <div className="mt-2 max-h-48 space-y-1 overflow-y-auto rounded-lg border border-stone-200/70 bg-white p-2 dark:border-slate-700 dark:bg-slate-900">
-                {filteredStudents.length === 0 && (
-                  <p className="px-2 py-3 text-center text-xs text-slate-400">
-                    No students found.
-                  </p>
-                )}
-                {filteredStudents.map((s) => (
-                  <label
-                    key={s.userId}
-                    className="flex cursor-pointer items-center gap-2.5 rounded-md px-2 py-1.5 text-sm text-slate-700 transition-colors hover:bg-stone-50 dark:text-slate-200 dark:hover:bg-slate-800"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selectedIds.has(s.userId)}
-                      onChange={() => toggleStudent(s.userId)}
-                      className="h-4 w-4 shrink-0 accent-slate-800 dark:accent-teal-500"
-                    />
-                    <span className="truncate">{s.name}</span>
-                    <div className="ml-auto flex shrink-0 items-center gap-1.5">
-                      {s.type && (
-                        <span
-                          className={`rounded px-1.5 py-0.5 text-[10px] font-semibold ${
-                            s.type === "new_student"
-                              ? "bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300"
-                              : "bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300"
-                          }`}
-                        >
-                          {s.type === "new_student" ? "Online" : "Offline"}
-                        </span>
-                      )}
-                      {s.class && (
-                        <span className="rounded bg-stone-100 px-1.5 py-0.5 text-[10px] font-semibold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
-                          Class {s.class}
-                        </span>
-                      )}
-                    </div>
-                  </label>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {props.mode === "create" && (
-        <div className="mt-4 rounded-xl border border-stone-200/70 bg-stone-50 p-4 dark:border-stone-700 dark:bg-stone-900/40">
-          <p className="text-sm font-medium text-stone-700 dark:text-stone-200">
-            Repeat
-          </p>
-          <p className="mt-0.5 text-xs text-stone-400">
-            Creates a separate meeting for each day — cancel or edit one without
-            touching the others.
-          </p>
-          <div className="mt-3 flex flex-wrap gap-4">
-            <label className="flex items-center gap-2 text-sm text-stone-700 dark:text-stone-200">
-              <input
-                name="repeat_weekdays"
-                type="checkbox"
-                className="h-4 w-4 accent-stone-800 dark:accent-yellow-500"
-              />
-              Weekdays (Mon–Fri)
-            </label>
-            <label className="flex items-center gap-2 text-sm text-stone-700 dark:text-stone-200">
-              <input
-                name="repeat_weekends"
-                type="checkbox"
-                className="h-4 w-4 accent-stone-800 dark:accent-yellow-500"
-              />
-              Weekends (Sat–Sun)
-            </label>
-          </div>
-          <label className="mt-3 block text-sm font-medium text-stone-700 dark:text-stone-200">
-            Repeat until
+          <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+            Session Date
             <input
-              name="repeat_until"
+              name="date"
               type="date"
+              required
+              defaultValue={defaultDate}
               className={inputClass}
             />
-            <span className="mt-1 block text-xs text-stone-400">
-              Optional. Defaults to 4 weeks when a repeat option is selected.
-            </span>
           </label>
+
+          <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+            Start Time
+            <input
+              name="time"
+              type="time"
+              required
+              defaultValue={defaultTime}
+              className={inputClass}
+            />
+          </label>
+
+          <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 sm:col-span-2">
+            Duration (Minutes)
+            <input
+              name="duration_minutes"
+              type="number"
+              min={5}
+              max={600}
+              required
+              defaultValue={ev?.duration_minutes ?? 30}
+              className={inputClass}
+            />
+          </label>
+
+          {isInquiry && (
+            <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 sm:col-span-2">
+              Select Enquiry Student
+              <select
+                name="enquiry_user_id"
+                required
+                defaultValue={ev?.enquiry_user_id ?? ""}
+                className={inputClass}
+              >
+                <option value="" disabled>
+                  {props.enquiryStudents.length
+                    ? "Select a student enquiry"
+                    : "No enquiries available"}
+                </option>
+                {props.enquiryStudents.map((s) => (
+                  <option key={s.userId} value={s.userId}>
+                    {s.name} — {s.latestTitle}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
         </div>
-      )}
 
-      <label className="mt-4 block text-sm font-medium text-stone-700 dark:text-stone-200">
-        Attachment
-        <input
-          name="attachment"
-          type="file"
-          className="mt-1.5 block w-full text-sm text-stone-600 file:mr-3 file:rounded-full file:border-0 file:bg-stone-800 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-stone-700 dark:text-stone-400"
-        />
-        <span className="mt-1 block text-xs text-stone-400">
-          {ev?.attachment_name
-            ? `Current: ${ev.attachment_name}. Choose a file to replace it.`
-            : "Optional. Sent with the invite email (max 10 MB)."}
-        </span>
-      </label>
+        {/* Send Invites Selector */}
+        {!isInquiry && (
+          <div className="rounded-2xl border border-stone-200/80 bg-stone-50/60 p-4 dark:border-stone-800 dark:bg-stone-900/40">
+            <p className="text-xs font-bold uppercase tracking-wider text-stone-800 dark:text-stone-200">
+              Send Invites To
+            </p>
+            <div className="mt-3 flex flex-wrap gap-4">
+              {(["all", "selected"] as const).map((opt) => (
+                <label
+                  key={opt}
+                  className="flex items-center gap-2 text-xs font-bold text-stone-700 dark:text-stone-300 cursor-pointer"
+                >
+                  <input
+                    type="radio"
+                    checked={sendTo === opt}
+                    onChange={() => setSendTo(opt)}
+                    className="h-4 w-4 accent-yellow-400"
+                  />
+                  {SEND_TO_LABELS[opt]}
+                </label>
+              ))}
+            </div>
 
-      <div className="mt-6 flex gap-3">
-        <button
-          type="submit"
-          disabled={pending}
-          className="rounded-full bg-gradient-to-r from-stone-700 to-stone-900 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-stone-900/20 transition-transform hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
-        >
-          {pending
-            ? "Saving…"
-            : isEdit
-              ? "Save & notify students"
-              : "Schedule & send invites"}
-        </button>
+            {sendTo === "selected" && (
+              <div className="mt-3 space-y-2">
+                <div className="flex items-center gap-2">
+                  <div className="relative flex-1">
+                    <input
+                      type="text"
+                      value={studentSearch}
+                      onChange={(e) => setStudentSearch(e.target.value)}
+                      placeholder="Search students by name or class…"
+                      className={`${inputClass} !mt-0`}
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={selectAll}
+                    className="shrink-0 rounded-xl border border-stone-200 bg-white px-3 py-2 text-xs font-bold text-stone-700 hover:bg-stone-50 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-200"
+                  >
+                    Select All
+                  </button>
+                  <button
+                    type="button"
+                    onClick={deselectAll}
+                    className="shrink-0 rounded-xl border border-stone-200 bg-white px-3 py-2 text-xs font-bold text-stone-700 hover:bg-stone-50 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-200"
+                  >
+                    Clear
+                  </button>
+                </div>
+
+                <p className="text-[11px] font-semibold text-stone-400">
+                  {selectedIds.size} of {props.allStudents.length} students selected
+                </p>
+
+                <div className="max-h-44 space-y-1 overflow-y-auto rounded-2xl border border-stone-200/80 bg-white p-2 dark:border-stone-800 dark:bg-stone-900/80 no-scrollbar">
+                  {filteredStudents.length === 0 ? (
+                    <p className="p-3 text-center text-xs text-stone-400">
+                      No matching students found
+                    </p>
+                  ) : (
+                    filteredStudents.map((s) => (
+                      <label
+                        key={s.userId}
+                        className="flex cursor-pointer items-center justify-between gap-3 rounded-xl p-2 hover:bg-stone-50 dark:hover:bg-stone-800/60 transition-colors"
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <input
+                            type="checkbox"
+                            checked={selectedIds.has(s.userId)}
+                            onChange={() => toggleStudent(s.userId)}
+                            className="h-4 w-4 accent-yellow-400 rounded shrink-0"
+                          />
+                          <span className="text-xs font-semibold text-stone-800 dark:text-stone-200 truncate">
+                            {s.name}
+                          </span>
+                        </div>
+                        <span className="rounded-md bg-stone-100 px-2 py-0.5 text-[10px] font-bold text-stone-600 dark:bg-stone-800 dark:text-stone-300 shrink-0">
+                          Class {s.class}
+                        </span>
+                      </label>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Repeat schedule options (create mode) */}
+        {props.mode === "create" && (
+          <div className="rounded-2xl border border-stone-200/80 bg-stone-50/60 p-4 dark:border-stone-800 dark:bg-stone-900/40 space-y-3">
+            <p className="text-xs font-bold uppercase tracking-wider text-stone-800 dark:text-stone-200">
+              Recurring Schedule
+            </p>
+            <div className="flex flex-wrap gap-4">
+              <label className="flex items-center gap-2 text-xs font-semibold text-stone-700 dark:text-stone-300 cursor-pointer">
+                <input
+                  name="repeat_weekdays"
+                  type="checkbox"
+                  className="h-4 w-4 accent-yellow-400"
+                />
+                Weekdays (Mon–Fri)
+              </label>
+              <label className="flex items-center gap-2 text-xs font-semibold text-stone-700 dark:text-stone-300 cursor-pointer">
+                <input
+                  name="repeat_weekends"
+                  type="checkbox"
+                  className="h-4 w-4 accent-yellow-400"
+                />
+                Weekends (Sat–Sun)
+              </label>
+            </div>
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+                Repeat Until
+                <input
+                  name="repeat_until"
+                  type="date"
+                  className={inputClass}
+                />
+              </label>
+            </div>
+          </div>
+        )}
+
+        {/* Attachments */}
+        <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+          Session Resource Material (PDF / Homework)
+          <input
+            name="attachment"
+            type="file"
+            className="mt-1.5 block w-full text-xs text-stone-600 file:mr-3 file:rounded-full file:border-0 file:bg-yellow-400 file:px-4 file:py-2 file:text-xs file:font-bold file:text-stone-950 hover:file:bg-yellow-300 dark:text-stone-400 cursor-pointer"
+          />
+          <span className="mt-1 block text-[11px] font-normal text-stone-400">
+            {ev?.attachment_name
+              ? `Current file: ${ev.attachment_name}`
+              : "Optional attachment (max 10 MB)."}
+          </span>
+        </label>
+      </div>
+
+      <div className="mt-8 flex items-center justify-end gap-3 pt-4 border-t border-stone-100 dark:border-stone-800">
         {inModal ? (
-          <button
+          <AdminButton
             type="button"
+            variant="outline"
             onClick={props.onDone}
-            className="rounded-full border border-stone-300 px-4 py-2.5 text-sm font-semibold text-stone-700 transition-colors hover:border-stone-500 hover:text-stone-900 dark:border-stone-600 dark:text-stone-200 dark:hover:border-stone-400 dark:hover:text-white"
           >
             Cancel
-          </button>
+          </AdminButton>
         ) : (
-          <Link
-            href={`${base}/calendar`}
-            className="rounded-full border border-stone-300 px-4 py-2.5 text-sm font-semibold text-stone-700 transition-colors hover:border-stone-500 hover:text-stone-900 dark:border-stone-600 dark:text-stone-200 dark:hover:border-stone-400 dark:hover:text-white"
-          >
-            Cancel
+          <Link href={`${base}/calendar`}>
+            <AdminButton type="button" variant="outline">
+              Cancel
+            </AdminButton>
           </Link>
         )}
+
+        <AdminButton
+          type="submit"
+          loading={pending}
+        >
+          {isEdit ? "Save Changes & Notify" : "Schedule & Send Invites"}
+        </AdminButton>
       </div>
     </form>
   );

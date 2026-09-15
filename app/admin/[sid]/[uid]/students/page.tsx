@@ -1,5 +1,7 @@
 import { getRoster } from "@/app/lib/roster";
+import { Users, BookOpen, Inbox, GraduationCap } from "@/app/components/icons";
 import StudentManager, { type Student } from "./StudentManager";
+import { AdminPageHeader, AdminStatCard } from "../_components/ui";
 
 export default async function StudentManagementPage() {
   const roster = await getRoster();
@@ -17,38 +19,49 @@ export default async function StudentManagementPage() {
     parent_phone: s.parent_phone,
   }));
 
-  const stats = [
-    { label: "Total Students", value: students.length },
-    {
-      label: "Online Students",
-      value: students.filter((s) => s.type === "new_student").length,
-    },
-    {
-      label: "Offline Students",
-      value: students.filter((s) => s.type === "existing_student").length,
-    },
-    {
-      label: "Classes",
-      value: new Set(students.map((s) => s.class).filter(Boolean)).size,
-    },
-  ];
+  const onlineCount = students.filter((s) => s.type === "new_student").length;
+  const offlineCount = students.filter((s) => s.type === "existing_student").length;
+  const classCount = new Set(students.map((s) => s.class).filter(Boolean)).size;
 
   return (
-    <div className="space-y-6">
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {stats.map((s) => (
-          <div
-            key={s.label}
-            className="rounded-2xl border border-stone-200/70 bg-white p-4 shadow-sm dark:border-stone-800 dark:bg-stone-800"
-          >
-            <p className="text-2xl font-bold text-stone-900 dark:text-white">
-              {s.value}
-            </p>
-            <p className="text-sm text-stone-600 dark:text-stone-400">
-              {s.label}
-            </p>
-          </div>
-        ))}
+    <div className="space-y-8">
+      <AdminPageHeader
+        title="Student Management"
+        subtitle="Roster database, student registrations, batch allocations, and credential resets."
+      />
+
+      {/* Stat Cards Grid */}
+      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+        <AdminStatCard
+          label="Total Students"
+          value={students.length}
+          subtitle="Enrolled student accounts"
+          icon={Users}
+          variant="yellow"
+          trend="Active Roster"
+          miniChart={[45, 60, 55, 80, 70, 90, 100]}
+        />
+        <AdminStatCard
+          label="Offline Students"
+          value={offlineCount}
+          subtitle="In-person classroom attendees"
+          icon={BookOpen}
+          miniChart={[50, 65, 45, 75, 60, 85, 80]}
+        />
+        <AdminStatCard
+          label="Online Students"
+          value={onlineCount}
+          subtitle="Remote live stream participants"
+          icon={Inbox}
+          miniChart={[25, 40, 60, 50, 75, 65, 90]}
+        />
+        <AdminStatCard
+          label="Active Grades"
+          value={classCount}
+          subtitle="Distinct class levels configured"
+          icon={GraduationCap}
+          miniChart={[30, 45, 60, 70, 50, 80, 75]}
+        />
       </div>
 
       <StudentManager students={students} />

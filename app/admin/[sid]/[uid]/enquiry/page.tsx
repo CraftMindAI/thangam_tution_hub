@@ -1,5 +1,11 @@
 import { createAdminClient } from "@/app/lib/supabase/admin";
 import { Inbox } from "@/app/components/icons";
+import {
+  AdminPageHeader,
+  AdminTableContainer,
+  AdminBadge,
+  tableClasses,
+} from "../_components/ui";
 
 function formatDateTime(iso: string) {
   return new Date(iso).toLocaleString("en-IN", {
@@ -39,64 +45,97 @@ export default async function EnquiryPage() {
   );
 
   return (
-    <div className="space-y-4">
-      <p className="text-sm text-stone-600 dark:text-stone-400">
-        Enquiries submitted by students from their portal, newest first.
-      </p>
+    <div className="space-y-8">
+      <AdminPageHeader
+        title="Student Enquiries"
+        subtitle="Review questions, requests, and support tickets submitted by students."
+      />
 
-      <div className="overflow-x-auto rounded-2xl border border-stone-200/70 bg-white shadow-sm dark:border-stone-800 dark:bg-stone-800">
-        <table className="w-full min-w-[860px] text-left text-sm">
-          <thead className="border-b border-stone-200/70 text-xs uppercase tracking-wider text-stone-500 dark:border-stone-700 dark:text-stone-400">
+      <AdminTableContainer
+        header={
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-extrabold uppercase tracking-wider text-stone-900 dark:text-yellow-400">
+              Submitted Tickets ({enquiries?.length ?? 0})
+            </h2>
+          </div>
+        }
+      >
+        <table className={tableClasses.table}>
+          <thead className={tableClasses.thead}>
             <tr>
-              <th className="px-4 py-3">Student</th>
-              <th className="px-4 py-3">Title</th>
-              <th className="px-4 py-3">Subject</th>
-              <th className="px-4 py-3">Description</th>
-              <th className="px-4 py-3">Submitted</th>
+              <th className={tableClasses.th}>Student Information</th>
+              <th className={tableClasses.th}>Inquiry Topic</th>
+              <th className={tableClasses.th}>Subject</th>
+              <th className={tableClasses.th}>Message Details</th>
+              <th className={`${tableClasses.th} whitespace-nowrap`}>Date Submitted</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-stone-100 dark:divide-stone-700">
+          <tbody className={tableClasses.tbody}>
             {enquiries?.length ? (
-              enquiries.map((e) => (
-                <tr key={e.id}>
-                  <td className="px-4 py-3">
-                    <p className="font-medium text-stone-800 dark:text-stone-200">
-                      {nameById.get(e.user_id) ||
-                        emailById.get(e.user_id) ||
-                        "Student"}
-                    </p>
-                    <p className="text-xs text-stone-500 dark:text-stone-400">
-                      {emailById.get(e.user_id) ?? "—"}
-                    </p>
-                  </td>
-                  <td className="px-4 py-3 font-medium text-stone-800 dark:text-stone-200">
-                    {e.title}
-                  </td>
-                  <td className="px-4 py-3 text-stone-600 dark:text-stone-400">
-                    {e.subject}
-                  </td>
-                  <td className="max-w-md px-4 py-3 text-stone-600 dark:text-stone-400">
-                    {e.description}
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-stone-600 dark:text-stone-400">
-                    {formatDateTime(e.created_at)}
-                  </td>
-                </tr>
-              ))
+              enquiries.map((e) => {
+                const studentName =
+                  nameById.get(e.user_id) ||
+                  emailById.get(e.user_id) ||
+                  "Student";
+                const initial = studentName.charAt(0).toUpperCase();
+
+                return (
+                  <tr key={e.id} className={tableClasses.tr}>
+                    <td className={tableClasses.td}>
+                      <div className="flex items-center gap-3">
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-yellow-400 text-stone-950 font-black text-xs shadow-sm">
+                          {initial}
+                        </span>
+                        <div>
+                          <p className="font-extrabold text-stone-900 dark:text-white">
+                            {studentName}
+                          </p>
+                          <p className="text-[11px] text-stone-500 dark:text-stone-400">
+                            {emailById.get(e.user_id) ?? "—"}
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className={tableClasses.td}>
+                      <span className="font-bold text-stone-800 dark:text-stone-200">
+                        {e.title}
+                      </span>
+                    </td>
+                    <td className={tableClasses.td}>
+                      <AdminBadge variant="yellow">{e.subject}</AdminBadge>
+                    </td>
+                    <td className={`${tableClasses.td} max-w-md`}>
+                      <p className="text-xs text-stone-600 dark:text-stone-300 line-clamp-2 leading-relaxed">
+                        {e.description}
+                      </p>
+                    </td>
+                    <td className={`${tableClasses.td} whitespace-nowrap text-xs text-stone-500 dark:text-stone-400 font-semibold`}>
+                      {formatDateTime(e.created_at)}
+                    </td>
+                  </tr>
+                );
+              })
             ) : (
               <tr>
                 <td
                   colSpan={5}
-                  className="px-4 py-10 text-center text-stone-500 dark:text-stone-400"
+                  className="py-14 text-center text-stone-500 dark:text-stone-400"
                 >
-                  <Inbox className="mx-auto h-6 w-6 opacity-50" />
-                  <p className="mt-2">No enquiries yet.</p>
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-stone-100 dark:bg-stone-800 text-stone-400">
+                    <Inbox className="h-6 w-6" />
+                  </div>
+                  <p className="mt-3 text-sm font-bold text-stone-800 dark:text-stone-200">
+                    No student enquiries found
+                  </p>
+                  <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
+                    Student enquiries submitted from the portal will appear here.
+                  </p>
                 </td>
               </tr>
             )}
           </tbody>
         </table>
-      </div>
+      </AdminTableContainer>
     </div>
   );
 }

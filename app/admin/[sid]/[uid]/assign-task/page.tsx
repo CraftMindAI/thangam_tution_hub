@@ -1,5 +1,5 @@
 import { createClient } from "@/app/lib/supabase/server";
-import { X } from "@/app/components/icons";
+import { X, ClipboardList } from "@/app/components/icons";
 import { deleteTask, setTaskStatus } from "@/app/actions/tasks";
 import {
   TASK_STATUSES,
@@ -8,11 +8,18 @@ import {
   type TaskStatus,
 } from "@/app/lib/tasks";
 import TaskForm from "./TaskForm";
+import {
+  AdminPageHeader,
+  AdminTableContainer,
+  AdminBadge,
+  AdminButton,
+  tableClasses,
+} from "../_components/ui";
 
-const statusStyles: Record<TaskStatus, string> = {
-  pending: "bg-yellow-50 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300",
-  in_progress: "bg-yellow-50 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300",
-  completed: "bg-stone-100 text-stone-600 dark:bg-stone-700 dark:text-stone-300",
+const statusBadgeVariant: Record<TaskStatus, "warning" | "yellow" | "gray"> = {
+  pending: "warning",
+  in_progress: "yellow",
+  completed: "gray",
 };
 
 function formatTime(t: string) {
@@ -52,30 +59,39 @@ export default async function AssignTaskPage() {
   const rows = (tasks ?? []) as Task[];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      <AdminPageHeader
+        title="Task Management"
+        subtitle="Create, assign, and track progress on administrative operational tasks."
+      />
+
       <TaskForm admins={adminOptions} />
 
-      <div className="overflow-x-auto rounded-2xl border border-stone-200/70 bg-white shadow-sm dark:border-stone-800 dark:bg-stone-800">
-        <div className="border-b border-stone-200/70 px-4 py-3 text-sm font-semibold text-stone-700 dark:border-stone-700 dark:text-stone-200">
-          Assigned Tasks
-        </div>
-
+      <AdminTableContainer
+        header={
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-extrabold uppercase tracking-wider text-stone-900 dark:text-yellow-400">
+              Assigned Tasks ({rows.length})
+            </h2>
+          </div>
+        }
+      >
         {rows.length ? (
-          <table className="w-full min-w-[820px] text-left text-sm">
-            <thead className="border-b border-stone-200/70 text-xs uppercase tracking-wider text-stone-500 dark:border-stone-700 dark:text-stone-400">
+          <table className={tableClasses.table}>
+            <thead className={tableClasses.thead}>
               <tr>
-                <th className="px-4 py-3">Task</th>
-                <th className="px-4 py-3">Assigned To</th>
-                <th className="px-4 py-3">Due</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3 text-right">Actions</th>
+                <th className={tableClasses.th}>Task Title & Notes</th>
+                <th className={tableClasses.th}>Assigned Staff</th>
+                <th className={tableClasses.th}>Due Date</th>
+                <th className={tableClasses.th}>Current Status</th>
+                <th className={`${tableClasses.th} text-right`}>Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-stone-100 dark:divide-stone-700">
+            <tbody className={tableClasses.tbody}>
               {rows.map((t) => (
-                <tr key={t.id}>
-                  <td className="px-4 py-3">
-                    <p className="font-medium text-stone-800 dark:text-stone-200">
+                <tr key={t.id} className={tableClasses.tr}>
+                  <td className={tableClasses.td}>
+                    <p className="font-extrabold text-stone-900 dark:text-white">
                       {t.title}
                     </p>
                     {t.notes && (
@@ -84,29 +100,31 @@ export default async function AssignTaskPage() {
                       </p>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-stone-600 dark:text-stone-400">
-                    {nameById.get(t.assigned_to) ?? "—"}
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-stone-600 dark:text-stone-400">
-                    {t.due_date
-                      ? `${formatDate(t.due_date)}${t.due_time ? ` · ${formatTime(t.due_time)}` : ""}`
-                      : "—"}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`inline-flex whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold ${statusStyles[t.status]}`}
-                    >
-                      {TASK_STATUS_LABELS[t.status]}
+                  <td className={tableClasses.td}>
+                    <span className="font-semibold text-stone-800 dark:text-stone-200">
+                      {nameById.get(t.assigned_to) ?? "—"}
                     </span>
                   </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center justify-end gap-1.5">
-                      <form action={setTaskStatus} className="flex items-center">
+                  <td className={`${tableClasses.td} whitespace-nowrap`}>
+                    <span className="text-xs font-semibold text-stone-600 dark:text-stone-300">
+                      {t.due_date
+                        ? `${formatDate(t.due_date)}${t.due_time ? ` · ${formatTime(t.due_time)}` : ""}`
+                        : "No deadline"}
+                    </span>
+                  </td>
+                  <td className={tableClasses.td}>
+                    <AdminBadge variant={statusBadgeVariant[t.status]}>
+                      {TASK_STATUS_LABELS[t.status]}
+                    </AdminBadge>
+                  </td>
+                  <td className={`${tableClasses.td} text-right`}>
+                    <div className="flex items-center justify-end gap-2">
+                      <form action={setTaskStatus} className="flex items-center gap-1.5">
                         <input type="hidden" name="id" value={t.id} />
                         <select
                           name="status"
                           defaultValue={t.status}
-                          className="rounded-lg border border-stone-300 bg-white px-2 py-1.5 text-xs font-semibold text-stone-700 dark:border-stone-600 dark:bg-stone-900 dark:text-stone-200"
+                          className="rounded-xl border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-xs font-bold text-stone-800 outline-none dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200 focus:border-yellow-400"
                         >
                           {TASK_STATUSES.map((s) => (
                             <option key={s} value={s}>
@@ -114,19 +132,21 @@ export default async function AssignTaskPage() {
                             </option>
                           ))}
                         </select>
-                        <button
+                        <AdminButton
                           type="submit"
-                          className="ml-1.5 rounded-full border border-stone-300 px-3 py-1.5 text-xs font-semibold text-stone-700 transition-colors hover:border-stone-500 hover:text-stone-900 dark:border-stone-600 dark:text-stone-200 dark:hover:border-stone-400 dark:hover:text-white"
+                          size="sm"
+                          variant="outline"
                         >
                           Update
-                        </button>
+                        </AdminButton>
                       </form>
+
                       <form action={deleteTask}>
                         <input type="hidden" name="id" value={t.id} />
                         <button
                           type="submit"
                           aria-label={`Delete ${t.title}`}
-                          className="rounded-lg p-1.5 text-stone-400 hover:bg-yellow-50 hover:text-yellow-700 dark:hover:bg-yellow-900/30"
+                          className="rounded-xl p-2 text-stone-400 hover:bg-red-500/10 hover:text-red-600 transition-colors"
                         >
                           <X className="h-4 w-4" />
                         </button>
@@ -138,11 +158,19 @@ export default async function AssignTaskPage() {
             </tbody>
           </table>
         ) : (
-          <p className="px-4 py-6 text-center text-sm text-stone-500 dark:text-stone-400">
-            No tasks yet.
-          </p>
+          <div className="py-12 text-center">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-stone-100 dark:bg-stone-800 text-stone-400">
+              <ClipboardList className="h-6 w-6" />
+            </div>
+            <p className="mt-3 text-sm font-bold text-stone-800 dark:text-stone-200">
+              No tasks currently recorded
+            </p>
+            <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
+              Use the form above to assign a task to staff members.
+            </p>
+          </div>
         )}
-      </div>
+      </AdminTableContainer>
     </div>
   );
 }

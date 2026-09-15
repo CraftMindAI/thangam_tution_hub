@@ -4,6 +4,8 @@ import { useActionState } from "react";
 import { updateMeetingPreferences } from "@/app/actions/admin";
 import type { MeetingPreferences } from "@/app/lib/meeting-preferences";
 import { CalendarClock } from "@/app/components/icons";
+import { AdminCard, AdminButton } from "../../_components/ui";
+import { SettingsTabs } from "../_components/SettingsTabs";
 
 const options: {
   name: keyof MeetingPreferences;
@@ -12,28 +14,28 @@ const options: {
 }[] = [
   {
     name: "audio_enabled",
-    label: "Enable audio",
-    hint: "Allow participants to use their microphone.",
+    label: "Enable Audio by Default",
+    hint: "Allow participants to use microphone upon joining.",
   },
   {
     name: "video_enabled",
-    label: "Enable video",
-    hint: "Allow participants to turn on their camera.",
+    label: "Enable Video Camera by Default",
+    hint: "Allow participants to activate their camera in live classes.",
   },
   {
     name: "chat_enabled",
-    label: "Enable chat",
-    hint: "Allow in-meeting text chat.",
+    label: "Enable In-Meeting Live Chat",
+    hint: "Allow students and teachers to send real-time text messages.",
   },
   {
     name: "breakout_enabled",
-    label: "Enable breakout rooms",
-    hint: "Let the host split participants into separate rooms.",
+    label: "Enable Breakout Rooms",
+    hint: "Permit the teacher/host to split students into smaller study groups.",
   },
   {
     name: "student_email_notifications",
-    label: "Student email notification",
-    hint: "Email students when a meeting is scheduled or updated.",
+    label: "Automated Student Email Notifications",
+    hint: "Email students whenever a new session or reschedule occurs.",
   },
 ];
 
@@ -48,66 +50,75 @@ export default function MeetingPreferenceForm({
   );
 
   return (
-    <form
-      action={formAction}
-      className="rounded-2xl border border-stone-200/70 bg-white p-6 shadow-sm dark:border-stone-800 dark:bg-stone-800"
-    >
-      <div className="flex items-center gap-2.5">
-        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-yellow-50 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300">
-          <CalendarClock className="h-5 w-5" />
-        </span>
-        <div>
-          <h2 className="font-semibold text-stone-900 dark:text-white">
-            Video Meeting Preferences
-          </h2>
-          <p className="text-sm text-stone-600 dark:text-stone-400">
-            Applies to every admin-hosted meeting. Admins only.
-          </p>
-        </div>
-      </div>
+    <div className="space-y-6">
+      <SettingsTabs />
 
-      {state && "error" in state && (
-        <p className="mt-4 rounded-lg bg-yellow-50 px-3 py-2 text-sm text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
-          {state.error}
-        </p>
-      )}
-      {state && "success" in state && (
-        <p className="mt-4 rounded-lg bg-yellow-50 px-3 py-2 text-sm text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300">
-          Meeting Preferences has been saved it will apply for all future meetings.
-        </p>
-      )}
-
-      <div className="mt-5 divide-y divide-stone-100 dark:divide-stone-700">
-        {options.map((opt) => (
-          <label
-            key={opt.name}
-            className="flex cursor-pointer items-start justify-between gap-4 py-3.5"
-          >
-            <span className="text-sm">
-              <span className="font-medium text-stone-800 dark:text-stone-200">
-                {opt.label}
-              </span>
-              <span className="block text-stone-500 dark:text-stone-400">
-                {opt.hint}
-              </span>
+      <AdminCard className="p-6 sm:p-8">
+        <form action={formAction}>
+          <div className="flex items-center gap-3 pb-6 border-b border-stone-100 dark:border-stone-800/80">
+            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-yellow-400 text-stone-950 shadow-md">
+              <CalendarClock className="h-6 w-6" />
             </span>
-            <input
-              type="checkbox"
-              name={opt.name}
-              defaultChecked={preferences[opt.name]}
-              className="mt-1 h-4 w-4 shrink-0 accent-stone-800 dark:accent-yellow-500"
-            />
-          </label>
-        ))}
-      </div>
+            <div>
+              <h2 className="text-xl font-extrabold tracking-tight text-stone-900 dark:text-white">
+                Live Class & Video Meeting Defaults
+              </h2>
+              <p className="text-xs text-stone-500 dark:text-stone-400">
+                These settings apply globally to every session created by administrators.
+              </p>
+            </div>
+          </div>
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="mt-6 rounded-full bg-gradient-to-r from-stone-700 to-stone-900 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-stone-900/20 transition-transform hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
-      >
-        {pending ? "Saving…" : "Save Preferences"}
-      </button>
-    </form>
+          {state && "error" in state && (
+            <div className="mt-4 rounded-2xl bg-yellow-400/20 p-3.5 text-xs font-bold text-yellow-800 dark:text-yellow-300 border border-yellow-400/40">
+              {state.error}
+            </div>
+          )}
+          {state && "success" in state && (
+            <div className="mt-4 rounded-2xl bg-emerald-500/15 p-3.5 text-xs font-bold text-emerald-700 dark:text-emerald-300 border border-emerald-500/20">
+              Meeting preferences saved successfully. All future sessions will adopt these defaults.
+            </div>
+          )}
+
+          <div className="mt-6 divide-y divide-stone-100 dark:divide-stone-800/80">
+            {options.map((opt) => (
+              <label
+                key={opt.name}
+                className="group flex cursor-pointer items-center justify-between gap-4 py-4 transition-colors hover:bg-stone-50/50 dark:hover:bg-stone-900/30 px-2 rounded-2xl"
+              >
+                <div className="min-w-0 pr-4">
+                  <span className="text-sm font-extrabold text-stone-800 dark:text-stone-200 group-hover:text-yellow-600 dark:group-hover:text-yellow-400 transition-colors">
+                    {opt.label}
+                  </span>
+                  <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
+                    {opt.hint}
+                  </p>
+                </div>
+
+                <div className="relative inline-flex items-center shrink-0">
+                  <input
+                    type="checkbox"
+                    name={opt.name}
+                    defaultChecked={preferences[opt.name]}
+                    className="peer sr-only"
+                  />
+                  <div className="h-6 w-11 rounded-full bg-stone-200 transition-colors peer-checked:bg-yellow-400 peer-focus:outline-none dark:bg-stone-800" />
+                  <div className="absolute left-1 top-1 h-4 w-4 rounded-full bg-white transition-transform peer-checked:translate-x-5 peer-checked:bg-stone-950 shadow-sm" />
+                </div>
+              </label>
+            ))}
+          </div>
+
+          <div className="mt-8 flex justify-end pt-4 border-t border-stone-100 dark:border-stone-800">
+            <AdminButton
+              type="submit"
+              loading={pending}
+            >
+              Save Preferences
+            </AdminButton>
+          </div>
+        </form>
+      </AdminCard>
+    </div>
   );
 }
