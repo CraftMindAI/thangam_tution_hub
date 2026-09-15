@@ -173,45 +173,51 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="relative mx-auto mt-16 grid max-w-6xl grid-cols-2 gap-4 px-6 pb-16 sm:grid-cols-4 sm:pb-24">
-            {stats.map(({ label, value, icon: Icon }) => (
-              <div
-                key={label}
-                className="rounded-3xl bg-white/90 p-5 shadow-md backdrop-blur transition-all hover:-translate-y-1 hover:shadow-lg dark:bg-stone-800/70"
-              >
-                <span
-                  className={`flex h-10 w-10 items-center justify-center rounded-2xl ${iconBadge}`}
+          <div className="relative mx-auto mt-16 max-w-6xl px-6 pb-16 sm:pb-24">
+            <div className="grid grid-cols-2 divide-y divide-stone-200 rounded-[2rem] bg-white/80 shadow-md backdrop-blur sm:grid-cols-4 sm:divide-x sm:divide-y-0 dark:divide-stone-700 dark:bg-stone-800/60">
+              {stats.map(({ label, value, icon: Icon }) => (
+                <div
+                  key={label}
+                  className="flex flex-col items-center gap-2 px-6 py-6 text-center"
                 >
-                  <Icon className="h-5 w-5" />
-                </span>
-                <div className="mt-3 text-xl font-extrabold text-stone-900 dark:text-white">
-                  {value}
+                  <span
+                    className={`flex h-9 w-9 items-center justify-center rounded-xl ${iconBadge}`}
+                  >
+                    <Icon className="h-4.5 w-4.5" />
+                  </span>
+                  <div className="text-xl font-extrabold text-stone-900 dark:text-white">
+                    {value}
+                  </div>
+                  <div className="text-xs font-medium text-stone-500 dark:text-stone-400">
+                    {label}
+                  </div>
                 </div>
-                <div className="mt-0.5 text-xs font-medium text-stone-500 dark:text-stone-400">
-                  {label}
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </section>
 
         {/* About teaser */}
-        <section className="bg-yellow-50 py-20 dark:bg-stone-800">
-          <div className="mx-auto max-w-3xl px-6 text-center">
+        <section className="relative overflow-hidden bg-yellow-50 py-24 dark:bg-stone-800">
+          <span
+            className="pointer-events-none absolute top-4 left-1/2 -translate-x-1/2 select-none text-[10rem] leading-none font-black text-yellow-500/10 sm:text-[14rem] dark:text-yellow-300/5"
+            aria-hidden
+          >
+            2021
+          </span>
+          <div className="relative mx-auto max-w-2xl px-6 text-center">
             <Eyebrow>About Us</Eyebrow>
-            <h2 className="mt-4 text-3xl font-bold tracking-tight text-stone-900 dark:text-white">
+            <h2 className="mt-4 text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl dark:text-white">
               A tuition centre built on trust
             </h2>
-            <div className="mt-8 rounded-[2rem] bg-white p-8 text-left shadow-lg dark:bg-stone-900/60">
-              <p className="text-lg leading-8 text-stone-600 dark:text-stone-300">
-                Thangam Varahi Tuition Hub has been seeded in the land of
-                Chennai since <strong>5th September 2021</strong>, on the
-                foundation of providing the best quality tutoring at an
-                affordable, reasonable price for all kinds of wage-earning
-                families. We are a Government-recognised MSME (Udyam)
-                enterprise under the academic tutoring services category.
-              </p>
-            </div>
+            <p className="mt-6 text-lg leading-8 text-stone-700 dark:text-stone-300">
+              Thangam Varahi Tuition Hub has been seeded in the land of
+              Chennai since <strong>5th September 2021</strong>, on the
+              foundation of providing the best quality tutoring at an
+              affordable, reasonable price for all kinds of wage-earning
+              families. We are a Government-recognised MSME (Udyam)
+              enterprise under the academic tutoring services category.
+            </p>
             <Link
               href="/about"
               className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-yellow-700 hover:gap-2.5 dark:text-yellow-300"
@@ -368,14 +374,14 @@ export default function Home() {
                 Why parents choose us
               </h2>
             </div>
-            <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-10 grid gap-px overflow-hidden rounded-[2rem] bg-stone-200 sm:grid-cols-2 lg:grid-cols-3 dark:bg-stone-700">
               {features.map((f) => (
                 <div
                   key={f.title}
-                  className="rounded-3xl bg-white p-7 shadow-md transition-all hover:-translate-y-1 hover:shadow-lg dark:bg-stone-800"
+                  className="group bg-white p-7 transition-colors hover:bg-yellow-50 dark:bg-stone-800 dark:hover:bg-stone-900"
                 >
                   <span
-                    className={`flex h-11 w-11 items-center justify-center rounded-2xl ${iconBadge}`}
+                    className={`flex h-11 w-11 items-center justify-center rounded-2xl ${iconBadge} transition-transform group-hover:scale-110`}
                   >
                     <f.icon className="h-5 w-5" />
                   </span>
@@ -482,7 +488,7 @@ export default function Home() {
                 Tuition Timings
               </h2>
             </div>
-            <div className="mt-10 grid gap-5 sm:grid-cols-3">
+            <div className="mt-10 flex flex-col divide-y divide-stone-200 overflow-hidden rounded-[2rem] border border-stone-200 bg-white sm:flex-row sm:divide-x sm:divide-y-0 dark:divide-stone-700 dark:border-stone-700 dark:bg-stone-800">
               {[
                 {
                   label: "Monday – Saturday",
@@ -498,10 +504,7 @@ export default function Home() {
                   sub: "Lunch break 12:30 – 2:00 PM",
                 },
               ].map((t) => (
-                <div
-                  key={t.label}
-                  className="rounded-3xl bg-white p-7 text-center shadow-md transition-all hover:-translate-y-1 hover:shadow-lg dark:bg-stone-800"
-                >
+                <div key={t.label} className="flex-1 p-8 text-center">
                   <span
                     className={`mx-auto flex h-11 w-11 items-center justify-center rounded-2xl ${iconBadge}`}
                   >
