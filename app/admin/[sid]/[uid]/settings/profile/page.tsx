@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/app/lib/supabase/server";
 import ProfileForm from "./ProfileForm";
+import { AdminPageHeader } from "../../_components/ui";
 
 export default async function ProfileSettingsPage() {
   const supabase = await createClient();
@@ -19,11 +20,17 @@ export default async function ProfileSettingsPage() {
     .single();
 
   return (
-    <ProfileForm
-      email={user.email ?? ""}
-      fullName={profile?.full_name ?? ""}
-      phone={profile?.phone ?? ""}
-      role={profile?.role ?? ""}
-    />
+    <div className="space-y-6">
+      <AdminPageHeader
+        title="Settings: Profile"
+        subtitle="View and update your personal account information and contact numbers."
+      />
+      <ProfileForm
+        email={user.email ?? ""}
+        fullName={profile?.full_name ?? ""}
+        phone={profile?.phone ?? ""}
+        role={profile?.role ?? ""}
+      />
+    </div>
   );
 }

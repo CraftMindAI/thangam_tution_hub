@@ -25,7 +25,7 @@ export default function MeetingTimer({
   const [extraSeconds, setExtraSeconds] = useState(0);
   const [showElapsed, setShowElapsed] = useState(false);
   const [now, setNow] = useState<number>(() => Date.now());
-  const [sessionStartTime, setSessionStartTime] = useState<number>(() => {
+  const [sessionStartTime] = useState<number>(() => {
     if (typeof window !== "undefined" && callId) {
       const stored = sessionStorage.getItem(`call_start_${callId}`);
       if (stored) return Number(stored);
@@ -37,13 +37,17 @@ export default function MeetingTimer({
   });
 
   // Update session start time if SDK provides SFU call start
-  useEffect(() => {
+  const effectiveStartTime = useMemo(() => {
     if (callStartedAt) {
+      return new Date(callStartedAt).getTime();
+    }
+    return sessionStartTime;
+  }, [callStartedAt, sessionStartTime]);
+
+  useEffect(() => {
+    if (callStartedAt && callId && typeof window !== "undefined") {
       const sdkTime = new Date(callStartedAt).getTime();
-      setSessionStartTime(sdkTime);
-      if (callId && typeof window !== "undefined") {
-        sessionStorage.setItem(`call_start_${callId}`, String(sdkTime));
-      }
+      sessionStorage.setItem(`call_start_${callId}`, String(sdkTime));
     }
   }, [callStartedAt, callId]);
 
@@ -63,7 +67,7 @@ export default function MeetingTimer({
 
   // Calculate remaining and elapsed seconds
   const { remainingSeconds, elapsedSeconds } = useMemo(() => {
-    const elapsed = Math.max(0, Math.floor((now - sessionStartTime) / 1000));
+    const elapsed = Math.max(0, Math.floor((now - effectiveStartTime) / 1000));
 
     if (startsAt) {
       const scheduledStart = new Date(startsAt).getTime();
@@ -78,7 +82,7 @@ export default function MeetingTimer({
     // Dynamic session-based countdown from the event duration
     const remaining = totalDurationSeconds - elapsed;
     return { remainingSeconds: remaining, elapsedSeconds: elapsed };
-  }, [now, sessionStartTime, startsAt, totalDurationSeconds]);
+  }, [now, effectiveStartTime, startsAt, totalDurationSeconds]);
 
   function formatTime(totalSec: number) {
     const isNegative = totalSec < 0;

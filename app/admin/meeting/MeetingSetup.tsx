@@ -36,6 +36,9 @@ export default function MeetingSetup({
     }
   }, [isMicCamToggled, call]);
 
+  const router = useRouter();
+  const [isRestarting, setIsRestarting] = useState(false);
+
   if (!call) {
     throw new Error("useStreamCall must be used within a StreamCall component.");
   }
@@ -49,15 +52,12 @@ export default function MeetingSetup({
     );
   }
 
-  const [isRestarting, setIsRestarting] = useState(false);
-  const router = useRouter();
-
   const handleRestart = async () => {
     setIsRestarting(true);
     try {
       const res = await restartMeetingCall(call.id);
       if ("callId" in res) {
-        window.location.href = `/admin/meeting/${res.callId}`;
+        router.push(`/admin/meeting/${res.callId}`);
       } else {
         alert(res.error || "Could not restart meeting");
         setIsRestarting(false);

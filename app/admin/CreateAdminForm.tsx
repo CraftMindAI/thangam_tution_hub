@@ -1,11 +1,11 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { createAdminUser } from "../actions/admin";
-import { X } from "../components/icons";
+import { createAdminUser } from "@/app/actions/admin";
+import { X, Plus, Users } from "@/app/components/icons";
 
 const inputClass =
-  "mt-1.5 w-full rounded-lg border border-stone-300 bg-stone-50 px-3.5 py-2.5 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-stone-500 focus:ring-2 focus:ring-stone-500/20 dark:border-stone-700 dark:bg-stone-900 dark:text-white";
+  "mt-1.5 w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-2.5 text-xs font-semibold text-stone-900 outline-none placeholder:text-stone-400 focus:border-yellow-400 focus:bg-white dark:border-stone-800 dark:bg-stone-900 dark:text-white dark:focus:border-yellow-400 transition-colors";
 
 export default function CreateAdminForm() {
   const [open, setOpen] = useState(false);
@@ -19,126 +19,144 @@ export default function CreateAdminForm() {
   }
 
   return (
-    <div className="rounded-2xl border border-stone-200/70 bg-white p-6 shadow-sm dark:border-stone-800 dark:bg-stone-800">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <h2 className="font-semibold text-stone-900 dark:text-white">
-            Admin Accounts
-          </h2>
-          <p className="mt-1 text-sm text-stone-600 dark:text-stone-400">
-            Invite another staff member by email — they&apos;ll set their own
-            password.
-          </p>
+    <div className="rounded-[28px] border border-stone-200/90 bg-white p-6 sm:p-8 shadow-sm dark:border-stone-800/80 dark:bg-[#14151b]">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-yellow-400 text-stone-950 shadow-md">
+            <Users className="h-6 w-6" />
+          </span>
+          <div>
+            <h2 className="text-xl font-extrabold tracking-tight text-stone-900 dark:text-white">
+              Administrator Accounts
+            </h2>
+            <p className="text-xs text-stone-500 dark:text-stone-400">
+              Invite additional administrators and staff members to manage the portal.
+            </p>
+          </div>
         </div>
+
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="shrink-0 rounded-full bg-gradient-to-r from-stone-700 to-stone-900 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-stone-900/20 transition-transform hover:scale-[1.02]"
+          className="inline-flex items-center gap-1.5 rounded-full bg-yellow-400 px-5 py-2.5 text-xs font-bold text-stone-950 shadow-sm shadow-yellow-500/25 hover:bg-yellow-300 transition-colors"
         >
-          + Add Admin
+          <Plus className="h-3.5 w-3.5" />
+          Add Admin Staff
         </button>
       </div>
 
       {state && "error" in state && (
-        <p className="mt-3 rounded-lg bg-yellow-50 px-3 py-2 text-sm text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
+        <div className="mt-4 rounded-2xl bg-yellow-400/20 p-3.5 text-xs font-bold text-yellow-800 dark:text-yellow-300 border border-yellow-400/40">
           {state.error}
-        </p>
+        </div>
       )}
       {state && "success" in state && (
-        <p className="mt-3 rounded-lg bg-yellow-50 px-3 py-2 text-sm text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300">
-          Invite sent to {state.email}. They&apos;ll get an email with a link to
-          set their password.
-        </p>
+        <div className="mt-4 rounded-2xl bg-emerald-500/15 p-3.5 text-xs font-bold text-emerald-700 dark:text-emerald-300 border border-emerald-500/20">
+          Invitation sent to {state.email}. They will receive a link to set their password.
+        </div>
       )}
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div
-            className="absolute inset-0 bg-stone-900/50 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm"
             onClick={() => !pending && setOpen(false)}
           />
-          <div className="relative w-full max-w-md rounded-2xl border border-stone-200/70 bg-white p-6 shadow-xl dark:border-stone-800 dark:bg-stone-800">
-            <div className="flex items-start justify-between gap-4">
-              <h3 className="font-semibold text-stone-900 dark:text-white">
-                Add Admin
-              </h3>
+          <div className="relative w-full max-w-lg rounded-[28px] border border-stone-200/90 bg-white p-6 sm:p-8 shadow-2xl dark:border-stone-800 dark:bg-[#14151b]">
+            <div className="flex items-start justify-between gap-4 mb-5">
+              <div>
+                <h3 className="text-lg font-extrabold text-stone-900 dark:text-white">
+                  Invite Administrator
+                </h3>
+                <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
+                  An activation email will be sent to the address provided.
+                </p>
+              </div>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label="Close"
-                className="text-stone-400 hover:text-stone-700 dark:hover:text-stone-200"
+                className="rounded-xl p-2 text-stone-400 hover:bg-stone-100 hover:text-stone-700 dark:hover:bg-stone-800 dark:hover:text-stone-200 transition-colors"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
-            <form action={formAction} className="mt-4">
+            <form action={formAction}>
               {state && "error" in state && (
-                <p className="mb-3 rounded-lg bg-yellow-50 px-3 py-2 text-sm text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
+                <div className="mb-4 rounded-2xl bg-yellow-400/20 p-3 text-xs font-bold text-yellow-800 dark:text-yellow-300 border border-yellow-400/40">
                   {state.error}
-                </p>
+                </div>
               )}
 
-              <div className="grid gap-3 sm:grid-cols-2">
-                <label className="text-sm font-medium text-stone-700 dark:text-stone-200">
-                  First name
-                  <input
-                    type="text"
-                    name="first_name"
-                    required
-                    placeholder="First name"
-                    className={inputClass}
-                  />
-                </label>
-                <label className="text-sm font-medium text-stone-700 dark:text-stone-200">
-                  Last name
-                  <input
-                    type="text"
-                    name="last_name"
-                    required
-                    placeholder="Last name"
-                    className={inputClass}
-                  />
-                </label>
-                <label className="text-sm font-medium text-stone-700 sm:col-span-2 dark:text-stone-200">
-                  Email
-                  <input
-                    type="email"
-                    name="email"
-                    required
-                    placeholder="new-admin@example.com"
-                    className={inputClass}
-                  />
-                </label>
-                <label className="text-sm font-medium text-stone-700 sm:col-span-2 dark:text-stone-200">
-                  Phone number
-                  <input
-                    type="tel"
-                    name="phone"
-                    required
-                    pattern="[6-9][0-9]{9}"
-                    maxLength={10}
-                    placeholder="10-digit mobile number"
-                    className={inputClass}
-                  />
-                </label>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+                    First Name
+                    <input
+                      type="text"
+                      name="first_name"
+                      required
+                      placeholder="First name"
+                      className={inputClass}
+                    />
+                  </label>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+                    Last Name
+                    <input
+                      type="text"
+                      name="last_name"
+                      required
+                      placeholder="Last name"
+                      className={inputClass}
+                    />
+                  </label>
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+                    Work Email
+                    <input
+                      type="email"
+                      name="email"
+                      required
+                      placeholder="staff@thangamtution.com"
+                      className={inputClass}
+                    />
+                  </label>
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+                    Phone Number
+                    <input
+                      type="tel"
+                      name="phone"
+                      required
+                      pattern="[6-9][0-9]{9}"
+                      maxLength={10}
+                      placeholder="10-digit mobile number"
+                      className={inputClass}
+                    />
+                  </label>
+                </div>
               </div>
 
-              <div className="mt-5 flex justify-end gap-3">
+              <div className="mt-8 flex justify-end gap-3 pt-4 border-t border-stone-100 dark:border-stone-800">
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
                   disabled={pending}
-                  className="rounded-full border border-stone-300 px-4 py-2.5 text-sm font-semibold text-stone-700 transition-colors hover:border-stone-500 hover:text-stone-900 disabled:opacity-60 dark:border-stone-600 dark:text-stone-200 dark:hover:border-stone-400 dark:hover:text-white"
+                  className="rounded-full border border-stone-300 px-5 py-2.5 text-xs font-bold text-stone-700 hover:bg-stone-50 dark:border-stone-700 dark:text-stone-300 dark:hover:bg-stone-800 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={pending}
-                  className="rounded-full bg-gradient-to-r from-stone-700 to-stone-900 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-stone-900/20 transition-transform hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
+                  className="rounded-full bg-yellow-400 px-6 py-2.5 text-xs font-bold text-stone-950 shadow-sm shadow-yellow-500/25 hover:bg-yellow-300 disabled:opacity-50 transition-all"
                 >
-                  {pending ? "Sending…" : "Submit"}
+                  {pending ? "Sending Invite…" : "Send Invite"}
                 </button>
               </div>
             </form>

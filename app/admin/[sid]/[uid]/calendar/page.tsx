@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { createClient } from "@/app/lib/supabase/server";
-import { ArrowRight } from "@/app/components/icons";
+import { ArrowRight, Calendar as CalendarIcon, Plus } from "@/app/components/icons";
 import WeekCalendar, { type WeekEvent } from "./WeekCalendar";
+import { AdminPageHeader, AdminButton } from "../_components/ui";
 
 function ymd(d: Date) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
@@ -62,46 +63,54 @@ export default async function CalendarPage({
   })}`;
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <Link
-            href={`${panel}/calendar?date=${ymd(addDays(weekStart, -7))}`}
-            aria-label="Previous week"
-            className="flex h-8 w-8 items-center justify-center rounded-lg border border-stone-300 text-stone-600 hover:border-stone-500 hover:text-stone-900 dark:border-stone-600 dark:text-stone-300 dark:hover:text-white"
-          >
-            <ArrowRight className="h-4 w-4 rotate-180" />
-          </Link>
-          <Link
-            href={`${panel}/calendar?date=${ymd(addDays(weekStart, 7))}`}
-            aria-label="Next week"
-            className="flex h-8 w-8 items-center justify-center rounded-lg border border-stone-300 text-stone-600 hover:border-stone-500 hover:text-stone-900 dark:border-stone-600 dark:text-stone-300 dark:hover:text-white"
-          >
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-          <Link
-            href={`${panel}/calendar`}
-            className="rounded-lg border border-stone-300 px-3 py-1.5 text-sm font-semibold text-stone-600 hover:border-stone-500 hover:text-stone-900 dark:border-stone-600 dark:text-stone-300 dark:hover:text-white"
-          >
-            Today
-          </Link>
-          <span className="ml-1 text-sm font-semibold text-stone-800 dark:text-stone-200">
-            {rangeLabel}
-          </span>
-        </div>
+    <div className="space-y-6">
+      <AdminPageHeader
+        title="Calendar Schedule"
+        subtitle="Manage weekly sessions, schedule live classes, and view invitations."
+        actions={
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-1.5 rounded-full border border-stone-200 bg-white p-1 shadow-sm dark:border-stone-800 dark:bg-[#14151b]">
+              <Link
+                href={`${panel}/calendar?date=${ymd(addDays(weekStart, -7))}`}
+                aria-label="Previous week"
+                className="flex h-8 w-8 items-center justify-center rounded-full text-stone-500 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-stone-800 dark:hover:text-white transition-colors"
+              >
+                <ArrowRight className="h-4 w-4 rotate-180" />
+              </Link>
+              <Link
+                href={`${panel}/calendar`}
+                className="rounded-full px-3 py-1 text-xs font-bold text-stone-700 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-stone-800 transition-colors"
+              >
+                Today
+              </Link>
+              <Link
+                href={`${panel}/calendar?date=${ymd(addDays(weekStart, 7))}`}
+                aria-label="Next week"
+                className="flex h-8 w-8 items-center justify-center rounded-full text-stone-500 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-stone-800 dark:hover:text-white transition-colors"
+              >
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
 
-        <Link
-          href={`${panel}/calendar/add-event`}
-          className="rounded-full bg-gradient-to-r from-stone-700 to-stone-900 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-stone-900/20 transition-transform hover:scale-[1.02]"
-        >
-          + Add Event
-        </Link>
+            <span className="hidden sm:inline-block rounded-full bg-stone-100 px-3.5 py-1.5 text-xs font-bold text-stone-700 dark:bg-stone-800/80 dark:text-stone-300">
+              {rangeLabel}
+            </span>
+
+            <Link href={`${panel}/calendar/add-event`}>
+              <AdminButton size="sm" icon={Plus}>
+                Add Event
+              </AdminButton>
+            </Link>
+          </div>
+        }
+      />
+
+      <div className="rounded-2xl bg-yellow-400/10 border border-yellow-400/20 px-4 py-2.5 text-xs font-medium text-yellow-800 dark:text-yellow-300 flex items-center gap-2">
+        <CalendarIcon className="h-4 w-4 shrink-0 text-yellow-600 dark:text-yellow-400" />
+        <span>
+          Click any time slot on the grid to schedule a meeting. Offline students in the selected class receive an automated email invite.
+        </span>
       </div>
-
-      <p className="text-sm text-stone-500 dark:text-stone-400">
-        Click any time slot to schedule a meeting. Offline students in the
-        selected class are emailed an invite — Online sign-ups are not invited.
-      </p>
 
       <WeekCalendar weekStartISO={ymd(weekStart)} events={events} />
     </div>

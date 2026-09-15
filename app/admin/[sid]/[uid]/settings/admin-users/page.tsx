@@ -1,6 +1,14 @@
 import { createClient } from "@/app/lib/supabase/server";
 import { createAdminClient } from "@/app/lib/supabase/admin";
 import CreateAdminForm from "@/app/admin/CreateAdminForm";
+import {
+  AdminPageHeader,
+  AdminTableContainer,
+  AdminBadge,
+  tableClasses,
+} from "../../_components/ui";
+import { SettingsTabs } from "../_components/SettingsTabs";
+import { Users } from "@/app/components/icons";
 
 export default async function AdminUsersPage() {
   const supabase = await createClient();
@@ -25,45 +33,81 @@ export default async function AdminUsersPage() {
 
   return (
     <div className="space-y-6">
+      <AdminPageHeader
+        title="Settings: Admin Staff"
+        subtitle="Manage authorized administrators and team access credentials."
+      />
+
+      <SettingsTabs />
+
       <CreateAdminForm />
 
-      <div className="overflow-x-auto rounded-2xl border border-stone-200/70 bg-white shadow-sm dark:border-stone-800 dark:bg-stone-800">
-        <table className="w-full min-w-[560px] text-left text-sm">
-          <thead className="border-b border-stone-200/70 text-xs uppercase tracking-wider text-stone-500 dark:border-stone-700 dark:text-stone-400">
+      <AdminTableContainer
+        header={
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-extrabold uppercase tracking-wider text-stone-900 dark:text-yellow-400">
+              Active Admin Staff ({admins?.length ?? 0})
+            </h2>
+          </div>
+        }
+      >
+        <table className={tableClasses.table}>
+          <thead className={tableClasses.thead}>
             <tr>
-              <th className="px-4 py-3">Name</th>
-              <th className="px-4 py-3">Email</th>
-              <th className="px-4 py-3">Phone</th>
+              <th className={tableClasses.th}>Administrator</th>
+              <th className={tableClasses.th}>Official Email</th>
+              <th className={tableClasses.th}>Contact Phone</th>
+              <th className={`${tableClasses.th} text-right`}>Role</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-stone-100 dark:divide-stone-700">
+          <tbody className={tableClasses.tbody}>
             {admins?.length ? (
-              admins.map((a) => (
-                <tr key={a.id}>
-                  <td className="px-4 py-3 font-medium text-stone-800 dark:text-stone-200">
-                    {a.full_name ?? "—"}
-                  </td>
-                  <td className="px-4 py-3 text-stone-600 dark:text-stone-400">
-                    {emailById.get(a.id) ?? "—"}
-                  </td>
-                  <td className="px-4 py-3 text-stone-600 dark:text-stone-400">
-                    {a.phone ?? "—"}
-                  </td>
-                </tr>
-              ))
+              admins.map((a) => {
+                const initial = (a.full_name || "A").trim().charAt(0).toUpperCase();
+                return (
+                  <tr key={a.id} className={tableClasses.tr}>
+                    <td className={tableClasses.td}>
+                      <div className="flex items-center gap-3">
+                        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-yellow-400 text-stone-950 font-black text-xs shadow-sm">
+                          {initial}
+                        </span>
+                        <span className="font-extrabold text-stone-900 dark:text-white">
+                          {a.full_name ?? "—"}
+                        </span>
+                      </div>
+                    </td>
+                    <td className={tableClasses.td}>
+                      <span className="text-xs font-semibold text-stone-700 dark:text-stone-300">
+                        {emailById.get(a.id) ?? "—"}
+                      </span>
+                    </td>
+                    <td className={tableClasses.td}>
+                      <span className="text-xs text-stone-600 dark:text-stone-400">
+                        {a.phone ?? "—"}
+                      </span>
+                    </td>
+                    <td className={`${tableClasses.td} text-right`}>
+                      <AdminBadge variant="yellow">ADMIN</AdminBadge>
+                    </td>
+                  </tr>
+                );
+              })
             ) : (
               <tr>
                 <td
-                  colSpan={3}
-                  className="px-4 py-6 text-center text-stone-500 dark:text-stone-400"
+                  colSpan={4}
+                  className="py-10 text-center text-stone-500 dark:text-stone-400"
                 >
-                  No admin users found.
+                  <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl bg-stone-100 dark:bg-stone-800 text-stone-400">
+                    <Users className="h-5 w-5" />
+                  </div>
+                  <p className="mt-2 text-xs font-semibold">No admin users found.</p>
                 </td>
               </tr>
             )}
           </tbody>
         </table>
-      </div>
+      </AdminTableContainer>
     </div>
   );
 }
