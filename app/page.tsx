@@ -384,23 +384,23 @@ export default function Home() {
                 Why parents choose us
               </h2>
             </div>
-            <div className="mt-10 grid gap-px overflow-hidden rounded-[2rem] bg-stone-200 sm:grid-cols-2 lg:grid-cols-3 dark:bg-stone-700">
-              {features.map((f) => (
+            <div className="mt-14 grid gap-x-12 gap-y-10 sm:grid-cols-2">
+              {features.map((f, i) => (
                 <div
                   key={f.title}
-                  className="group bg-white p-7 transition-colors hover:bg-yellow-50 dark:bg-stone-800 dark:hover:bg-stone-900"
+                  className="flex gap-5 border-t border-stone-200 pt-6 dark:border-stone-800"
                 >
-                  <span
-                    className={`flex h-11 w-11 items-center justify-center rounded-2xl ${iconBadge} transition-transform group-hover:scale-110`}
-                  >
-                    <f.icon className="h-5 w-5" />
+                  <span className="text-3xl font-black tabular-nums text-yellow-400/70 dark:text-yellow-500/30">
+                    {String(i + 1).padStart(2, "0")}
                   </span>
-                  <h3 className="mt-4 font-semibold text-stone-900 dark:text-white">
-                    {f.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-6 text-stone-600 dark:text-stone-400">
-                    {f.desc}
-                  </p>
+                  <div>
+                    <h3 className="font-semibold text-stone-900 dark:text-white">
+                      {f.title}
+                    </h3>
+                    <p className="mt-2 text-sm leading-6 text-stone-600 dark:text-stone-400">
+                      {f.desc}
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
