@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function Contact() {
   return (
-    <div className="flex flex-col flex-1 bg-white text-stone-900 dark:bg-stone-900 dark:text-stone-100">
+    <div className="flex flex-col flex-1 bg-stone-950 text-white">
       <SiteHeader />
 
       <main className="flex-1">
@@ -22,11 +22,11 @@ export default function Contact() {
           <Blobs variant="compact" />
           <div className="relative mx-auto max-w-3xl px-6 py-20 text-center sm:py-24">
             <Eyebrow>Contact</Eyebrow>
-            <h1 className="mt-5 text-4xl font-extrabold tracking-tight text-stone-900 sm:text-5xl dark:text-white">
+            <h1 className="mt-5 text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
               Visit or{" "}
-              <span className="text-yellow-600">contact us</span>
+              <span className="text-yellow-400">contact us</span>
             </h1>
-            <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-stone-600 dark:text-stone-300">
+            <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-stone-400">
               We&apos;re happy to answer any questions about admission,
               timings, or fees — call, email, or drop by the centre any day
               during tuition hours.
@@ -35,9 +35,9 @@ export default function Contact() {
         </section>
 
         {/* Contact details */}
-        <section className="bg-yellow-50 py-20 dark:bg-stone-800">
+        <section className="bg-stone-900 py-20">
           <div className="mx-auto max-w-4xl px-6">
-            <div className="grid overflow-hidden rounded-[2rem] shadow-lg sm:grid-cols-2">
+            <div className="grid overflow-hidden rounded-[2rem] shadow-2xl shadow-black/40 sm:grid-cols-2">
               <div className="bg-gradient-to-br from-yellow-300 to-yellow-500 p-8 text-stone-900">
                 <h3 className="font-semibold">Find Us</h3>
                 <p className="mt-3 flex items-start gap-2 text-sm leading-6 text-stone-800">
@@ -79,11 +79,11 @@ export default function Contact() {
                   Chat with us on WhatsApp
                 </a>
               </div>
-              <div className="flex flex-col items-center justify-center gap-4 bg-white p-8 text-center dark:bg-stone-800">
-                <h3 className="font-semibold text-stone-900 dark:text-white">
+              <div className="flex flex-col items-center justify-center gap-4 bg-stone-950 p-8 text-center">
+                <h3 className="font-semibold text-white">
                   Ready to admit your child?
                 </h3>
-                <p className="max-w-xs text-sm text-stone-600 dark:text-stone-400">
+                <p className="max-w-xs text-sm text-stone-400">
                   Call us to ask about admission, or book a demo class online.
                 </p>
                 <a
@@ -95,7 +95,7 @@ export default function Contact() {
                 </a>
                 <Link
                   href="/demo"
-                  className="inline-flex items-center rounded-full border border-stone-200 bg-white px-6 py-3 text-sm font-semibold text-stone-700 shadow-sm transition-colors hover:text-yellow-700 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-200 dark:hover:text-yellow-300"
+                  className="inline-flex items-center rounded-full border border-stone-700 bg-stone-900 px-6 py-3 text-sm font-semibold text-stone-200 transition-colors hover:text-yellow-300"
                 >
                   Book a Demo Class
                 </Link>

@@ -87,7 +87,7 @@ const rules = [
 
 export default function About() {
   return (
-    <div className="flex flex-col flex-1 bg-white text-stone-900 dark:bg-stone-900 dark:text-stone-100">
+    <div className="flex flex-col flex-1 bg-stone-950 text-white">
       <SiteHeader />
 
       <main className="flex-1">
@@ -96,12 +96,12 @@ export default function About() {
           <Blobs variant="compact" />
           <div className="relative mx-auto max-w-3xl px-6 py-20 text-center sm:py-24">
             <Eyebrow>Our Story</Eyebrow>
-            <h1 className="mt-5 text-4xl font-extrabold tracking-tight text-stone-900 sm:text-5xl dark:text-white">
+            <h1 className="mt-5 text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
               About{" "}
-              <span className="text-yellow-600">Thangam Varahi</span>{" "}
+              <span className="text-yellow-400">Thangam Varahi</span>{" "}
               Tuition Hub
             </h1>
-            <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-stone-600 dark:text-stone-300">
+            <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-stone-400">
               We welcome you all, our cute children&apos;s, as God&apos;s
               gift &mdash; the line we&apos;ve stood by since the day we
               opened our doors.
@@ -110,15 +110,15 @@ export default function About() {
         </section>
 
         {/* Story */}
-        <section className="bg-yellow-50 py-20 dark:bg-stone-800">
+        <section className="bg-stone-900 py-20">
           <div className="mx-auto max-w-3xl px-6">
-            <div className="rounded-[2rem] bg-white p-8 shadow-lg dark:bg-stone-900/60">
-              <h2 className="text-2xl font-bold tracking-tight text-stone-900 dark:text-white">
+            <div className="rounded-[2rem] border border-stone-800 bg-stone-950 p-8 shadow-xl shadow-black/30">
+              <h2 className="text-2xl font-bold tracking-tight text-white">
                 Where we started
               </h2>
-              <p className="mt-4 leading-8 text-stone-600 dark:text-stone-300">
+              <p className="mt-4 leading-8 text-stone-400">
                 Thangam Varahi Tuition Hub was seeded in the land of Chennai
-                on <strong>5th September 2021</strong>, built on one simple
+                on <strong className="text-white">5th September 2021</strong>, built on one simple
                 idea: every wage-earning family deserves access to
                 best-quality tutoring at an affordable, reasonable price.
                 Since then we have taught a wide variety of children, from
@@ -126,10 +126,10 @@ export default function About() {
                 how we teach — with clarity and care that shows in our
                 students&apos; results.
               </p>
-              <p className="mt-4 leading-8 text-stone-600 dark:text-stone-300">
+              <p className="mt-4 leading-8 text-stone-400">
                 We are registered with the Government of India as a Micro
                 enterprise under Udyam (Reg. No.{" "}
-                <strong>UDYAM-TN-02-0419567</strong>), classified under
+                <strong className="text-white">UDYAM-TN-02-0419567</strong>), classified under
                 academic tutoring services &mdash; a small but meaningful
                 marker of how seriously we take this work.
               </p>
@@ -140,11 +140,11 @@ export default function About() {
         {/* Pledge */}
         <section className="py-20">
           <div className="mx-auto max-w-3xl px-6">
-            <h2 className="text-center text-2xl font-bold tracking-tight text-stone-900 dark:text-white">
+            <h2 className="text-center text-2xl font-bold tracking-tight text-white">
               Our Tuition Pledge
             </h2>
-            <div className="relative mt-8 space-y-4 rounded-[2rem] bg-yellow-100 p-8 leading-8 text-stone-700 shadow-lg dark:bg-yellow-950/30 dark:text-stone-300">
-              <span className="pointer-events-none absolute -top-4 left-6 select-none text-6xl font-serif text-yellow-400/60 dark:text-yellow-700/50">
+            <div className="relative mt-8 space-y-4 rounded-[2rem] bg-gradient-to-br from-yellow-300 to-yellow-500 p-8 leading-8 text-stone-800 shadow-lg shadow-yellow-500/20">
+              <span className="pointer-events-none absolute -top-4 left-6 select-none text-6xl font-serif text-stone-900/20">
                 &ldquo;
               </span>
               <p>
@@ -160,10 +160,10 @@ export default function About() {
               </p>
             </div>
             <div className="mt-8 flex flex-col items-center gap-2 text-center">
-              <span className="text-lg font-bold text-yellow-700 dark:text-yellow-300">
+              <span className="text-lg font-bold text-yellow-400">
                 &ldquo;Practice makes us perfect.&rdquo;
               </span>
-              <span className="text-lg font-bold text-yellow-700 dark:text-yellow-300">
+              <span className="text-lg font-bold text-yellow-400">
                 &ldquo;Training till we achieve our targets.&rdquo;
               </span>
             </div>
@@ -171,14 +171,14 @@ export default function About() {
         </section>
 
         {/* How we teach */}
-        <section className="bg-yellow-50 py-20 dark:bg-stone-800">
+        <section className="bg-stone-900 py-20">
           <div className="mx-auto max-w-6xl px-6">
             <div className="text-center">
               <Eyebrow>Our Approach</Eyebrow>
-              <h2 className="mt-4 text-2xl font-bold tracking-tight text-stone-900 dark:text-white">
+              <h2 className="mt-4 text-2xl font-bold tracking-tight text-white">
                 How We Teach
               </h2>
-              <p className="mx-auto mt-3 max-w-2xl text-stone-600 dark:text-stone-400">
+              <p className="mx-auto mt-3 max-w-2xl text-stone-400">
                 None of this is complicated. It&apos;s just followed
                 consistently, for every child, every day.
               </p>
@@ -187,17 +187,17 @@ export default function About() {
               {values.map((v) => (
                 <div
                   key={v.title}
-                  className="rounded-3xl bg-white p-6 shadow-md transition-all hover:-translate-y-1 hover:shadow-lg dark:bg-stone-900"
+                  className="rounded-3xl border border-stone-800 bg-stone-950 p-6 shadow-md shadow-black/20 transition-all hover:-translate-y-1 hover:border-yellow-500/30"
                 >
                   <span
                     className={`flex h-11 w-11 items-center justify-center rounded-2xl ${iconBadge}`}
                   >
                     <v.icon className="h-5 w-5" />
                   </span>
-                  <h3 className="mt-4 font-semibold text-stone-900 dark:text-white">
+                  <h3 className="mt-4 font-semibold text-white">
                     {v.title}
                   </h3>
-                  <p className="mt-1.5 text-sm leading-6 text-stone-600 dark:text-stone-400">
+                  <p className="mt-1.5 text-sm leading-6 text-stone-400">
                     {v.desc}
                   </p>
                 </div>
@@ -211,10 +211,10 @@ export default function About() {
           <div className="mx-auto max-w-6xl px-6">
             <div className="text-center">
               <Eyebrow>Progress Tracking</Eyebrow>
-              <h2 className="mt-4 text-2xl font-bold tracking-tight text-stone-900 dark:text-white">
+              <h2 className="mt-4 text-2xl font-bold tracking-tight text-white">
                 How We Track Every Child&apos;s Progress
               </h2>
-              <p className="mx-auto mt-3 max-w-2xl text-stone-600 dark:text-stone-400">
+              <p className="mx-auto mt-3 max-w-2xl text-stone-400">
                 Paperwork parents can actually see — not just promises.
               </p>
             </div>
@@ -222,17 +222,17 @@ export default function About() {
               {tracking.map((t) => (
                 <div
                   key={t.title}
-                  className="rounded-3xl bg-white p-6 shadow-md transition-all hover:-translate-y-1 hover:shadow-lg dark:bg-stone-800"
+                  className="rounded-3xl border border-stone-800 bg-stone-900 p-6 shadow-md shadow-black/20 transition-all hover:-translate-y-1 hover:border-yellow-500/30"
                 >
                   <span
                     className={`flex h-11 w-11 items-center justify-center rounded-2xl ${iconBadge}`}
                   >
                     <t.icon className="h-5 w-5" />
                   </span>
-                  <h3 className="mt-4 font-semibold text-stone-900 dark:text-white">
+                  <h3 className="mt-4 font-semibold text-white">
                     {t.title}
                   </h3>
-                  <p className="mt-2 text-sm leading-6 text-stone-600 dark:text-stone-400">
+                  <p className="mt-2 text-sm leading-6 text-stone-400">
                     {t.desc}
                   </p>
                 </div>
@@ -242,23 +242,23 @@ export default function About() {
         </section>
 
         {/* Centre rules */}
-        <section className="bg-yellow-50 py-20 dark:bg-stone-800">
+        <section className="bg-stone-900 py-20">
           <div className="mx-auto max-w-3xl px-6">
             <div className="text-center">
               <Eyebrow>Life at the Centre</Eyebrow>
-              <h2 className="mt-4 text-2xl font-bold tracking-tight text-stone-900 dark:text-white">
+              <h2 className="mt-4 text-2xl font-bold tracking-tight text-white">
                 Centre Rules
               </h2>
-              <p className="mx-auto mt-3 max-w-xl text-stone-600 dark:text-stone-400">
+              <p className="mx-auto mt-3 max-w-xl text-stone-400">
                 Simple rules, followed by every child, so the room stays calm
                 and every child gets a fair shot at focus.
               </p>
             </div>
-            <div className="mt-10 rounded-[2rem] bg-white p-8 shadow-lg dark:bg-stone-900/60">
-              <ul className="grid gap-3 text-sm text-stone-600 sm:grid-cols-2 dark:text-stone-400">
+            <div className="mt-10 rounded-[2rem] border border-stone-800 bg-stone-950 p-8 shadow-xl shadow-black/30">
+              <ul className="grid gap-3 text-sm text-stone-400 sm:grid-cols-2">
                 {rules.map((item) => (
                   <li key={item} className="flex items-start gap-2">
-                    <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-yellow-600 dark:text-yellow-400" />
+                    <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-yellow-400" />
                     <span>{item}</span>
                   </li>
                 ))}
@@ -269,15 +269,15 @@ export default function About() {
 
         {/* CTA */}
         <section className="relative overflow-hidden py-20 text-center">
-          <div className="pointer-events-none absolute -bottom-24 left-1/2 h-80 w-80 -translate-x-1/2 rounded-full bg-yellow-200/30 blur-3xl dark:bg-yellow-500/10" />
+          <div className="pointer-events-none absolute -bottom-24 left-1/2 h-80 w-80 -translate-x-1/2 rounded-full bg-yellow-500/10 blur-3xl" />
           <div className="relative mx-auto max-w-2xl px-6">
             <span className={`mx-auto flex h-12 w-12 items-center justify-center rounded-2xl ${iconBadge}`}>
               <Clock className="h-6 w-6" />
             </span>
-            <h2 className="mt-4 text-2xl font-bold tracking-tight text-stone-900 dark:text-white">
+            <h2 className="mt-4 text-2xl font-bold tracking-tight text-white">
               Want to see it for yourself?
             </h2>
-            <p className="mt-3 text-stone-600 dark:text-stone-400">
+            <p className="mt-3 text-stone-400">
               Visit us in West Mambalam, or call to ask about admission for
               your child.
             </p>
@@ -291,7 +291,7 @@ export default function About() {
               </a>
               <Link
                 href="/#fees"
-                className="inline-flex items-center rounded-full border border-stone-200 bg-white px-6 py-3 text-sm font-semibold text-stone-700 shadow-sm transition-colors hover:text-yellow-700 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-200 dark:hover:text-yellow-300"
+                className="inline-flex items-center rounded-full border border-stone-700 bg-stone-900 px-6 py-3 text-sm font-semibold text-stone-200 transition-colors hover:text-yellow-300"
               >
                 View Fee Structure
               </Link>
