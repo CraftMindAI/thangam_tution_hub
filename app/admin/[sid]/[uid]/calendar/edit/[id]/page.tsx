@@ -50,8 +50,8 @@ export default async function EditEventPage({
   }));
 
   return (
-    <div className="mx-auto max-w-2xl">
-      <h2 className="mb-4 text-lg font-bold tracking-tight text-stone-900 dark:text-white">
+    <div className="mx-auto max-w-4xl">
+      <h2 className="mb-2 text-base font-bold tracking-tight text-stone-900 dark:text-white">
         Edit Meeting
       </h2>
       <EventForm

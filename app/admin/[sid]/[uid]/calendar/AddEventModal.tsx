@@ -34,7 +34,7 @@ export default function AddEventModal({
             className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
             onClick={() => setOpen(false)}
           />
-          <div className="relative mx-auto my-8 w-full max-w-2xl px-4">
+          <div className="relative mx-auto my-6 w-full max-w-4xl px-4">
             <div className="relative">
               <button
                 type="button"

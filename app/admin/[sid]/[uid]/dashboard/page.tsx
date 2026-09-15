@@ -225,7 +225,11 @@ export default async function AdminDashboard({
                     </AdminBadge>
 
                     {m.call_id && (
-                      <Link href={`/admin/meeting/${m.call_id}`}>
+                      <Link
+                        href={`/admin/meeting/${m.call_id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
                         <AdminButton
                           size="sm"
                           icon={Video}

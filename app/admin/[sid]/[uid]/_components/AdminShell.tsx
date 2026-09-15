@@ -112,9 +112,12 @@ function AdminShellContent({
   );
 
   return (
-    <div className="flex min-h-screen bg-[#f8f9fa] text-stone-900 dark:bg-[#0c0d12] dark:text-stone-100 transition-colors duration-200 font-sans">
+    <div
+      data-admin-shell="true"
+      className="flex h-screen h-[100dvh] overflow-hidden bg-[#f8f9fa] text-stone-900 dark:bg-[#0c0d12] dark:text-stone-100 transition-colors duration-200 font-sans"
+    >
       {/* Desktop sidebar */}
-      <aside className="sticky top-0 hidden h-screen w-72 shrink-0 flex-col border-r border-stone-200/80 bg-white py-6 lg:flex dark:border-stone-800/80 dark:bg-[#121318]">
+      <aside className="hidden h-full w-72 shrink-0 flex-col border-r border-stone-200/80 bg-white py-6 lg:flex dark:border-stone-800/80 dark:bg-[#121318]">
         {/* Logo / Brand */}
         <Link href="/" className="flex items-center gap-3 px-6 pb-6 group">
           <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-yellow-400 text-stone-950 shadow-md shadow-yellow-500/25 transition-transform group-hover:scale-105">
@@ -133,15 +136,8 @@ function AdminShellContent({
         {/* Navigation list */}
         <div className="flex-1 overflow-y-auto no-scrollbar">{nav}</div>
 
-        {/* Theme Switcher & Admin Profile in sidebar footer */}
-        <div className="mt-auto border-t border-stone-200/80 px-4 pt-4 pb-2 dark:border-stone-800/80 space-y-3">
-          <div className="flex items-center justify-between px-2">
-            <span className="text-xs font-semibold text-stone-400 uppercase tracking-wider">
-              Theme
-            </span>
-            <ThemeToggle />
-          </div>
-
+        {/* Admin Profile in sidebar footer */}
+        <div className="mt-auto border-t border-stone-200/80 p-4 dark:border-stone-800/80">
           <div className="flex items-center gap-3 rounded-2xl bg-stone-100/80 p-2.5 dark:bg-stone-900/60 border border-stone-200/60 dark:border-stone-800/60">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-yellow-400 text-stone-950 font-black text-sm shadow-sm">
               {adminInitial}
@@ -193,11 +189,6 @@ function AdminShellContent({
                 <X className="h-5 w-5" />
               </button>
             </div>
-
-            <div className="px-4 pb-3">
-              <ThemeToggle className="w-full justify-center" />
-            </div>
-
             <div className="flex-1 overflow-y-auto no-scrollbar">{nav}</div>
 
             <div className="mt-auto border-t border-stone-200/80 p-4 dark:border-stone-800/80">
@@ -224,9 +215,9 @@ function AdminShellContent({
       )}
 
       {/* Main Column */}
-      <div className="flex min-w-0 flex-1 flex-col">
-        {/* Sticky top header */}
-        <header className="sticky top-0 z-30 flex items-center justify-between border-b border-stone-200/80 bg-white/80 px-4 py-3.5 backdrop-blur-md sm:px-8 dark:border-stone-800/80 dark:bg-[#121318]/80">
+      <div className="flex min-w-0 flex-1 flex-col h-full overflow-hidden">
+        {/* Top header */}
+        <header className="shrink-0 z-30 flex items-center justify-between border-b border-stone-200/80 bg-white/80 px-4 py-3 backdrop-blur-md sm:px-8 dark:border-stone-800/80 dark:bg-[#121318]/80">
           <div className="flex items-center gap-3">
             <button
               type="button"
@@ -244,12 +235,12 @@ function AdminShellContent({
           </div>
 
           <div className="flex items-center gap-3">
-            <ThemeToggle className="hidden sm:inline-flex" />
+            <ThemeToggle className="inline-flex" />
           </div>
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 px-4 py-7 sm:px-8 lg:px-10">
+        <main className="flex-1 overflow-y-auto no-scrollbar px-4 py-5 sm:px-8 lg:px-10">
           <div className="mx-auto max-w-6xl">{children}</div>
         </main>
       </div>

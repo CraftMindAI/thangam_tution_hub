@@ -137,7 +137,7 @@ export default async function UpcomingMeetingsPage({
   }
 
   const inputClasses =
-    "mt-1.5 block w-full rounded-2xl border border-stone-200 bg-stone-50 px-3.5 py-2.5 text-xs font-semibold text-stone-900 outline-none transition-colors focus:border-yellow-400 focus:bg-white dark:border-stone-800 dark:bg-stone-900 dark:text-white dark:focus:border-yellow-400";
+    "mt-1.5 block w-full rounded-2xl border border-stone-200 bg-stone-50 px-3.5 py-2.5 text-xs font-semibold text-stone-900 outline-none transition-colors focus:border-yellow-400 focus:bg-white dark:border-stone-800 dark:bg-stone-900 dark:text-white dark:focus:border-yellow-400 dark:focus:bg-stone-900 [color-scheme:light] dark:[color-scheme:dark]";
 
   return (
     <div className="space-y-8">
@@ -313,7 +313,11 @@ export default async function UpcomingMeetingsPage({
 
                     <div className="flex items-center gap-3 ml-auto sm:ml-0">
                       {e.call_id ? (
-                        <Link href={`/admin/meeting/${e.call_id}`}>
+                        <Link
+                          href={`/admin/meeting/${e.call_id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
                           <AdminButton
                             size="sm"
                             icon={Video}
