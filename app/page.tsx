@@ -12,6 +12,7 @@ import {
   Clock,
   GraduationCap,
   HeartHandshake,
+  LayoutDashboard,
   Mail,
   MapPin,
   Pencil,
@@ -78,13 +79,13 @@ const features = [
 ];
 
 const subjects = [
-  "Tamil",
-  "English",
-  "Hindi",
-  "Mathematics",
-  "Science",
-  "Social Science",
-  "Computer Science",
+  { name: "Tamil", icon: BookOpen },
+  { name: "English", icon: BookOpen },
+  { name: "Hindi", icon: BookOpen },
+  { name: "Mathematics", icon: Pencil },
+  { name: "Science", icon: Sparkles },
+  { name: "Social Science", icon: Users },
+  { name: "Computer Science", icon: LayoutDashboard },
 ];
 
 const activities = [
@@ -297,14 +298,19 @@ export default function Home() {
             <h3 className="mt-16 text-center text-xl font-bold text-stone-900 dark:text-white">
               Subjects Covered
             </h3>
-            <div className="mt-6 flex flex-wrap justify-center gap-3">
-              {subjects.map((subject) => (
-                <span
-                  key={subject}
-                  className="rounded-full bg-yellow-100 px-4 py-2 text-sm font-medium text-yellow-800 shadow-sm transition-transform hover:scale-105 dark:bg-yellow-900/30 dark:text-yellow-300"
-                >
-                  {subject}
-                </span>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-5">
+              {subjects.map(({ name, icon: Icon }, i) => (
+                <div key={name} className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <Icon className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
+                    <span className="text-base font-semibold text-stone-800 dark:text-stone-100">
+                      {name}
+                    </span>
+                  </div>
+                  {i < subjects.length - 1 && (
+                    <span className="hidden h-1.5 w-1.5 rounded-full bg-stone-300 sm:block dark:bg-stone-700" aria-hidden />
+                  )}
+                </div>
               ))}
             </div>
 
@@ -315,15 +321,19 @@ export default function Home() {
               No tuition fees for 2 months of annual holidays — instead, we
               teach valuable extra-curricular skills.
             </p>
-            <div className="mt-6 flex flex-wrap justify-center gap-3">
-              {activities.map((activity) => (
-                <span
-                  key={activity}
-                  className="rounded-full bg-yellow-50 px-4 py-2 text-sm font-medium text-yellow-800 shadow-sm transition-transform hover:scale-105 dark:bg-yellow-900/30 dark:text-yellow-300"
-                >
-                  {activity}
-                </span>
-              ))}
+            <div className="relative mt-8 -mx-6 overflow-hidden sm:mx-0">
+              <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-white to-transparent dark:from-stone-900" />
+              <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-white to-transparent dark:from-stone-900" />
+              <div className="animate-marquee flex w-max gap-3 px-6">
+                {[...activities, ...activities].map((activity, i) => (
+                  <span
+                    key={`${activity}-${i}`}
+                    className="shrink-0 rounded-full bg-yellow-100 px-5 py-2.5 text-sm font-semibold text-yellow-800 shadow-sm dark:bg-yellow-900/30 dark:text-yellow-300"
+                  >
+                    {activity}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         </section>
