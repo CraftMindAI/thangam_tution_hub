@@ -1,4 +1,4 @@
-import { createClient } from "../../lib/supabase/server";
+import { createClient } from "@/app/lib/supabase/server";
 import MonthCalendar, { type CalendarEvent } from "./MonthCalendar";
 
 function formatTime12h(hour: number, minute: number) {

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "../../lib/supabase/server";
+import { buildStudentPath } from "../../lib/secure-path";
 
 const roleLabels: Record<string, string> = {
   existing_student: "Offline Student",
@@ -79,7 +80,7 @@ export default async function DashboardView({ userId }: { userId: string }) {
             Your Enquiries
           </h2>
           <Link
-            href="/student/enquiry"
+            href={buildStudentPath(userId, "/enquiry")}
             className="text-sm font-semibold text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white"
           >
             Submit new

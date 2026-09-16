@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowRight, Clock } from "../../components/icons";
+import { ArrowRight, Clock } from "@/app/components/icons";
 
 export type CalendarEvent = {
   date: string; // YYYY-MM-DD (local)

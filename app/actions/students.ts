@@ -430,3 +430,93 @@ export async function deleteStudent(formData: FormData) {
   await adminClient.auth.admin.deleteUser(userId);
   revalidatePath("/admin/[sid]/[uid]", "layout");
 }
+
+const phoneRegex = /^[6-9]\d{9}$/;
+
+const optionalTrimmed = (v: FormDataEntryValue | null) =>
+  typeof v === "string" && v.trim() ? v.trim() : null;
+
+const updateStudentProfileSchema = z.object({
+  full_name: z.string().trim().min(2, "Enter your name"),
+  phone: z
+    .string()
+    .trim()
+    .regex(phoneRegex, "Enter a valid 10-digit mobile number"),
+  class: z
+    .string()
+    .transform((v) => normalizeClass(v))
+    .refine(
+      (v): v is (typeof STUDENT_CLASSES)[number] =>
+        (STUDENT_CLASSES as readonly string[]).includes(v),
+      { message: "Choose a valid class" }
+    ),
+  school: z.string().trim().min(1, "School is required"),
+  location: z.string().trim().min(1, "Location is required"),
+  parent_name: z.string().trim().nullable(),
+  parent_phone: z
+    .string()
+    .nullable()
+    .refine((v) => v === null || phoneRegex.test(v), {
+      message: "Enter a valid 10-digit parent mobile number",
+    }),
+  parent_email: z
+    .string()
+    .nullable()
+    .pipe(z.union([z.null(), z.string().trim().email("Enter a valid parent email")])),
+});
+
+export type UpdateStudentProfileState =
+  | { error: string }
+  | { success: true }
+  | undefined;
+
+export async function updateStudentProfile(
+  _state: UpdateStudentProfileState,
+  formData: FormData
+): Promise<UpdateStudentProfileState> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: "You must be signed in to do this." };
+  }
+
+  const parsed = updateStudentProfileSchema.safeParse({
+    full_name: formData.get("full_name"),
+    phone: formData.get("phone"),
+    class: formData.get("class"),
+    school: formData.get("school"),
+    location: formData.get("location"),
+    parent_name: optionalTrimmed(formData.get("parent_name")),
+    parent_phone: optionalTrimmed(formData.get("parent_phone")),
+    parent_email: optionalTrimmed(formData.get("parent_email")),
+  });
+
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid input." };
+  }
+
+  const adminClient = createAdminClient();
+  const { error } = await adminClient
+    .from("profiles")
+    .update({
+      full_name: parsed.data.full_name,
+      phone: parsed.data.phone,
+      class: parsed.data.class,
+      school: parsed.data.school,
+      location: parsed.data.location,
+      parent_name: parsed.data.parent_name,
+      parent_phone: parsed.data.parent_phone,
+      parent_email: parsed.data.parent_email,
+    })
+    .eq("id", user.id);
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath("/student", "layout");
+  return { success: true };
+}

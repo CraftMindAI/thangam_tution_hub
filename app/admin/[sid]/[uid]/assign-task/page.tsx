@@ -1,6 +1,7 @@
 import { createClient } from "@/app/lib/supabase/server";
 import { X, ClipboardList } from "@/app/components/icons";
 import { deleteTask, setTaskStatus } from "@/app/actions/tasks";
+import { getRoster } from "@/app/lib/roster";
 import {
   TASK_STATUSES,
   TASK_STATUS_LABELS,
@@ -39,7 +40,7 @@ function formatDate(d: string) {
 export default async function AssignTaskPage() {
   const supabase = await createClient();
 
-  const [{ data: admins }, { data: tasks }] = await Promise.all([
+  const [{ data: admins }, { data: tasks }, roster] = await Promise.all([
     supabase
       .from("profiles")
       .select("id, full_name")
@@ -49,13 +50,21 @@ export default async function AssignTaskPage() {
       .from("tasks")
       .select("id, title, assigned_to, due_date, due_time, notes, status, created_at")
       .order("created_at", { ascending: false }),
+    getRoster(),
   ]);
 
   const adminOptions = (admins ?? []).map((a) => ({
     id: a.id,
     name: a.full_name ?? "Admin",
   }));
-  const nameById = new Map(adminOptions.map((a) => [a.id, a.name]));
+  const studentOptions = roster.map((s) => ({
+    id: s.userId,
+    name: s.name || s.email || "Student",
+  }));
+  const nameById = new Map([
+    ...adminOptions.map((a) => [a.id, a.name] as const),
+    ...studentOptions.map((s) => [s.id, s.name] as const),
+  ]);
   const rows = (tasks ?? []) as Task[];
 
   return (
@@ -65,7 +74,7 @@ export default async function AssignTaskPage() {
         subtitle="Create, assign, and track progress on administrative operational tasks."
       />
 
-      <TaskForm admins={adminOptions} />
+      <TaskForm admins={adminOptions} students={studentOptions} />
 
       <AdminTableContainer
         header={

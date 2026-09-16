@@ -4,46 +4,100 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Menu, X } from "../../components/icons";
+import { Menu, X, ChevronRight } from "../../components/icons";
 import { signOut } from "../../actions/auth";
-import { buildStudentNav, isActive } from "../_lib/nav";
+import { buildStudentNav, isActive, studentBase } from "../_lib/nav";
 
 export default function StudentShell({
   children,
   studentName,
   studentEmail,
-  dashboardHref,
 }: {
   children: React.ReactNode;
   studentName: string;
   studentEmail: string;
-  dashboardHref: string;
 }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [hoveredHref, setHoveredHref] = useState<string | null>(null);
 
-  const studentNav = buildStudentNav(dashboardHref);
-  const current = studentNav.find((item) => isActive(pathname, item));
+  const base = studentBase(pathname);
+  const studentNav = buildStudentNav(base);
+  const flatNav = studentNav.flatMap((item) =>
+    item.children ? [item, ...item.children] : [item]
+  );
+  const current = [...flatNav]
+    .sort((a, b) => b.href.length - a.href.length)
+    .find((item) => isActive(pathname, item) || pathname.startsWith(`${item.href}/`));
   const pageTitle = current?.label ?? "Student Portal";
 
   const nav = (
     <nav className="flex flex-1 flex-col gap-1 px-3">
       {studentNav.map((item) => {
         const active = isActive(pathname, item);
+        const childOnPath =
+          item.children?.some((c) => isActive(pathname, c)) ?? false;
+        const sectionOpen =
+          Boolean(item.children) &&
+          (active || childOnPath || hoveredHref === item.href);
+
         return (
-          <Link
+          <div
             key={item.href}
-            href={item.href}
-            onClick={() => setMobileOpen(false)}
-            className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
-              active
-                ? "bg-gradient-to-r from-stone-700 to-stone-900 text-white shadow-sm shadow-stone-900/20"
-                : "text-stone-600 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-stone-800 dark:hover:text-white"
-            }`}
+            onMouseEnter={() => item.children && setHoveredHref(item.href)}
+            onMouseLeave={() => setHoveredHref(null)}
           >
-            <item.icon className="h-4.5 w-4.5 shrink-0" />
-            {item.label}
-          </Link>
+            <Link
+              href={item.href}
+              onClick={() => setMobileOpen(false)}
+              className={`flex items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
+                active
+                  ? "bg-gradient-to-r from-stone-700 to-stone-900 text-white shadow-sm shadow-stone-900/20"
+                  : "text-stone-600 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-stone-800 dark:hover:text-white"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <item.icon className="h-4.5 w-4.5 shrink-0" />
+                {item.label}
+              </div>
+              {item.children && (
+                <ChevronRight
+                  className={`h-3.5 w-3.5 transition-transform duration-200 ${
+                    sectionOpen ? "rotate-90" : ""
+                  }`}
+                />
+              )}
+            </Link>
+
+            {item.children && sectionOpen && (
+              <div className="mt-1 ml-5 flex flex-col gap-0.5 border-l-2 border-stone-200 pl-3 dark:border-stone-800">
+                {item.children.map((child) => {
+                  const childActive = isActive(pathname, child);
+                  return (
+                    <Link
+                      key={child.href}
+                      href={child.href}
+                      onClick={() => setMobileOpen(false)}
+                      className={`flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-semibold transition-colors ${
+                        childActive
+                          ? "text-stone-900 dark:text-white"
+                          : "text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white"
+                      }`}
+                    >
+                      <span
+                        className={`h-1.5 w-1.5 rounded-full ${
+                          childActive
+                            ? "bg-stone-700 dark:bg-stone-300"
+                            : "bg-stone-300 dark:bg-stone-700"
+                        }`}
+                      />
+                      {child.label}
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         );
       })}
     </nav>

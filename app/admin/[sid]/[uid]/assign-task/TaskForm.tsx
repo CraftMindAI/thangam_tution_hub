@@ -10,7 +10,13 @@ const inputClass =
 
 export type AdminOption = { id: string; name: string };
 
-export default function TaskForm({ admins }: { admins: AdminOption[] }) {
+export default function TaskForm({
+  admins,
+  students,
+}: {
+  admins: AdminOption[];
+  students: AdminOption[];
+}) {
   const [state, formAction, pending] = useActionState(createTask, undefined);
 
   // Remount the form (clearing its fields) after a successful submit.
@@ -65,7 +71,7 @@ export default function TaskForm({ admins }: { admins: AdminOption[] }) {
 
           <div>
             <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
-              Assign To Admin Staff
+              Assign To
               <select
                 name="assigned_to"
                 required
@@ -73,13 +79,26 @@ export default function TaskForm({ admins }: { admins: AdminOption[] }) {
                 className={inputClass}
               >
                 <option value="" disabled>
-                  Select Administrator
+                  Select a person
                 </option>
-                {admins.map((a) => (
-                  <option key={a.id} value={a.id}>
-                    {a.name}
-                  </option>
-                ))}
+                {admins.length > 0 && (
+                  <optgroup label="Admin Staff">
+                    {admins.map((a) => (
+                      <option key={a.id} value={a.id}>
+                        {a.name}
+                      </option>
+                    ))}
+                  </optgroup>
+                )}
+                {students.length > 0 && (
+                  <optgroup label="Students">
+                    {students.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.name}
+                      </option>
+                    ))}
+                  </optgroup>
+                )}
               </select>
             </label>
           </div>
