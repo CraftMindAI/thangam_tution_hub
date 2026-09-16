@@ -58,9 +58,17 @@ function buildBase(root: "student" | "admin", userId: string): string {
   return `/${root}/${encryptSegment(userNumber(userId))}/${encryptSegment(userId)}`;
 }
 
+/**
+ * A student panel URL, e.g. buildStudentPath(id, "/calendar").
+ * Defaults to the student dashboard.
+ */
+export function buildStudentPath(userId: string, subpath = "/dashboard"): string {
+  return `${buildBase("student", userId)}${subpath}`;
+}
+
 /** The canonical dashboard URL for a student. */
 export function buildStudentDashboardPath(userId: string): string {
-  return `${buildBase("student", userId)}/dashboard`;
+  return buildStudentPath(userId, "/dashboard");
 }
 
 /**

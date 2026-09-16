@@ -70,6 +70,7 @@ export async function signUp(
     class: input.standard,
     school: input.school_name ?? null,
     location: input.location,
+    parent_name: input.parent_name,
     parent_phone: input.parent_phone,
     parent_email: input.parent_email ?? null,
   });

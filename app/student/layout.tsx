@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import { createClient } from "../lib/supabase/server";
-import { buildStudentDashboardPath } from "../lib/secure-path";
 import StudentShell from "./_components/StudentShell";
 
 export default async function StudentLayout({
@@ -25,7 +24,6 @@ export default async function StudentLayout({
     <StudentShell
       studentName={profile?.full_name ?? user.email ?? "Student"}
       studentEmail={user.email ?? ""}
-      dashboardHref={buildStudentDashboardPath(user.id)}
     >
       {children}
     </StudentShell>

@@ -44,6 +44,6 @@ export async function submitStudentEnquiry(
     return { errors: {}, formError: error.message };
   }
 
-  revalidatePath("/student/enquiry");
+  revalidatePath("/student/[sid]/[uid]", "layout");
   return { success: true };
 }

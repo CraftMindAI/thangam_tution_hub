@@ -35,6 +35,23 @@ async function requireAdmin(): Promise<AdminCheck> {
   return { ok: true, supabase, userId: user.id };
 }
 
+type AuthedCheck =
+  | { ok: false; error: string }
+  | { ok: true; supabase: Supabase; userId: string };
+
+async function requireAuthed(): Promise<AuthedCheck> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { ok: false, error: "You must be signed in." };
+  }
+
+  return { ok: true, supabase, userId: user.id };
+}
+
 const optionalText = (v: FormDataEntryValue | null) =>
   typeof v === "string" && v.trim() ? v.trim() : null;
 
@@ -85,11 +102,12 @@ export async function createTask(
   if (error) return { error: error.message };
 
   revalidatePath("/admin/[sid]/[uid]", "layout");
+  revalidatePath("/student/[sid]/[uid]", "layout");
   return { success: true, message: `Task "${parsed.data.title}" assigned.` };
 }
 
 export async function setTaskStatus(formData: FormData) {
-  const auth = await requireAdmin();
+  const auth = await requireAuthed();
   if (!auth.ok) return;
 
   const id = formData.get("id");
@@ -97,8 +115,11 @@ export async function setTaskStatus(formData: FormData) {
   if (typeof id !== "string" || !id) return;
   if (!TASK_STATUSES.includes(status as TaskStatus)) return;
 
+  // RLS (tasks_select_own_or_admin / tasks_update_own_status_or_admin) makes
+  // this a no-op unless the caller is the assignee or an admin.
   await auth.supabase.from("tasks").update({ status }).eq("id", id);
   revalidatePath("/admin/[sid]/[uid]", "layout");
+  revalidatePath("/student/[sid]/[uid]", "layout");
 }
 
 export async function deleteTask(formData: FormData) {

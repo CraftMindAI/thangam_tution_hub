@@ -2,123 +2,205 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Menu, X } from "../../components/icons";
+import { Menu, X, ChevronRight, Award, LogOut } from "../../components/icons";
 import { signOut } from "../../actions/auth";
-import { buildStudentNav, isActive } from "../_lib/nav";
+import { buildStudentNav, isActive, studentBase } from "../_lib/nav";
+import { AdminThemeProvider, ThemeToggle } from "@/app/admin/_components/ui";
 
-export default function StudentShell({
+function StudentShellContent({
   children,
   studentName,
   studentEmail,
-  dashboardHref,
 }: {
   children: React.ReactNode;
   studentName: string;
   studentEmail: string;
-  dashboardHref: string;
 }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [hoveredHref, setHoveredHref] = useState<string | null>(null);
 
-  const studentNav = buildStudentNav(dashboardHref);
-  const current = studentNav.find((item) => isActive(pathname, item));
+  const base = studentBase(pathname);
+  const studentNav = buildStudentNav(base);
+  const flatNav = studentNav.flatMap((item) =>
+    item.children ? [item, ...item.children] : [item]
+  );
+  const current = [...flatNav]
+    .sort((a, b) => b.href.length - a.href.length)
+    .find((item) => isActive(pathname, item) || pathname.startsWith(`${item.href}/`));
   const pageTitle = current?.label ?? "Student Portal";
 
+  const studentInitial = (studentName || "S").trim().charAt(0).toUpperCase();
+
   const nav = (
-    <nav className="flex flex-1 flex-col gap-1 px-3">
+    <nav className="flex flex-1 flex-col gap-1.5 px-4">
       {studentNav.map((item) => {
         const active = isActive(pathname, item);
+        const childOnPath =
+          item.children?.some((c) => isActive(pathname, c)) ?? false;
+        const sectionOpen =
+          Boolean(item.children) &&
+          (active || childOnPath || hoveredHref === item.href);
+
         return (
-          <Link
+          <div
             key={item.href}
-            href={item.href}
-            onClick={() => setMobileOpen(false)}
-            className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
-              active
-                ? "bg-gradient-to-r from-stone-700 to-stone-900 text-white shadow-sm shadow-stone-900/20"
-                : "text-stone-600 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-stone-800 dark:hover:text-white"
-            }`}
+            onMouseEnter={() => item.children && setHoveredHref(item.href)}
+            onMouseLeave={() => setHoveredHref(null)}
           >
-            <item.icon className="h-4.5 w-4.5 shrink-0" />
-            {item.label}
-          </Link>
+            <Link
+              href={item.href}
+              onClick={() => setMobileOpen(false)}
+              className={`flex items-center justify-between gap-3 rounded-2xl px-4 py-3 text-xs font-bold transition-all duration-200 ${
+                active
+                  ? "bg-yellow-400 text-stone-950 shadow-md shadow-yellow-500/20 scale-[1.01]"
+                  : "text-stone-600 hover:bg-stone-100/80 hover:text-stone-950 dark:text-stone-400 dark:hover:bg-stone-900/60 dark:hover:text-white"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <item.icon className="h-4.5 w-4.5 shrink-0" />
+                <span>{item.label}</span>
+              </div>
+              {item.children && (
+                <ChevronRight
+                  className={`h-3.5 w-3.5 transition-transform duration-200 ${
+                    sectionOpen ? "rotate-90" : ""
+                  } ${active ? "text-stone-900" : "text-stone-400"}`}
+                />
+              )}
+            </Link>
+
+            {item.children && sectionOpen && (
+              <div className="mt-1 ml-5 flex flex-col gap-0.5 border-l-2 border-stone-200 pl-3 dark:border-stone-800">
+                {item.children.map((child) => {
+                  const childActive = isActive(pathname, child);
+                  return (
+                    <Link
+                      key={child.href}
+                      href={child.href}
+                      onClick={() => setMobileOpen(false)}
+                      className={`flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-semibold transition-colors ${
+                        childActive
+                          ? "bg-yellow-400/20 text-stone-950 dark:bg-yellow-400/20 dark:text-yellow-300 font-bold"
+                          : "text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white"
+                      }`}
+                    >
+                      <span
+                        className={`h-1.5 w-1.5 rounded-full ${
+                          childActive
+                            ? "bg-yellow-500 dark:bg-yellow-400"
+                            : "bg-stone-300 dark:bg-stone-700"
+                        }`}
+                      />
+                      {child.label}
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         );
       })}
     </nav>
   );
 
   return (
-    <div className="flex flex-1 bg-stone-50 text-stone-900 dark:bg-stone-900 dark:text-stone-100">
+    <div
+      data-admin-shell="true"
+      className="flex h-screen h-[100dvh] overflow-hidden bg-[#f8f9fa] text-stone-900 dark:bg-[#0c0d12] dark:text-stone-100 transition-colors duration-200 font-sans"
+    >
       {/* Desktop sidebar */}
-      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-stone-200/70 bg-white py-5 lg:flex dark:border-stone-800 dark:bg-stone-800">
-        <Link href="/" className="flex items-center gap-2.5 px-6 pb-5">
-          <span className="relative flex h-9 w-9 shrink-0 overflow-hidden rounded-xl shadow-md shadow-stone-900/20">
-            <Image
-              src="/logo.jpeg"
-              alt="Thangam Varahi Tuition Hub"
-              fill
-              sizes="36px"
-              className="object-cover"
-            />
+      <aside className="hidden h-full w-72 shrink-0 flex-col border-r border-stone-200/80 bg-white py-6 lg:flex dark:border-stone-800/80 dark:bg-[#121318]">
+        {/* Logo / Brand */}
+        <Link href="/" className="flex items-center gap-3 px-6 pb-6 group">
+          <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-yellow-400 text-stone-950 shadow-md shadow-yellow-500/25 transition-transform group-hover:scale-105">
+            <Award className="h-6 w-6" />
           </span>
-          <span className="text-sm font-extrabold leading-tight tracking-tight text-stone-900 dark:text-white">
-            Thangam Varahi
-            <span className="block text-xs font-semibold text-stone-500 dark:text-stone-400">
+          <div>
+            <span className="text-base font-extrabold leading-tight tracking-tight text-stone-900 dark:text-white block">
+              Thangam Varahi
+            </span>
+            <span className="inline-block text-[11px] font-bold uppercase tracking-wider text-yellow-600 dark:text-yellow-400">
               Student Portal
             </span>
-          </span>
-        </Link>
-        {nav}
-        <div className="mt-auto border-t border-stone-200/70 px-3 pt-4 dark:border-stone-700">
-          <div className="px-3 pb-2">
-            <p className="truncate text-sm font-semibold text-stone-800 dark:text-stone-200">
-              {studentName}
-            </p>
-            <p className="truncate text-xs text-stone-500 dark:text-stone-400">
-              {studentEmail}
-            </p>
           </div>
-          <form action={signOut}>
-            <button
-              type="submit"
-              className="w-full rounded-xl px-3 py-2 text-left text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-stone-800 dark:hover:text-white"
-            >
-              Sign Out
-            </button>
-          </form>
+        </Link>
+
+        {/* Navigation list */}
+        <div className="flex-1 overflow-y-auto no-scrollbar">{nav}</div>
+
+        {/* Student Profile in sidebar footer */}
+        <div className="mt-auto border-t border-stone-200/80 p-4 dark:border-stone-800/80">
+          <div className="flex items-center gap-3 rounded-2xl bg-stone-100/80 p-2.5 dark:bg-stone-900/60 border border-stone-200/60 dark:border-stone-800/60">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-yellow-400 text-stone-950 font-black text-sm shadow-sm">
+              {studentInitial}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-xs font-bold text-stone-900 dark:text-white">
+                {studentName}
+              </p>
+              <p className="truncate text-[11px] text-stone-500 dark:text-stone-400">
+                {studentEmail}
+              </p>
+            </div>
+            <form action={signOut} className="shrink-0">
+              <button
+                type="submit"
+                title="Sign Out"
+                className="flex h-8 w-8 items-center justify-center rounded-xl text-stone-400 hover:bg-white hover:text-stone-900 dark:hover:bg-stone-800 dark:hover:text-white transition-colors"
+              >
+                <LogOut className="h-4 w-4" />
+              </button>
+            </form>
+          </div>
         </div>
       </aside>
 
       {/* Mobile drawer */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-40 lg:hidden">
+        <div className="fixed inset-0 z-50 lg:hidden">
           <div
-            className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
             onClick={() => setMobileOpen(false)}
           />
-          <aside className="absolute left-0 top-0 flex h-full w-64 flex-col border-r border-stone-200/70 bg-white py-5 dark:border-stone-800 dark:bg-stone-900">
-            <div className="flex items-center justify-between px-6 pb-5">
-              <span className="text-sm font-extrabold tracking-tight text-stone-900 dark:text-white">
-                Student Portal
-              </span>
+          <aside className="absolute left-0 top-0 flex h-full w-72 flex-col border-r border-stone-200/80 bg-white py-6 dark:border-stone-800/80 dark:bg-[#121318] shadow-2xl">
+            <div className="flex items-center justify-between px-6 pb-6">
+              <div className="flex items-center gap-2.5">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-yellow-400 text-stone-950 shadow-md">
+                  <Award className="h-5 w-5" />
+                </span>
+                <span className="text-sm font-extrabold tracking-tight text-stone-900 dark:text-white">
+                  Student Portal
+                </span>
+              </div>
               <button
                 type="button"
                 onClick={() => setMobileOpen(false)}
                 aria-label="Close menu"
-                className="text-stone-500 hover:text-stone-800 dark:hover:text-white"
+                className="rounded-xl p-1.5 text-stone-400 hover:bg-stone-100 hover:text-stone-700 dark:hover:bg-stone-800 dark:hover:text-white"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
-            {nav}
-            <div className="mt-auto border-t border-stone-200/70 px-3 pt-4 dark:border-stone-700">
+
+            <div className="flex-1 overflow-y-auto no-scrollbar">{nav}</div>
+
+            <div className="mt-auto border-t border-stone-200/80 p-4 dark:border-stone-800/80">
+              <div className="mb-3 px-2">
+                <p className="truncate text-xs font-bold text-stone-800 dark:text-stone-200">
+                  {studentName}
+                </p>
+                <p className="truncate text-[11px] text-stone-500 dark:text-stone-400">
+                  {studentEmail}
+                </p>
+              </div>
               <form action={signOut}>
                 <button
                   type="submit"
-                  className="w-full rounded-xl px-3 py-2 text-left text-sm font-medium text-stone-600 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-stone-800 dark:hover:text-white"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-stone-100 px-4 py-2.5 text-xs font-bold text-stone-700 hover:bg-stone-200 dark:bg-stone-800 dark:text-stone-200 dark:hover:bg-stone-700"
                 >
+                  <LogOut className="h-3.5 w-3.5" />
                   Sign Out
                 </button>
               </form>
@@ -127,26 +209,54 @@ export default function StudentShell({
         </div>
       )}
 
-      {/* Main column */}
-      <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-stone-200/70 bg-white/90 px-4 py-3 backdrop-blur sm:px-6 dark:border-stone-800 dark:bg-stone-800/90">
-          <button
-            type="button"
-            onClick={() => setMobileOpen(true)}
-            aria-label="Open menu"
-            className="rounded-lg p-1.5 text-stone-600 hover:bg-stone-100 lg:hidden dark:text-stone-300 dark:hover:bg-stone-700"
-          >
-            <Menu className="h-5 w-5" />
-          </button>
-          <h1 className="text-base font-bold tracking-tight text-stone-900 dark:text-white">
-            {pageTitle}
-          </h1>
+      {/* Main Column */}
+      <div className="flex min-w-0 flex-1 flex-col h-full overflow-hidden">
+        {/* Top header */}
+        <header className="shrink-0 z-30 flex items-center justify-between border-b border-stone-200/80 bg-white/80 px-4 py-3 backdrop-blur-md sm:px-8 dark:border-stone-800/80 dark:bg-[#121318]/80">
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setMobileOpen(true)}
+              aria-label="Open menu"
+              className="rounded-xl p-2 text-stone-600 hover:bg-stone-100 lg:hidden dark:text-stone-300 dark:hover:bg-stone-800"
+            >
+              <Menu className="h-5 w-5" />
+            </button>
+            <div>
+              <h1 className="text-base sm:text-lg font-extrabold tracking-tight text-stone-900 dark:text-white flex items-center gap-2">
+                {pageTitle}
+              </h1>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <ThemeToggle className="inline-flex" />
+          </div>
         </header>
 
-        <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-5xl">{children}</div>
+        {/* Page Content */}
+        <main className="flex-1 overflow-y-auto no-scrollbar px-4 py-5 sm:px-8 lg:px-10">
+          <div className="mx-auto max-w-6xl">{children}</div>
         </main>
       </div>
     </div>
+  );
+}
+
+export default function StudentShell({
+  children,
+  studentName,
+  studentEmail,
+}: {
+  children: React.ReactNode;
+  studentName: string;
+  studentEmail: string;
+}) {
+  return (
+    <AdminThemeProvider>
+      <StudentShellContent studentName={studentName} studentEmail={studentEmail}>
+        {children}
+      </StudentShellContent>
+    </AdminThemeProvider>
   );
 }
