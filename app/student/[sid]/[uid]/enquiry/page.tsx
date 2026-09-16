@@ -1,19 +1,16 @@
+import { AdminPageHeader } from "@/app/admin/_components/ui";
 import NewEnquiryForm from "./NewEnquiryForm";
 
 export default function StudentEnquiry() {
   return (
     <div className="space-y-6">
-      <p className="text-sm text-stone-600 dark:text-stone-400">
-        Raise a question or doubt about your class.
-      </p>
+      <AdminPageHeader
+        title="Enquiry"
+        subtitle="Raise a question, subject doubt, or query with your tutors."
+      />
 
-      <div>
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-yellow-700 dark:text-yellow-400">
-          Submit a New Enquiry
-        </h2>
-        <div className="mt-3">
-          <NewEnquiryForm />
-        </div>
+      <div className="max-w-2xl">
+        <NewEnquiryForm />
       </div>
     </div>
   );

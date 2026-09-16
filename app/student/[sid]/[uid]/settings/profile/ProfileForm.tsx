@@ -67,10 +67,10 @@ export default function ProfileForm({
     STUDENT_TYPE_LABELS[role as StudentType] ?? "Student";
 
   const fieldClass = (locked: boolean) =>
-    `mt-1.5 w-full rounded-2xl border px-4 py-2.5 text-xs font-semibold outline-none transition-colors ${
+    `mt-1.5 w-full rounded-2xl border px-4 py-2.5 text-xs font-semibold outline-none transition-colors [color-scheme:light] dark:[color-scheme:dark] ${
       locked
-        ? "border-stone-200 bg-stone-100 text-stone-500 dark:border-stone-800 dark:bg-stone-900/60 dark:text-stone-400 cursor-not-allowed"
-        : "border-stone-200 bg-stone-50 text-stone-900 placeholder:text-stone-400 focus:border-stone-400 focus:bg-white dark:border-stone-800 dark:bg-stone-900 dark:text-white dark:focus:border-stone-400 dark:focus:bg-stone-900"
+        ? "border-stone-200 bg-stone-100/80 text-stone-400 dark:border-stone-800 dark:bg-stone-900/40 dark:text-stone-500 cursor-not-allowed"
+        : "border-stone-200 bg-stone-50 text-stone-900 placeholder:text-stone-400 focus:border-yellow-400 focus:bg-white dark:border-stone-800 dark:bg-stone-900 dark:text-white dark:focus:border-yellow-400 dark:focus:bg-stone-900"
     }`;
 
   return (
@@ -78,7 +78,7 @@ export default function ProfileForm({
       <AdminCard className="p-6 sm:p-8">
         <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-stone-100 dark:border-stone-800/80">
           <div className="flex items-center gap-4">
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-stone-800 text-white font-black text-2xl shadow-md shadow-stone-900/20">
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-yellow-400 text-stone-950 font-black text-2xl shadow-md shadow-yellow-500/20">
               {initial}
             </div>
             <div>
@@ -86,7 +86,7 @@ export default function ProfileForm({
                 <h2 className="text-xl font-extrabold text-stone-900 dark:text-white">
                   {fullName || "Student"}
                 </h2>
-                <AdminBadge variant="gray">{roleLabel}</AdminBadge>
+                <AdminBadge variant="yellow">{roleLabel}</AdminBadge>
               </div>
               <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
                 {email}
@@ -108,19 +108,19 @@ export default function ProfileForm({
         </div>
 
         {state && "error" in state && (
-          <div className="mt-4 rounded-2xl bg-yellow-400/20 p-3.5 text-xs font-bold text-yellow-800 dark:text-yellow-300 border border-yellow-400/40">
+          <div className="mt-4 rounded-2xl bg-red-500/10 p-3.5 text-xs font-bold text-red-600 dark:text-red-400 border border-red-500/20">
             {state.error}
           </div>
         )}
         {state && "success" in state && !editing && (
-          <div className="mt-4 rounded-2xl bg-emerald-500/15 p-3.5 text-xs font-bold text-emerald-700 dark:text-emerald-300 border border-emerald-500/20">
+          <div className="mt-4 rounded-2xl bg-yellow-400/15 p-3.5 text-xs font-bold text-yellow-800 dark:text-yellow-300 border border-yellow-400/30">
             Profile updated successfully.
           </div>
         )}
 
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
               Full Name
               <input
                 name="full_name"
@@ -136,7 +136,7 @@ export default function ProfileForm({
           </div>
 
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
               Phone Number
               <input
                 name="phone"
@@ -154,7 +154,7 @@ export default function ProfileForm({
           </div>
 
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-stone-400 dark:text-stone-500">
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-400 dark:text-stone-500">
               Registered Email (Locked)
               <input
                 type="email"
@@ -166,7 +166,7 @@ export default function ProfileForm({
           </div>
 
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-stone-400 dark:text-stone-500">
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-400 dark:text-stone-500">
               Account Type
               <input
                 type="text"
@@ -181,7 +181,7 @@ export default function ProfileForm({
 
       <AdminCard className="p-6 sm:p-8">
         <div className="flex items-center gap-3 pb-6 border-b border-stone-100 dark:border-stone-800/80">
-          <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-stone-100 text-stone-700 dark:bg-stone-800 dark:text-stone-300">
+          <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-yellow-400/15 text-yellow-600 dark:bg-yellow-400/20 dark:text-yellow-400 font-bold">
             <GraduationCap className="h-6 w-6" />
           </span>
           <div>
@@ -196,7 +196,7 @@ export default function ProfileForm({
 
         <div className="mt-6 grid gap-4 sm:grid-cols-3">
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
               School Name
               <input
                 name="school"
@@ -211,7 +211,7 @@ export default function ProfileForm({
             </label>
           </div>
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
               Class
               <select
                 name="class"
@@ -233,7 +233,7 @@ export default function ProfileForm({
             </label>
           </div>
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
               Location
               <input
                 name="location"
@@ -252,7 +252,7 @@ export default function ProfileForm({
 
       <AdminCard className="p-6 sm:p-8">
         <div className="flex items-center gap-3 pb-6 border-b border-stone-100 dark:border-stone-800/80">
-          <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-stone-100 text-stone-700 dark:bg-stone-800 dark:text-stone-300">
+          <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-yellow-400/15 text-yellow-600 dark:bg-yellow-400/20 dark:text-yellow-400 font-bold">
             <HeartHandshake className="h-6 w-6" />
           </span>
           <div>
@@ -267,7 +267,7 @@ export default function ProfileForm({
 
         <div className="mt-6 grid gap-4 sm:grid-cols-3">
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
               Parent&apos;s Name
               <input
                 name="parent_name"
@@ -281,7 +281,7 @@ export default function ProfileForm({
             </label>
           </div>
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
               Parent&apos;s Phone Number
               <input
                 name="parent_phone"
@@ -297,7 +297,7 @@ export default function ProfileForm({
             </label>
           </div>
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
               Parent&apos;s Email
               <input
                 name="parent_email"

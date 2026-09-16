@@ -16,10 +16,10 @@ import {
   tableClasses,
 } from "@/app/admin/_components/ui";
 
-const statusBadgeVariant: Record<TaskStatus, "warning" | "yellow" | "gray"> = {
+const statusBadgeVariant: Record<TaskStatus, "warning" | "yellow" | "success"> = {
   pending: "warning",
   in_progress: "yellow",
-  completed: "gray",
+  completed: "success",
 };
 
 function formatTime(t: string) {
@@ -108,13 +108,13 @@ export default async function StudentViewTasksPage() {
                   <td className={`${tableClasses.td} text-right`}>
                     <form
                       action={setTaskStatus}
-                      className="flex items-center justify-end gap-1.5"
+                      className="flex items-center justify-end gap-2"
                     >
                       <input type="hidden" name="id" value={t.id} />
                       <select
                         name="status"
                         defaultValue={t.status}
-                        className="rounded-xl border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-xs font-bold text-stone-800 outline-none dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200 focus:border-stone-400"
+                        className="rounded-xl border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-xs font-bold text-stone-800 outline-none transition-colors focus:border-yellow-400 focus:bg-white dark:border-stone-800 dark:bg-stone-900 dark:text-stone-200 dark:focus:border-yellow-400 dark:focus:bg-stone-900 [color-scheme:light] dark:[color-scheme:dark]"
                       >
                         {TASK_STATUSES.map((s) => (
                           <option key={s} value={s}>
@@ -122,7 +122,7 @@ export default async function StudentViewTasksPage() {
                           </option>
                         ))}
                       </select>
-                      <AdminButton type="submit" size="sm" variant="outline">
+                      <AdminButton type="submit" size="sm" variant="secondary">
                         Update
                       </AdminButton>
                     </form>

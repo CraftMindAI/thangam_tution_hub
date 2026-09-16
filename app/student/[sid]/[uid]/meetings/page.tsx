@@ -1,14 +1,16 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/app/lib/supabase/server";
 import {
   MEETING_TYPE_LABELS,
   type MeetingType,
 } from "@/app/lib/calendar";
-import { CalendarClock } from "@/app/components/icons";
+import { CalendarClock, Video } from "@/app/components/icons";
 import {
   AdminPageHeader,
   AdminCard,
   AdminBadge,
+  AdminButton,
 } from "@/app/admin/_components/ui";
 
 type EventRow = {
@@ -18,6 +20,7 @@ type EventRow = {
   duration_minutes: number;
   meeting_type: MeetingType;
   class_filter: string | null;
+  call_id: string | null;
 };
 
 function ymd(d: Date) {
@@ -70,7 +73,7 @@ export default async function StudentMeetingsPage() {
 
   const { data } = await supabase
     .from("calendar_events")
-    .select("id, title, starts_at, duration_minutes, meeting_type, class_filter")
+    .select("id, title, starts_at, duration_minutes, meeting_type, class_filter, call_id")
     .gte("starts_at", startOfToday.toISOString())
     .order("starts_at", { ascending: true });
 
@@ -107,8 +110,8 @@ export default async function StudentMeetingsPage() {
         [...groups.entries()].map(([key, list]) => (
           <section key={key} className="space-y-4">
             <div className="flex items-center gap-3">
-              <span className="h-2 w-2 rounded-full bg-stone-700 dark:bg-stone-300" />
-              <h2 className="text-xs font-extrabold uppercase tracking-widest text-stone-900 dark:text-stone-300">
+              <span className="h-2 w-2 rounded-full bg-yellow-400" />
+              <h2 className="text-xs font-extrabold uppercase tracking-widest text-stone-900 dark:text-yellow-400">
                 {dayHeading(new Date(`${key}T00:00:00`), todayKey, tomorrowKey)}
               </h2>
               <span className="text-xs font-semibold text-stone-400">
@@ -126,10 +129,10 @@ export default async function StudentMeetingsPage() {
                 return (
                   <AdminCard
                     key={e.id}
-                    className="p-5 flex flex-wrap items-center justify-between gap-4"
+                    className="p-5 flex flex-wrap items-center justify-between gap-4 transition-all hover:border-yellow-400/50"
                   >
                     <div className="flex items-start gap-4 min-w-0">
-                      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-stone-100 text-stone-700 dark:bg-stone-800 dark:text-stone-300 font-black">
+                      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-yellow-400/15 text-yellow-600 dark:bg-yellow-400/20 dark:text-yellow-400 font-black">
                         <CalendarClock className="h-6 w-6" />
                       </span>
                       <div className="min-w-0">
@@ -162,6 +165,28 @@ export default async function StudentMeetingsPage() {
                           )}
                         </div>
                       </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 ml-auto sm:ml-0">
+                      {e.call_id ? (
+                        <Link
+                          href={`/admin/meeting/${e.call_id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <AdminButton
+                            size="sm"
+                            icon={Video}
+                            className={isLive ? "animate-pulse" : ""}
+                          >
+                            {isLive ? "Join Class Now" : "Join Video Call"}
+                          </AdminButton>
+                        </Link>
+                      ) : (
+                        <span className="text-xs font-medium text-stone-400">
+                          No Call Link
+                        </span>
+                      )}
                     </div>
                   </AdminCard>
                 );

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ArrowRight, Clock } from "@/app/components/icons";
+import { AdminCard } from "@/app/admin/_components/ui";
 
 export type CalendarEvent = {
   date: string; // YYYY-MM-DD (local)
@@ -45,15 +46,15 @@ export default function MonthCalendar({ events }: { events: CalendarEvent[] }) {
   }
 
   return (
-    <div className="rounded-2xl border border-stone-200/70 bg-white p-5 shadow-sm dark:border-stone-800 dark:bg-stone-800">
-      <div className="flex items-center justify-between">
-        <h2 className="font-semibold text-stone-900 dark:text-white">{monthLabel}</h2>
-        <div className="flex gap-1">
+    <AdminCard className="p-6">
+      <div className="flex items-center justify-between pb-4 border-b border-stone-200/70 dark:border-stone-800">
+        <h2 className="text-base font-bold text-stone-900 dark:text-white">{monthLabel}</h2>
+        <div className="flex gap-1.5">
           <button
             type="button"
             onClick={() => setCursor(new Date(year, month - 1, 1))}
             aria-label="Previous month"
-            className="flex h-8 w-8 items-center justify-center rounded-full text-stone-500 hover:bg-stone-100 dark:text-stone-400 dark:hover:bg-stone-700"
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-stone-200 text-stone-600 hover:bg-yellow-400 hover:border-yellow-400 hover:text-stone-950 dark:border-stone-800 dark:text-stone-300 dark:hover:bg-yellow-400 dark:hover:border-yellow-400 dark:hover:text-stone-950 transition-colors"
           >
             <ArrowRight className="h-4 w-4 rotate-180" />
           </button>
@@ -61,14 +62,14 @@ export default function MonthCalendar({ events }: { events: CalendarEvent[] }) {
             type="button"
             onClick={() => setCursor(new Date(year, month + 1, 1))}
             aria-label="Next month"
-            className="flex h-8 w-8 items-center justify-center rounded-full text-stone-500 hover:bg-stone-100 dark:text-stone-400 dark:hover:bg-stone-700"
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-stone-200 text-stone-600 hover:bg-yellow-400 hover:border-yellow-400 hover:text-stone-950 dark:border-stone-800 dark:text-stone-300 dark:hover:bg-yellow-400 dark:hover:border-yellow-400 dark:hover:text-stone-950 transition-colors"
           >
             <ArrowRight className="h-4 w-4" />
           </button>
         </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-7 gap-1 text-center text-xs font-semibold uppercase tracking-wide text-stone-400 dark:text-stone-500">
+      <div className="mt-4 grid grid-cols-7 gap-2 text-center text-xs font-bold uppercase tracking-wider text-stone-400 dark:text-stone-500">
         {weekdays.map((w) => (
           <div key={w} className="py-1">
             {w}
@@ -76,59 +77,70 @@ export default function MonthCalendar({ events }: { events: CalendarEvent[] }) {
         ))}
       </div>
 
-      <div className="mt-1 grid grid-cols-7 gap-1">
+      <div className="mt-2 grid grid-cols-7 gap-2">
         {cells.map((cell, i) => {
-          if (cell.day === null) return <div key={i} />;
+          if (cell.day === null) return <div key={i} className="min-h-20" />;
           const dayEvents = eventsByDate.get(cell.key!) ?? [];
           const isToday = cell.key === todayKey;
           return (
             <div
               key={cell.key}
-              className={`flex min-h-16 flex-col items-center rounded-lg p-1.5 text-sm ${
+              className={`flex min-h-20 flex-col items-center rounded-2xl p-2 text-sm transition-all ${
                 isToday
-                  ? "bg-yellow-50 dark:bg-yellow-900/30"
-                  : "hover:bg-stone-50 dark:hover:bg-stone-700/40"
+                  ? "border border-yellow-400 bg-yellow-400/10 dark:bg-yellow-400/10 shadow-xs"
+                  : "border border-stone-100 bg-stone-50/50 hover:bg-stone-100/60 dark:border-stone-800/60 dark:bg-stone-900/40 dark:hover:bg-stone-800/60"
               }`}
             >
               <span
-                className={`flex h-6 w-6 items-center justify-center rounded-full ${
+                className={`flex h-7 w-7 items-center justify-center rounded-full text-xs transition-colors ${
                   isToday
-                    ? "bg-stone-800 font-semibold text-white dark:bg-stone-100 dark:text-stone-900"
-                    : "text-stone-700 dark:text-stone-300"
+                    ? "bg-yellow-400 font-extrabold text-stone-950 shadow-sm shadow-yellow-500/30"
+                    : "font-semibold text-stone-700 dark:text-stone-300"
                 }`}
               >
                 {cell.day}
               </span>
-              {dayEvents.map((event, idx) => (
-                <span
-                  key={idx}
-                  title={`${event.label}${event.time ? ` · ${event.time}` : ""}`}
-                  className="mt-1 flex w-full items-center justify-center gap-0.5 truncate rounded bg-gradient-to-r from-stone-700 to-stone-900 px-1 py-0.5 text-[10px] font-medium text-white"
-                >
-                  {event.time ?? event.label}
-                </span>
-              ))}
+              <div className="mt-1 flex w-full flex-col gap-1">
+                {dayEvents.map((event, idx) => (
+                  <span
+                    key={idx}
+                    title={`${event.label}${event.time ? ` · ${event.time}` : ""}`}
+                    className="flex w-full items-center justify-center truncate rounded-md bg-yellow-400 px-1.5 py-0.5 text-[10px] font-bold text-stone-950 shadow-xs"
+                  >
+                    {event.time ?? event.label}
+                  </span>
+                ))}
+              </div>
             </div>
           );
         })}
       </div>
 
       {events.length > 0 && (
-        <div className="mt-4 space-y-1.5 border-t border-stone-200/70 pt-3 dark:border-stone-700">
+        <div className="mt-6 space-y-2 border-t border-stone-200/70 pt-4 dark:border-stone-800">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-stone-400 dark:text-stone-500 mb-2">
+            Schedule Highlights
+          </p>
           {events.map((event, i) => (
-            <p
+            <div
               key={i}
-              className="flex items-center gap-2 text-sm text-stone-600 dark:text-stone-400"
+              className="flex items-center gap-2.5 text-xs font-semibold text-stone-700 dark:text-stone-300"
             >
-              <Clock className="h-3.5 w-3.5 shrink-0 text-yellow-600 dark:text-yellow-400" />
-              <span>
-                {event.label}
-                {event.time ? ` — ${event.time}` : ""}
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-yellow-400/20 text-yellow-600 dark:text-yellow-400">
+                <Clock className="h-3 w-3" />
               </span>
-            </p>
+              <span className="font-bold text-stone-900 dark:text-white">
+                {event.label}
+              </span>
+              {event.time && (
+                <span className="text-stone-400 dark:text-stone-500 font-normal">
+                  — {event.date} at {event.time}
+                </span>
+              )}
+            </div>
           ))}
         </div>
       )}
-    </div>
+    </AdminCard>
   );
 }
