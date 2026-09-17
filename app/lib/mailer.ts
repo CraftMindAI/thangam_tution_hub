@@ -71,3 +71,30 @@ export async function sendPasswordSetupEmail(
     return false;
   }
 }
+
+/**
+ * A plain notification email — used by workflows (like the enquiry review
+ * flow) that just need to tell someone a status changed, without a bespoke
+ * template. Returns false when mail isn't configured or delivery failed.
+ */
+export async function sendNotificationEmail(
+  to: string,
+  subject: string,
+  lines: string[]
+): Promise<boolean> {
+  const transport = getMailTransport();
+  if (!transport || !to) return false;
+
+  const text = lines.join("\n");
+  const html = `<div style="font-family:system-ui,sans-serif;font-size:14px;line-height:1.6">
+      ${lines.map((l) => (l ? `<p style="margin:0 0 10px">${l}</p>` : "<br>")).join("\n")}
+    </div>`;
+
+  try {
+    await transport.sendMail({ from: MAIL_FROM, to, subject, text, html });
+    return true;
+  } catch (err) {
+    console.error(`Failed to send notification email to ${to}`, err);
+    return false;
+  }
+}
