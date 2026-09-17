@@ -12,11 +12,15 @@ function MeetingContent({
   initialDurationMinutes,
   startsAt,
   eventTitle,
+  restartHref,
+  leaveHref,
 }: {
   callId: string;
   initialDurationMinutes?: number;
   startsAt?: string | null;
   eventTitle?: string | null;
+  restartHref?: string;
+  leaveHref?: string;
 }) {
   const { call, isCallLoading } = useGetCallById(callId);
   const [isSetupComplete, setIsSetupComplete] = useState(false);
@@ -54,13 +58,18 @@ function MeetingContent({
     <StreamCall call={call}>
       <StreamTheme>
         {!isSetupComplete ? (
-          <MeetingSetup setIsSetupComplete={setIsSetupComplete} />
+          <MeetingSetup
+            setIsSetupComplete={setIsSetupComplete}
+            restartHref={restartHref}
+            leaveHref={leaveHref}
+          />
         ) : (
           <MeetingRoom
             durationMinutes={durationMinutes}
             startsAt={startsAt}
             eventTitle={title}
             callId={callId}
+            leaveHref={leaveHref}
           />
         )}
       </StreamTheme>
@@ -72,24 +81,32 @@ export default function MeetingPageClient({
   callId,
   userId,
   userName,
+  isGuest,
   initialDurationMinutes,
   startsAt,
   eventTitle,
+  restartHref,
+  leaveHref,
 }: {
   callId: string;
   userId: string;
   userName: string;
+  isGuest?: boolean;
   initialDurationMinutes?: number;
   startsAt?: string | null;
   eventTitle?: string | null;
+  restartHref?: string;
+  leaveHref?: string;
 }) {
   return (
-    <StreamVideoProvider userId={userId} userName={userName}>
+    <StreamVideoProvider userId={userId} userName={userName} isGuest={isGuest}>
       <MeetingContent
         callId={callId}
         initialDurationMinutes={initialDurationMinutes}
         startsAt={startsAt}
         eventTitle={eventTitle}
+        restartHref={restartHref}
+        leaveHref={leaveHref}
       />
     </StreamVideoProvider>
   );

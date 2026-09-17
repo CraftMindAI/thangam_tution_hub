@@ -43,36 +43,21 @@ export default async function DashboardView({ userId }: { userId: string }) {
 
   const role = profile?.role as string | undefined;
 
-  const [{ data: existing }, { data: newReq }, { data: enquiries }, { data: upcomingMeetings }] =
-    await Promise.all([
-      supabase
-        .from("existing_student_requests")
-        .select("student_name")
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle(),
-      supabase
-        .from("new_student_requests")
-        .select("student_name")
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle(),
-      supabase
-        .from("student_enquiries")
-        .select("*")
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false }),
-      supabase
-        .from("calendar_events")
-        .select("id, title, starts_at, duration_minutes")
-        .gte("starts_at", new Date().toISOString())
-        .order("starts_at", { ascending: true })
-        .limit(1),
-    ]);
+  const [{ data: enquiries }, { data: upcomingMeetings }] = await Promise.all([
+    supabase
+      .from("student_enquiries")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("calendar_events")
+      .select("id, title, starts_at, duration_minutes")
+      .gte("starts_at", new Date().toISOString())
+      .order("starts_at", { ascending: true })
+      .limit(1),
+  ]);
 
-  const displayName = existing?.student_name ?? newReq?.student_name ?? profile?.full_name ?? "Student";
+  const displayName = profile?.full_name ?? "Student";
   const nextMeeting = upcomingMeetings?.[0];
 
   return (

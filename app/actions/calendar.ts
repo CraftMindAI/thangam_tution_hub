@@ -8,7 +8,12 @@ import { StreamClient } from "@stream-io/node-sdk";
 import { createClient } from "../lib/supabase/server";
 import { createAdminClient } from "../lib/supabase/admin";
 import { getMailTransport, MAIL_FROM } from "../lib/mailer";
-import { MEETING_TYPES, MEETING_TYPE_LABELS, SEND_TO_OPTIONS } from "../lib/calendar";
+import {
+  MEETING_TYPES,
+  MEETING_TYPE_LABELS,
+  SEND_TO_OPTIONS,
+  type MeetingType,
+} from "../lib/calendar";
 import { STUDENT_CLASSES } from "../lib/students";
 import { getMeetingInvitees, getEnquiryStudents, getStudentsByIds } from "../lib/roster";
 
@@ -165,24 +170,24 @@ async function uploadAttachment(
  * Replace the invite list for an event.
  *
  * An "inquiry" meeting is about one student's enquiry, so only that student is
- * invited and the class is ignored. Every other type invites the Offline
- * students it applies to — the whole roster when no class is set, otherwise
- * just that class.
+ * invited and the class is ignored. A "demo" meeting targets people who
+ * submitted a demo request (not necessarily registered students) — every
+ * still-pending request, or a hand-picked subset of them. Every other type
+ * invites the Offline students it applies to — the whole roster when no
+ * class is set, otherwise just that class.
  *
- * When send_to is 'selected', only the hand-picked students are invited.
+ * When send_to is 'selected', only the hand-picked students/requests are invited.
  */
 async function syncEventInvites(
   supabase: Supabase,
   eventId: string,
   classFilter: string | null,
   enquiryUserId: string | null,
+  meetingType: MeetingType,
   sendTo: "all" | "selected" = "all",
   selectedStudentIds: string[] = []
 ): Promise<string[]> {
   await supabase.from("calendar_event_invites").delete().eq("event_id", eventId);
-
-  // Also clear previous selected-students join rows.
-  await supabase.from("calendar_event_selected_students").delete().eq("event_id", eventId);
 
   let invitees: { name: string; email: string }[];
 
@@ -191,21 +196,38 @@ async function syncEventInvites(
     invitees = (await getEnquiryStudents())
       .filter((s) => s.userId === enquiryUserId && s.email)
       .map((s) => ({ name: s.name, email: s.email }));
+    await supabase.from("calendar_events").update({ selected_student_ids: [] }).eq("id", eventId);
+  } else if (meetingType === "demo") {
+    // Demo meeting — target pending demo requests by email, not the student
+    // roster. "selected" here holds demo_requests ids, not user ids.
+    let query = supabase
+      .from("demo_requests")
+      .select("id, name, email")
+      .eq("status", "pending");
+    if (sendTo === "selected") {
+      query = query.in("id", selectedStudentIds.length ? selectedStudentIds : [""]);
+    }
+    const { data: demoRows } = await query;
+    invitees = (demoRows ?? []).map((d) => ({ name: d.name, email: d.email }));
+    await supabase
+      .from("calendar_events")
+      .update({ selected_student_ids: sendTo === "selected" ? selectedStudentIds : [] })
+      .eq("id", eventId);
   } else if (sendTo === "selected" && selectedStudentIds.length > 0) {
     // Hand-picked students.
     const students = await getStudentsByIds(selectedStudentIds);
     invitees = students.map((s) => ({ name: s.name, email: s.email }));
-    // Persist the selection for edit form.
-    const selectRows = selectedStudentIds.map((uid) => ({
-      event_id: eventId,
-      user_id: uid,
-    }));
-    await supabase.from("calendar_event_selected_students").insert(selectRows);
+    await supabase
+      .from("calendar_events")
+      .update({ selected_student_ids: selectedStudentIds })
+      .eq("id", eventId);
   } else if (sendTo === "selected") {
     invitees = [];
+    await supabase.from("calendar_events").update({ selected_student_ids: [] }).eq("id", eventId);
   } else {
     // All students (filtered by class).
     invitees = await getMeetingInvitees(classFilter);
+    await supabase.from("calendar_events").update({ selected_student_ids: [] }).eq("id", eventId);
   }
 
   const rows = invitees
@@ -275,7 +297,9 @@ async function notifyInvitees(
   });
   const joinUrl =
     kind !== "cancelled" && ev.call_id
-      ? `${origin}/admin/meeting/${ev.call_id}`
+      ? `${origin}${
+          ev.meeting_type === "demo" ? "/demo/meeting" : "/student/meeting"
+        }/${ev.call_id}`
       : null;
 
   const textLines = [
@@ -377,7 +401,9 @@ export async function createCalendarEvent(
   if (Number.isNaN(firstStart.getTime())) {
     return { error: "Enter a valid date and time." };
   }
-  const classFilter = resolveClassFilter(parsed.data.class_filter);
+  // Demo meetings target demo requests by email, not a class.
+  const classFilter =
+    parsed.data.meeting_type === "demo" ? null : resolveClassFilter(parsed.data.class_filter);
   // Only an inquiry meeting targets a single student.
   const enquiryUserId =
     parsed.data.meeting_type === "inquiry" && parsed.data.enquiry_user_id
@@ -447,7 +473,15 @@ export async function createCalendarEvent(
     eventIds.push(event.id);
     if (!firstCallId && callCreated) firstCallId = callId;
 
-    const emails = await syncEventInvites(auth.supabase, event.id, classFilter, enquiryUserId, sendTo, selectedStudentIds);
+    const emails = await syncEventInvites(
+      auth.supabase,
+      event.id,
+      classFilter,
+      enquiryUserId,
+      parsed.data.meeting_type,
+      sendTo,
+      selectedStudentIds
+    );
     emails.forEach((e) => allEmails.add(e));
   }
 
@@ -537,7 +571,9 @@ export async function updateCalendarEvent(
   if (Number.isNaN(startsAt.getTime())) {
     return { error: "Enter a valid date and time." };
   }
-  const classFilter = resolveClassFilter(parsed.data.class_filter);
+  // Demo meetings target demo requests by email, not a class.
+  const classFilter =
+    parsed.data.meeting_type === "demo" ? null : resolveClassFilter(parsed.data.class_filter);
   // Only an inquiry meeting targets a single student.
   const enquiryUserId =
     parsed.data.meeting_type === "inquiry" && parsed.data.enquiry_user_id
@@ -575,7 +611,15 @@ export async function updateCalendarEvent(
     .eq("id", id).eq("created_by", auth.userId);
   if (updateErr) return { error: updateErr.message };
 
-  const emails = await syncEventInvites(auth.supabase, id, classFilter, enquiryUserId, sendTo, selectedStudentIds);
+  const emails = await syncEventInvites(
+    auth.supabase,
+    id,
+    classFilter,
+    enquiryUserId,
+    parsed.data.meeting_type,
+    sendTo,
+    selectedStudentIds
+  );
   const emailed = await notifyInvitees(
     "updated",
     {

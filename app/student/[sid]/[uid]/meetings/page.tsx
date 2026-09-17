@@ -170,7 +170,9 @@ export default async function StudentMeetingsPage() {
                     <div className="flex items-center gap-3 ml-auto sm:ml-0">
                       {e.call_id ? (
                         <Link
-                          href={`/admin/meeting/${e.call_id}`}
+                          href={`${
+                            e.meeting_type === "demo" ? "/demo/meeting" : "/student/meeting"
+                          }/${e.call_id}`}
                           target="_blank"
                           rel="noopener noreferrer"
                         >

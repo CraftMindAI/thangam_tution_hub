@@ -78,18 +78,6 @@ export async function signUp(
     return { errors: {}, formError: profileError.message };
   }
 
-  const { error: requestError } = await admin.from("new_student_requests").insert({
-    user_id: userId,
-    student_name: input.student_name,
-    standard: input.standard,
-    school_name: input.school_name ?? null,
-    parent_name: input.parent_name,
-    parent_phone: input.parent_phone,
-  });
-  if (requestError) {
-    return { errors: {}, formError: requestError.message };
-  }
-
   if (data.session) {
     redirect(buildStudentDashboardPath(userId));
   }

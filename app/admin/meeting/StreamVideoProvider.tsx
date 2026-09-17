@@ -3,17 +3,19 @@
 import { ReactNode, useEffect, useState } from "react";
 import { StreamVideoClient, StreamVideo } from "@stream-io/video-react-sdk";
 import "@stream-io/video-react-sdk/dist/css/styles.css";
-import { tokenProvider } from "../../lib/stream/actions";
+import { tokenProvider, guestTokenProvider } from "../../lib/stream/actions";
 
 const API_KEY = process.env.NEXT_PUBLIC_STREAM_API_KEY;
 
 export default function StreamVideoProvider({
   userId,
   userName,
+  isGuest = false,
   children,
 }: {
   userId: string;
   userName: string;
+  isGuest?: boolean;
   children: ReactNode;
 }) {
   const [videoClient, setVideoClient] = useState<StreamVideoClient>();
@@ -28,7 +30,10 @@ export default function StreamVideoProvider({
     const client = new StreamVideoClient(API_KEY);
 
     client
-      .connectUser({ id: userId, name: userName }, tokenProvider)
+      .connectUser(
+        { id: userId, name: userName },
+        isGuest ? () => guestTokenProvider(userId) : tokenProvider
+      )
       .then(() => {
         if (!cancelled) setVideoClient(client);
       })
@@ -40,7 +45,7 @@ export default function StreamVideoProvider({
       cancelled = true;
       client.disconnectUser();
     };
-  }, [userId, userName]);
+  }, [userId, userName, isGuest]);
 
   if (!videoClient) {
     return (

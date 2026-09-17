@@ -7,6 +7,7 @@ import {
   Inbox,
   Users,
   Settings,
+  Video,
 } from "@/app/components/icons";
 
 type IconType = ComponentType<{ className?: string }>;
@@ -37,6 +38,13 @@ export function buildSettingsNav(base: string): NavItem[] {
   ];
 }
 
+export function buildEnquiryNav(base: string): NavItem[] {
+  return [
+    { label: "Student Enquiry", href: `${base}/enquiry`, icon: Inbox },
+    { label: "Demo", href: `${base}/enquiry/demo`, icon: Video },
+  ];
+}
+
 export function buildAdminNav(base: string): NavItem[] {
   return [
     { label: "Dashboard", href: `${base}/dashboard`, icon: LayoutDashboard },
@@ -52,7 +60,13 @@ export function buildAdminNav(base: string): NavItem[] {
       matchPrefix: true,
     },
     { label: "Assign Task", href: `${base}/assign-task`, icon: ClipboardList },
-    { label: "Enquiry", href: `${base}/enquiry`, icon: Inbox },
+    {
+      label: "Enquiry",
+      href: `${base}/enquiry`,
+      icon: Inbox,
+      matchPrefix: true,
+      children: buildEnquiryNav(base),
+    },
     {
       label: "Student Management",
       href: `${base}/students`,

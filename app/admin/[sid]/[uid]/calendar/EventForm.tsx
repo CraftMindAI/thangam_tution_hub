@@ -48,12 +48,19 @@ export type StudentOption = {
   type?: string;
 };
 
+export type DemoRequestOption = {
+  id: string;
+  name: string;
+  email: string;
+};
+
 type Props = (
   | { mode: "create"; defaultDate: string; defaultTime: string }
   | { mode: "edit"; event: EditableEvent }
 ) & {
   enquiryStudents: EnquiryOption[];
   allStudents: StudentOption[];
+  demoRequests: DemoRequestOption[];
   defaultSelectedStudentIds?: string[];
   onDone?: () => void;
 };
@@ -67,6 +74,7 @@ export default function EventForm(props: Props) {
     props.mode === "edit" ? props.event.meeting_type : "daily"
   );
   const isInquiry = meetingType === "inquiry";
+  const isDemo = meetingType === "demo";
   const [sendTo, setSendTo] = useState<SendTo>(
     props.mode === "edit" ? props.event.send_to : "all"
   );
@@ -75,14 +83,23 @@ export default function EventForm(props: Props) {
   );
   const [studentSearch, setStudentSearch] = useState("");
 
-  const filteredStudents = useMemo(() => {
-    if (!studentSearch.trim()) return props.allStudents;
+  // A common shape for the "selected" checklist, whichever source it's drawn
+  // from — the student roster (by class) or pending demo requests (by email).
+  const selectableOptions = useMemo(
+    () =>
+      isDemo
+        ? props.demoRequests.map((d) => ({ id: d.id, name: d.name, sublabel: d.email }))
+        : props.allStudents.map((s) => ({ id: s.userId, name: s.name, sublabel: `Class ${s.class}` })),
+    [isDemo, props.demoRequests, props.allStudents]
+  );
+
+  const filteredOptions = useMemo(() => {
+    if (!studentSearch.trim()) return selectableOptions;
     const q = studentSearch.toLowerCase();
-    return props.allStudents.filter(
-      (s) =>
-        s.name.toLowerCase().includes(q) || s.class.toLowerCase().includes(q)
+    return selectableOptions.filter(
+      (s) => s.name.toLowerCase().includes(q) || s.sublabel.toLowerCase().includes(q)
     );
-  }, [props.allStudents, studentSearch]);
+  }, [selectableOptions, studentSearch]);
 
   const [state, formAction, pending] = useActionState(
     isEdit ? updateCalendarEvent : createCalendarEvent,
@@ -122,7 +139,7 @@ export default function EventForm(props: Props) {
   }
 
   function selectAll() {
-    setSelectedIds(new Set(props.allStudents.map((s) => s.userId)));
+    setSelectedIds(new Set(selectableOptions.map((s) => s.id)));
   }
 
   function deselectAll() {
@@ -224,7 +241,7 @@ export default function EventForm(props: Props) {
               <select
                 name="class_filter"
                 defaultValue={ev?.class_filter ?? ""}
-                disabled={isInquiry}
+                disabled={isInquiry || isDemo}
                 className={`${inputClass} disabled:opacity-50`}
               >
                 <option value="">All Classes</option>
@@ -237,6 +254,8 @@ export default function EventForm(props: Props) {
               <span className="mt-0.5 block text-[10px] font-normal text-stone-400">
                 {isInquiry
                   ? "Not applicable for inquiry."
+                  : isDemo
+                  ? "Not applicable — invited by demo request email."
                   : "Invited by class email."}
               </span>
             </label>
@@ -313,6 +332,11 @@ export default function EventForm(props: Props) {
               <p className="text-[11px] font-bold uppercase tracking-wider text-stone-800 dark:text-stone-200">
                 Send Invites To
               </p>
+              {isDemo && (
+                <p className="mt-0.5 text-[10px] font-normal text-stone-400">
+                  Targets pending demo requests by email, not enrolled students.
+                </p>
+              )}
               <div className="mt-1.5 flex flex-wrap gap-4">
                 {(["all", "selected"] as const).map((opt) => (
                   <label
@@ -338,7 +362,7 @@ export default function EventForm(props: Props) {
                         type="text"
                         value={studentSearch}
                         onChange={(e) => setStudentSearch(e.target.value)}
-                        placeholder="Search students…"
+                        placeholder={isDemo ? "Search demo requests…" : "Search students…"}
                         className={`${inputClass} !mt-0`}
                       />
                     </div>
@@ -359,25 +383,26 @@ export default function EventForm(props: Props) {
                   </div>
 
                   <p className="text-[10px] font-semibold text-stone-400">
-                    {selectedIds.size} of {props.allStudents.length} students selected
+                    {selectedIds.size} of {selectableOptions.length}{" "}
+                    {isDemo ? "demo requests" : "students"} selected
                   </p>
 
                   <div className="max-h-28 space-y-1 overflow-y-auto rounded-xl border border-stone-200/80 bg-white p-1 dark:border-stone-800 dark:bg-stone-900/80 no-scrollbar">
-                    {filteredStudents.length === 0 ? (
+                    {filteredOptions.length === 0 ? (
                       <p className="p-2 text-center text-xs text-stone-400">
-                        No matching students
+                        {isDemo ? "No matching demo requests" : "No matching students"}
                       </p>
                     ) : (
-                      filteredStudents.map((s) => (
+                      filteredOptions.map((s) => (
                         <label
-                          key={s.userId}
+                          key={s.id}
                           className="flex cursor-pointer items-center justify-between gap-2 rounded-lg p-1 hover:bg-stone-50 dark:hover:bg-stone-800/60 transition-colors"
                         >
                           <div className="flex items-center gap-2 min-w-0">
                             <input
                               type="checkbox"
-                              checked={selectedIds.has(s.userId)}
-                              onChange={() => toggleStudent(s.userId)}
+                              checked={selectedIds.has(s.id)}
+                              onChange={() => toggleStudent(s.id)}
                               className="h-3.5 w-3.5 accent-yellow-400 rounded shrink-0"
                             />
                             <span className="text-xs font-semibold text-stone-800 dark:text-stone-200 truncate">
@@ -385,7 +410,7 @@ export default function EventForm(props: Props) {
                             </span>
                           </div>
                           <span className="rounded-md bg-stone-100 px-1.5 py-0.5 text-[10px] font-bold text-stone-600 dark:bg-stone-800 dark:text-stone-300 shrink-0">
-                            Class {s.class}
+                            {s.sublabel}
                           </span>
                         </label>
                       ))

@@ -144,3 +144,25 @@ export async function getEnquiryStudents(): Promise<EnquiryStudent[]> {
   }
   return out;
 }
+
+export type DemoRequestOption = {
+  id: string;
+  name: string;
+  email: string;
+};
+
+/**
+ * Demo requesters aren't necessarily registered students — just a name +
+ * email submitted from the public demo form — so they're kept separate from
+ * the student roster. Only still-pending ones are invite candidates.
+ */
+export async function getPendingDemoRequests(): Promise<DemoRequestOption[]> {
+  const admin = createAdminClient();
+  const { data } = await admin
+    .from("demo_requests")
+    .select("id, name, email")
+    .eq("status", "pending")
+    .order("created_at", { ascending: false });
+
+  return (data ?? []) as DemoRequestOption[];
+}
