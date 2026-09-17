@@ -252,7 +252,9 @@ export default function WeekCalendar({
                     key={`${e.id}-${di}`}
                     type="button"
                     onClick={() => {
-                      if (new Date(e.starts_at).getTime() < new Date().getTime()) {
+                      const endMs =
+                        new Date(e.starts_at).getTime() + e.duration_minutes * 60 * 1000;
+                      if (endMs <= Date.now()) {
                         setNotice("This session has already ended.");
                         return;
                       }
@@ -341,6 +343,11 @@ function EventPanel({
   }, [cs, onClose]);
 
   const start = new Date(event.starts_at);
+  const startMs = start.getTime();
+  const endMs = startMs + event.duration_minutes * 60 * 1000;
+  const nowMs = new Date().getTime();
+  const hasEnded = nowMs >= endMs;
+  const isLive = !hasEnded && nowMs >= startMs;
   const dateStr = start.toLocaleDateString("en-IN", {
     weekday: "long",
     day: "2-digit",
@@ -365,9 +372,17 @@ function EventPanel({
       <aside className="absolute right-0 top-0 flex h-full w-full max-w-md flex-col border-l border-stone-200/80 bg-white shadow-2xl dark:border-stone-800 dark:bg-[#121318]">
         <header className="flex items-start justify-between gap-3 border-b border-stone-100 p-6 dark:border-stone-800/80">
           <div>
-            <AdminBadge variant="yellow">
-              {MEETING_TYPE_LABELS[event.meeting_type]}
-            </AdminBadge>
+            <div className="flex items-center gap-1.5">
+              <AdminBadge variant="yellow">
+                {MEETING_TYPE_LABELS[event.meeting_type]}
+              </AdminBadge>
+              {isLive && (
+                <AdminBadge variant="live" pulse>
+                  Live Now
+                </AdminBadge>
+              )}
+              {hasEnded && <AdminBadge variant="gray">Completed</AdminBadge>}
+            </div>
             <h3 className="mt-2 text-xl font-extrabold tracking-tight text-stone-900 dark:text-white">
               {event.title}
             </h3>
@@ -551,7 +566,7 @@ function EventPanel({
             >
               Reschedule
             </AdminButton>
-            {event.call_id && (
+            {event.call_id && (isLive ? (
               <Link
                 href={`/admin/meeting/${event.call_id}`}
                 target="_blank"
@@ -561,12 +576,26 @@ function EventPanel({
                 <AdminButton
                   size="sm"
                   icon={Video}
-                  className="w-full"
+                  className="w-full animate-pulse"
                 >
                   Join Meeting
                 </AdminButton>
               </Link>
-            )}
+            ) : (
+              <AdminButton
+                size="sm"
+                icon={Video}
+                disabled
+                className="grow w-full"
+                title={
+                  hasEnded
+                    ? "This meeting has already ended."
+                    : "You can join once the meeting starts."
+                }
+              >
+                {hasEnded ? "Meeting Completed" : "Not Started Yet"}
+              </AdminButton>
+            ))}
           </footer>
         )}
       </aside>

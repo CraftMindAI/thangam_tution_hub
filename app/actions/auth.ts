@@ -40,6 +40,34 @@ export async function signIn(
   );
 }
 
+export type SignInForMeetingState = { error: string } | { success: true } | undefined;
+
+/**
+ * Signs a user in without redirecting, for the inline login on a meeting
+ * page — the caller re-renders in place (router.refresh()) once signed in,
+ * landing directly in the call instead of bouncing through a separate page.
+ */
+export async function signInForMeeting(
+  _state: SignInForMeetingState,
+  formData: FormData
+): Promise<SignInForMeetingState> {
+  const email = formData.get("email");
+  const password = formData.get("password");
+
+  if (typeof email !== "string" || typeof password !== "string" || !email || !password) {
+    return { error: "Please enter both email and password." };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  return { success: true };
+}
+
 export async function signOut() {
   const supabase = await createClient();
   await supabase.auth.signOut();

@@ -12,8 +12,12 @@ import { restartMeetingCall } from "../../actions/calendar";
 
 export default function MeetingSetup({
   setIsSetupComplete,
+  restartHref = "/admin/meeting",
+  leaveHref = "/admin",
 }: {
   setIsSetupComplete: (value: boolean) => void;
+  restartHref?: string;
+  leaveHref?: string;
 }) {
   const { useCallEndedAt, useCallStartsAt } = useCallStateHooks();
   const callStartsAt = useCallStartsAt();
@@ -57,7 +61,7 @@ export default function MeetingSetup({
     try {
       const res = await restartMeetingCall(call.id);
       if ("callId" in res) {
-        router.push(`/admin/meeting/${res.callId}`);
+        router.push(`${restartHref}/${res.callId}`);
       } else {
         alert(res.error || "Could not restart meeting");
         setIsRestarting(false);
@@ -90,10 +94,10 @@ export default function MeetingSetup({
           </button>
           <button
             type="button"
-            onClick={() => router.push("/admin")}
+            onClick={() => router.push(leaveHref)}
             className="rounded-full border border-slate-700 bg-slate-800/80 px-5 py-2.5 text-sm font-semibold text-slate-300 hover:bg-slate-700 hover:text-white transition-colors"
           >
-            Upcoming Meetings
+            Back
           </button>
         </div>
       </div>

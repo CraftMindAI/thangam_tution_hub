@@ -1,5 +1,8 @@
 import * as z from "zod";
 
+export const DEMO_REQUEST_STATUSES = ["pending", "completed"] as const;
+export type DemoRequestStatus = (typeof DEMO_REQUEST_STATUSES)[number];
+
 const phoneRegex = /^[6-9]\d{9}$/;
 
 export const demoRequestSchema = z.object({

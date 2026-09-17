@@ -1,4 +1,8 @@
-import { getEnquiryStudents, getMeetingInvitees } from "@/app/lib/roster";
+import {
+  getEnquiryStudents,
+  getMeetingInvitees,
+  getPendingDemoRequests,
+} from "@/app/lib/roster";
 import EventForm from "../EventForm";
 
 function todayYmd() {
@@ -14,9 +18,10 @@ export default async function AddEventPage({
   searchParams: Promise<{ date?: string; hrs?: string }>;
 }) {
   const { date, hrs } = await searchParams;
-  const [enquiryStudents, allOffline] = await Promise.all([
+  const [enquiryStudents, allOffline, demoRequests] = await Promise.all([
     getEnquiryStudents(),
     getMeetingInvitees(null),
+    getPendingDemoRequests(),
   ]);
 
   const allStudents = allOffline.map((s) => ({
@@ -46,6 +51,7 @@ export default async function AddEventPage({
         defaultTime={defaultTime}
         enquiryStudents={enquiryStudents}
         allStudents={allStudents}
+        demoRequests={demoRequests}
       />
     </div>
   );

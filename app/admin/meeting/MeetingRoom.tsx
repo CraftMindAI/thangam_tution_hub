@@ -30,6 +30,7 @@ interface MeetingRoomProps {
   startsAt?: string | null;
   eventTitle?: string | null;
   callId?: string;
+  leaveHref?: string;
 }
 
 export default function MeetingRoom({
@@ -37,6 +38,7 @@ export default function MeetingRoom({
   startsAt,
   eventTitle,
   callId,
+  leaveHref = "/admin",
 }: MeetingRoomProps) {
   const router = useRouter();
   const [layout, setLayout] = useState<CallLayoutType>("speaker-left");
@@ -96,7 +98,7 @@ export default function MeetingRoom({
       />
 
       <div className="fixed bottom-0 flex w-full flex-wrap items-center justify-center gap-3 bg-slate-950/80 p-3 backdrop-blur z-40">
-        <CallControls onLeave={() => router.push("/admin")} />
+        <CallControls onLeave={() => router.push(leaveHref)} />
 
         {/* Blackboard & Whiteboard button */}
         <button

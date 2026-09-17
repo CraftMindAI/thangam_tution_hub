@@ -1,6 +1,10 @@
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/app/lib/supabase/server";
-import { getEnquiryStudents, getMeetingInvitees } from "@/app/lib/roster";
+import {
+  getEnquiryStudents,
+  getMeetingInvitees,
+  getPendingDemoRequests,
+} from "@/app/lib/roster";
 import EventForm, { type EditableEvent } from "../../EventForm";
 
 export default async function EditEventPage({
@@ -19,7 +23,7 @@ export default async function EditEventPage({
   const { data: event } = await supabase
     .from("calendar_events")
     .select(
-      "id, title, description, meeting_type, starts_at, duration_minutes, class_filter, enquiry_user_id, attachment_name, send_to"
+      "id, title, description, meeting_type, starts_at, duration_minutes, class_filter, enquiry_user_id, attachment_name, send_to, selected_student_ids"
     )
     .eq("id", id)
     .eq("created_by", user.id)
@@ -27,19 +31,12 @@ export default async function EditEventPage({
 
   if (!event) notFound();
 
-  // Fetch selected student IDs if send_to = 'selected'.
-  let defaultSelectedStudentIds: string[] = [];
-  if (event.send_to === "selected") {
-    const { data: selectedRows } = await supabase
-      .from("calendar_event_selected_students")
-      .select("user_id")
-      .eq("event_id", id);
-    defaultSelectedStudentIds = (selectedRows ?? []).map((r) => r.user_id as string);
-  }
+  const defaultSelectedStudentIds = (event.selected_student_ids as string[] | null) ?? [];
 
-  const [enquiryStudents, allOffline] = await Promise.all([
+  const [enquiryStudents, allOffline, demoRequests] = await Promise.all([
     getEnquiryStudents(),
     getMeetingInvitees(null),
+    getPendingDemoRequests(),
   ]);
 
   const allStudents = allOffline.map((s) => ({
@@ -59,6 +56,7 @@ export default async function EditEventPage({
         event={event as EditableEvent}
         enquiryStudents={enquiryStudents}
         allStudents={allStudents}
+        demoRequests={demoRequests}
         defaultSelectedStudentIds={defaultSelectedStudentIds}
       />
     </div>
