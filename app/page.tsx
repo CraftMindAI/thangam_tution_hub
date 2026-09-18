@@ -23,7 +23,7 @@ import {
 
 const stats = [
   { label: "Founded", value: "2021", icon: Sparkles },
-  { label: "Grades taught", value: "Nursery–10th", icon: GraduationCap },
+  { label: "Grades taught", value: "Nursery - 10th", icon: GraduationCap },
   { label: "Registered", value: "MSME / Udyam", icon: Award },
   { label: "Subjects covered", value: "7", icon: BookOpen },
 ];
@@ -39,7 +39,7 @@ const features = [
   {
     icon: Users,
     title: "Individual Attention",
-    desc: "Every child gets their own table — no crowding, no shared desks. Doubts are cleared one-on-one, right where you sit.",
+    desc: "Every child gets their own table - no crowding, no shared desks. Doubts are cleared one-on-one, right where you sit.",
   },
   {
     icon: Sparkles,
@@ -69,7 +69,7 @@ const features = [
   {
     icon: ClipboardList,
     title: "SSS Note (Std 3+)",
-    desc: "An 80-page note tracking school syllabus coverage, what's completed, and daily morning study at home — checked weekly and signed by parents.",
+    desc: "An 80-page note tracking school syllabus coverage, what's completed, and daily morning study at home - checked weekly and signed by parents.",
   },
   {
     icon: Pencil,
@@ -118,9 +118,8 @@ export default function Home() {
               </h1>
               <p className="mt-5 max-w-lg text-lg leading-8 text-zinc-400">
                 Best-quality tuition at an affordable, reasonable price for
-                Nursery to 10th Std — with individual attention, disciplined
-                study habits and a genuine focus on every child&apos;s
-                result.
+                Nursery to 10th Std - with individual attention, disciplined
+                study habits and a genuine focus on every child&apos;s result.
               </p>
               <div className="mt-8 flex flex-wrap gap-4">
                 <Link
@@ -136,6 +135,13 @@ export default function Home() {
                 >
                   <Phone className="h-4 w-4" />
                   97892 14998
+                </a>
+                <a
+                  href="tel:9790574321"
+                  className="inline-flex items-center gap-2 rounded-full border border-zinc-700 bg-zinc-900/60 px-6 py-3.5 text-sm font-semibold text-zinc-200 backdrop-blur transition-colors hover:text-yellow-300"
+                >
+                  <Phone className="h-4 w-4" />
+                  97905 74321
                 </a>
               </div>
               <Link
@@ -159,7 +165,9 @@ export default function Home() {
                 />
               </div>
               <span className="absolute -bottom-5 -left-5 flex items-center gap-2 rounded-2xl border border-zinc-800 bg-zinc-900 px-4 py-3 shadow-lg shadow-black/40">
-                <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${iconBadge}`}>
+                <span
+                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${iconBadge}`}
+                >
                   <GraduationCap className="h-4.5 w-4.5" />
                 </span>
                 <span className="leading-tight">
@@ -212,12 +220,12 @@ export default function Home() {
               A tuition centre built on trust
             </h2>
             <p className="mt-6 text-lg leading-8 text-zinc-300">
-              Thangam Varahi Tuition Hub has been seeded in the land of
-              Chennai since <strong className="text-white">5th September 2021</strong>, on the
-              foundation of providing the best quality tutoring at an
+              Thangam Varahi Tuition Hub has been seeded in the land of Chennai
+              since <strong className="text-white">5th September 2021</strong>,
+              on the foundation of providing the best quality tutoring at an
               affordable, reasonable price for all kinds of wage-earning
-              families. We are a Government-recognised MSME (Udyam)
-              enterprise under the academic tutoring services category.
+              families. We are a Government-recognised MSME (Udyam) enterprise
+              under the academic tutoring services category.
             </p>
             <Link
               href="/about"
@@ -308,7 +316,10 @@ export default function Home() {
                     </span>
                   </div>
                   {i < subjects.length - 1 && (
-                    <span className="hidden h-1.5 w-1.5 rounded-full bg-zinc-700 sm:block" aria-hidden />
+                    <span
+                      className="hidden h-1.5 w-1.5 rounded-full bg-zinc-700 sm:block"
+                      aria-hidden
+                    />
                   )}
                 </div>
               ))}
@@ -318,8 +329,9 @@ export default function Home() {
               Annual Holiday Activities
             </h3>
             <p className="mx-auto mt-2 max-w-xl text-center text-sm text-zinc-400">
-              No tuition fees for 2 months of annual holidays — instead, we
-              teach valuable extra-curricular skills.
+              No tuition fees for 2 months of annual holidays for our tuition
+              children - instead, we teach valuable extra-curricular skills
+              exclusively for them.
             </p>
             <div className="relative mt-8 -mx-6 overflow-hidden sm:mx-0">
               <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-zinc-950 to-transparent" />
@@ -347,9 +359,8 @@ export default function Home() {
                 Free Online Doubt-Clearing Sessions
               </h2>
               <p className="mx-auto mt-3 max-w-2xl text-zinc-400">
-                Every child gets live, one-on-one online sessions after
-                tuition hours, at no extra cost — so no doubt goes
-                unanswered.
+                Our every child gets live, one-on-one online sessions after
+                tuition hours, at no extra cost - so no doubt goes unanswered.
               </p>
             </div>
             <div className="mt-10 grid gap-6 sm:grid-cols-2">
@@ -394,9 +405,7 @@ export default function Home() {
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <div>
-                    <h3 className="font-semibold text-white">
-                      {f.title}
-                    </h3>
+                    <h3 className="font-semibold text-white">{f.title}</h3>
                     <p className="mt-2 text-sm leading-6 text-zinc-400">
                       {f.desc}
                     </p>
@@ -455,9 +464,7 @@ export default function Home() {
                     <span className="mt-4 text-3xl font-extrabold text-yellow-400">
                       ₹{row.amount}
                     </span>
-                    <span className="text-xs text-zinc-500">
-                      per month
-                    </span>
+                    <span className="text-xs text-zinc-500">per month</span>
                   </div>
                 ),
               )}
@@ -527,9 +534,7 @@ export default function Home() {
                     {t.value}
                   </div>
                   {t.sub && (
-                    <div className="mt-1 text-xs text-zinc-500">
-                      ({t.sub})
-                    </div>
+                    <div className="mt-1 text-xs text-zinc-500">({t.sub})</div>
                   )}
                 </div>
               ))}
@@ -538,7 +543,10 @@ export default function Home() {
         </section>
 
         {/* Contact */}
-        <section id="contact" className="relative overflow-hidden bg-zinc-900 py-20">
+        <section
+          id="contact"
+          className="relative overflow-hidden bg-zinc-900 py-20"
+        >
           <div className="relative mx-auto max-w-4xl px-6">
             <div className="text-center">
               <Eyebrow>Contact</Eyebrow>
@@ -558,11 +566,17 @@ export default function Home() {
                 </p>
                 <p className="mt-4 flex items-center gap-2 text-sm text-zinc-800">
                   <Phone className="h-4 w-4 shrink-0" />
-                  <a href="tel:9789214998" className="font-semibold text-zinc-900">
+                  <a
+                    href="tel:9789214998"
+                    className="font-semibold text-zinc-900"
+                  >
                     97892 14998
                   </a>
                   <span>/</span>
-                  <a href="tel:9790574321" className="font-semibold text-zinc-900">
+                  <a
+                    href="tel:9790574321"
+                    className="font-semibold text-zinc-900"
+                  >
                     97905 74321
                   </a>
                 </p>
@@ -576,7 +590,7 @@ export default function Home() {
                   </a>
                 </p>
                 <a
-                  href="https://wa.me/919789214998"
+                  href="https://wa.me/919790574321"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-zinc-900/10 px-4 py-2 text-xs font-semibold text-zinc-900 transition-colors hover:bg-zinc-900/20"
@@ -589,16 +603,25 @@ export default function Home() {
                   Ready to admit your child?
                 </h3>
                 <p className="max-w-xs text-sm text-zinc-400">
-                  Call us to ask about admission, or drop by the centre any
-                  day during tuition hours.
+                  Call us to ask about admission, or drop by the centre any day
+                  during tuition hours.
                 </p>
-                <a
-                  href="tel:9789214998"
-                  className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-yellow-300 to-yellow-500 px-8 py-3.5 text-sm font-semibold text-zinc-900 shadow-lg shadow-yellow-500/20 transition-transform hover:scale-[1.03]"
-                >
-                  Enquire About Admission
-                  <ArrowRight className="h-4 w-4" />
-                </a>
+                <div className="flex flex-wrap items-center justify-center gap-3">
+                  <a
+                    href="tel:9789214998"
+                    className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-yellow-300 to-yellow-500 px-6 py-3.5 text-sm font-semibold text-zinc-900 shadow-lg shadow-yellow-500/20 transition-transform hover:scale-[1.03]"
+                  >
+                    97892 14998
+                    <ArrowRight className="h-4 w-4" />
+                  </a>
+                  <a
+                    href="tel:9790574321"
+                    className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-yellow-300 to-yellow-500 px-6 py-3.5 text-sm font-semibold text-zinc-900 shadow-lg shadow-yellow-500/20 transition-transform hover:scale-[1.03]"
+                  >
+                    97905 74321
+                    <ArrowRight className="h-4 w-4" />
+                  </a>
+                </div>
               </div>
             </div>
           </div>

@@ -71,7 +71,7 @@ export default function Contact() {
                   <span>Mon – Sat, 4:00 – 8:30 PM</span>
                 </p>
                 <a
-                  href="https://wa.me/919789214998"
+                  href="https://wa.me/919790574321"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-zinc-900/10 px-4 py-2 text-xs font-semibold text-zinc-900 transition-colors hover:bg-zinc-900/20"
@@ -86,13 +86,22 @@ export default function Contact() {
                 <p className="max-w-xs text-sm text-zinc-400">
                   Call us to ask about admission, or book a demo class online.
                 </p>
-                <a
-                  href="tel:9789214998"
-                  className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-yellow-300 to-yellow-500 px-8 py-3.5 text-sm font-semibold text-zinc-900 shadow-lg shadow-yellow-500/20 transition-transform hover:scale-[1.03]"
-                >
-                  Call: 97892 14998
-                  <ArrowRight className="h-4 w-4" />
-                </a>
+                <div className="flex flex-wrap items-center justify-center gap-3">
+                  <a
+                    href="tel:9789214998"
+                    className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-yellow-300 to-yellow-500 px-6 py-3.5 text-sm font-semibold text-zinc-900 shadow-lg shadow-yellow-500/20 transition-transform hover:scale-[1.03]"
+                  >
+                    Call: 97892 14998
+                    <ArrowRight className="h-4 w-4" />
+                  </a>
+                  <a
+                    href="tel:9790574321"
+                    className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-yellow-300 to-yellow-500 px-6 py-3.5 text-sm font-semibold text-zinc-900 shadow-lg shadow-yellow-500/20 transition-transform hover:scale-[1.03]"
+                  >
+                    Call: 97905 74321
+                    <ArrowRight className="h-4 w-4" />
+                  </a>
+                </div>
                 <Link
                   href="/demo"
                   className="inline-flex items-center rounded-full border border-zinc-700 bg-zinc-900 px-6 py-3 text-sm font-semibold text-zinc-200 transition-colors hover:text-yellow-300"

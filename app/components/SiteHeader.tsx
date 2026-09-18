@@ -27,6 +27,13 @@ export default function SiteHeader() {
               97892 14998
             </a>
             <a
+              href="tel:9790574321"
+              className="flex items-center gap-1.5 hover:text-white"
+            >
+              <Phone className="h-3.5 w-3.5" />
+              97905 74321
+            </a>
+            <a
               href="mailto:thangamvarahituitionhub247365@gmail.com"
               className="flex items-center gap-1.5 hover:text-white"
             >

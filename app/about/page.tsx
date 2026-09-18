@@ -289,6 +289,13 @@ export default function About() {
                 Call: 97892 14998
                 <ArrowRight className="h-4 w-4" />
               </a>
+              <a
+                href="tel:9790574321"
+                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-yellow-300 to-yellow-500 px-6 py-3 text-sm font-semibold text-zinc-900 shadow-lg shadow-yellow-500/20 transition-transform hover:scale-[1.03]"
+              >
+                Call: 97905 74321
+                <ArrowRight className="h-4 w-4" />
+              </a>
               <Link
                 href="/#fees"
                 className="inline-flex items-center rounded-full border border-zinc-700 bg-zinc-900 px-6 py-3 text-sm font-semibold text-zinc-200 transition-colors hover:text-yellow-300"

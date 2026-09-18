@@ -50,6 +50,13 @@ export default function SiteFooter() {
               <Phone className="h-3.5 w-3.5" />
               97892 14998
             </a>
+            <a
+              href="tel:9790574321"
+              className="inline-flex items-center gap-1.5 rounded-full bg-yellow-400 px-5 py-2.5 text-sm font-semibold text-zinc-900 shadow-sm transition-transform hover:scale-[1.03]"
+            >
+              <Phone className="h-3.5 w-3.5" />
+              97905 74321
+            </a>
             <Link
               href="/demo"
               className="inline-flex items-center gap-1.5 rounded-full border border-zinc-700 px-5 py-2.5 text-sm font-semibold text-zinc-200 transition-colors hover:border-yellow-400 hover:text-yellow-300"
@@ -67,7 +74,7 @@ export default function SiteFooter() {
               individual attention and daily discipline — since 2021.
             </p>
             <a
-              href="https://wa.me/919789214998"
+              href="https://wa.me/919790574321"
               target="_blank"
               rel="noopener noreferrer"
               className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-yellow-400 hover:underline"
@@ -126,9 +133,15 @@ export default function SiteFooter() {
               </li>
               <li className="flex items-center gap-2.5">
                 <Phone className="h-4 w-4 shrink-0 text-yellow-400" />
-                <a href="tel:9789214998" className="hover:text-yellow-300">
-                  97892 14998
-                </a>
+                <span className="flex items-center gap-1.5">
+                  <a href="tel:9789214998" className="hover:text-yellow-300">
+                    97892 14998
+                  </a>
+                  <span>/</span>
+                  <a href="tel:9790574321" className="hover:text-yellow-300">
+                    97905 74321
+                  </a>
+                </span>
               </li>
               <li className="flex items-center gap-2.5">
                 <Mail className="h-4 w-4 shrink-0 text-yellow-400" />
