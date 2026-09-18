@@ -2,6 +2,7 @@ import { createClient } from "@/app/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { ClipboardList } from "@/app/components/icons";
 import { setTaskStatus } from "@/app/actions/tasks";
+import TaskSubmitForm from "./TaskSubmitForm";
 import {
   TASK_STATUSES,
   TASK_STATUS_LABELS,
@@ -36,6 +37,16 @@ function formatDate(d: string) {
   });
 }
 
+function formatDateTime(iso: string) {
+  return new Date(iso).toLocaleString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
 export default async function StudentViewTasksPage() {
   const supabase = await createClient();
   const {
@@ -48,7 +59,9 @@ export default async function StudentViewTasksPage() {
 
   const { data: tasks } = await supabase
     .from("tasks")
-    .select("id, title, assigned_to, due_date, due_time, notes, status, created_at")
+    .select(
+      "id, title, assigned_to, due_date, due_time, notes, status, submitted_at, updated_at, created_at"
+    )
     .eq("assigned_to", user.id)
     .order("created_at", { ascending: false });
 
@@ -74,10 +87,11 @@ export default async function StudentViewTasksPage() {
           <table className={tableClasses.table}>
             <thead className={tableClasses.thead}>
               <tr>
-                <th className={tableClasses.th}>Task Title & Notes</th>
+                <th className={tableClasses.th}>Task</th>
                 <th className={tableClasses.th}>Due Date</th>
                 <th className={tableClasses.th}>Current Status</th>
                 <th className={`${tableClasses.th} text-right`}>Update</th>
+                <th className={`${tableClasses.th} text-right`}>Submit Work (PDF)</th>
               </tr>
             </thead>
             <tbody className={tableClasses.tbody}>
@@ -87,11 +101,6 @@ export default async function StudentViewTasksPage() {
                     <p className="font-extrabold text-stone-900 dark:text-white">
                       {t.title}
                     </p>
-                    {t.notes && (
-                      <p className="mt-0.5 max-w-md text-xs text-stone-500 dark:text-stone-400">
-                        {t.notes}
-                      </p>
-                    )}
                   </td>
                   <td className={`${tableClasses.td} whitespace-nowrap`}>
                     <span className="text-xs font-semibold text-stone-600 dark:text-stone-300">
@@ -126,6 +135,21 @@ export default async function StudentViewTasksPage() {
                         Update
                       </AdminButton>
                     </form>
+                  </td>
+                  <td className={`${tableClasses.td} text-right`}>
+                    {t.submitted_at ? (
+                      <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                        Submitted {formatDateTime(t.submitted_at)}
+                      </span>
+                    ) : t.status === "completed" ? (
+                      // Completed some other way (manual status change, or
+                      // before submission tracking existed) — nothing to submit.
+                      <span className="text-xs font-semibold text-stone-500 dark:text-stone-400">
+                        Completed {formatDateTime(t.updated_at)}
+                      </span>
+                    ) : (
+                      <TaskSubmitForm taskId={t.id} />
+                    )}
                   </td>
                 </tr>
               ))}

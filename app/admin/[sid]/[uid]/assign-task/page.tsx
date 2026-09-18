@@ -8,7 +8,7 @@ import {
   type Task,
   type TaskStatus,
 } from "@/app/lib/tasks";
-import TaskForm from "./TaskForm";
+import TaskFormModal from "./TaskFormModal";
 import {
   AdminPageHeader,
   AdminTableContainer,
@@ -37,6 +37,13 @@ function formatDate(d: string) {
   });
 }
 
+function isOverdue(t: Task) {
+  if (!t.due_date || t.status === "completed") return false;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return new Date(`${t.due_date}T00:00:00`) < today;
+}
+
 export default async function AssignTaskPage() {
   const supabase = await createClient();
 
@@ -48,7 +55,9 @@ export default async function AssignTaskPage() {
       .order("full_name", { ascending: true }),
     supabase
       .from("tasks")
-      .select("id, title, assigned_to, due_date, due_time, notes, status, created_at")
+      .select(
+        "id, title, assigned_to, due_date, due_time, notes, status, notified_email, email_status, created_at"
+      )
       .order("created_at", { ascending: false }),
     getRoster(),
   ]);
@@ -58,12 +67,14 @@ export default async function AssignTaskPage() {
     name: a.full_name ?? "Admin",
   }));
   const studentOptions = roster.map((s) => ({
-    id: s.userId,
+    userId: s.userId,
     name: s.name || s.email || "Student",
+    class: s.class,
+    email: s.email,
   }));
   const nameById = new Map([
     ...adminOptions.map((a) => [a.id, a.name] as const),
-    ...studentOptions.map((s) => [s.id, s.name] as const),
+    ...studentOptions.map((s) => [s.userId, s.name] as const),
   ]);
   const rows = (tasks ?? []) as Task[];
 
@@ -71,10 +82,9 @@ export default async function AssignTaskPage() {
     <div className="space-y-8">
       <AdminPageHeader
         title="Task Management"
-        subtitle="Create, assign, and track progress on administrative operational tasks."
+        subtitle="Assign homework or tasks to a class (or hand-picked students) and track progress."
+        actions={<TaskFormModal students={studentOptions} />}
       />
-
-      <TaskForm admins={adminOptions} students={studentOptions} />
 
       <AdminTableContainer
         header={
@@ -89,8 +99,9 @@ export default async function AssignTaskPage() {
           <table className={tableClasses.table}>
             <thead className={tableClasses.thead}>
               <tr>
-                <th className={tableClasses.th}>Task Title & Notes</th>
-                <th className={tableClasses.th}>Assigned Staff</th>
+                <th className={tableClasses.th}>Subject</th>
+                <th className={tableClasses.th}>Assigned Student</th>
+                <th className={tableClasses.th}>Email Sent To</th>
                 <th className={tableClasses.th}>Due Date</th>
                 <th className={tableClasses.th}>Current Status</th>
                 <th className={`${tableClasses.th} text-right`}>Actions</th>
@@ -103,19 +114,32 @@ export default async function AssignTaskPage() {
                     <p className="font-extrabold text-stone-900 dark:text-white">
                       {t.title}
                     </p>
-                    {t.notes && (
-                      <p className="mt-0.5 max-w-md text-xs text-stone-500 dark:text-stone-400">
-                        {t.notes}
-                      </p>
-                    )}
                   </td>
                   <td className={tableClasses.td}>
                     <span className="font-semibold text-stone-800 dark:text-stone-200">
                       {nameById.get(t.assigned_to) ?? "—"}
                     </span>
                   </td>
+                  <td className={tableClasses.td}>
+                    <p
+                      className={`text-xs font-semibold break-all ${
+                        t.email_status === "failed"
+                          ? "text-red-600 dark:text-red-400"
+                          : "text-stone-800 dark:text-stone-200"
+                      }`}
+                    >
+                      {t.notified_email ?? "—"}
+                      {t.email_status === "failed" && " — not sent"}
+                    </p>
+                  </td>
                   <td className={`${tableClasses.td} whitespace-nowrap`}>
-                    <span className="text-xs font-semibold text-stone-600 dark:text-stone-300">
+                    <span
+                      className={`text-xs font-semibold ${
+                        isOverdue(t)
+                          ? "text-red-600 dark:text-red-400"
+                          : "text-stone-600 dark:text-stone-300"
+                      }`}
+                    >
                       {t.due_date
                         ? `${formatDate(t.due_date)}${t.due_time ? ` · ${formatTime(t.due_time)}` : ""}`
                         : "No deadline"}
@@ -175,7 +199,7 @@ export default async function AssignTaskPage() {
               No tasks currently recorded
             </p>
             <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
-              Use the form above to assign a task to staff members.
+              Click &ldquo;Add Task&rdquo; above to assign a task to a class or particular students.
             </p>
           </div>
         )}

@@ -163,12 +163,6 @@ export default function SiteFooter() {
           </span>
           <span className="flex items-center gap-4">
             <span>Udyam Reg. No. UDYAM-TN-02-0419567</span>
-            <Link
-              href="/#top"
-              className="font-semibold text-yellow-400 hover:underline"
-            >
-              Back to top ↑
-            </Link>
           </span>
         </div>
       </div>
