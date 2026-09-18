@@ -14,7 +14,9 @@ import {
   Plus,
   GraduationCap,
   CalendarClock,
+  ClipboardList,
 } from "@/app/components/icons";
+import { TASK_STATUSES, TASK_STATUS_LABELS, type TaskStatus } from "@/app/lib/tasks";
 
 const roleLabels: Record<string, string> = {
   existing_student: "Offline Student",
@@ -43,22 +45,38 @@ export default async function DashboardView({ userId }: { userId: string }) {
 
   const role = profile?.role as string | undefined;
 
-  const [{ data: enquiries }, { data: upcomingMeetings }] = await Promise.all([
-    supabase
-      .from("student_enquiries")
-      .select("*")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false }),
-    supabase
-      .from("calendar_events")
-      .select("id, title, starts_at, duration_minutes")
-      .gte("starts_at", new Date().toISOString())
-      .order("starts_at", { ascending: true })
-      .limit(1),
-  ]);
+  const [{ data: enquiries }, { data: upcomingMeetings }, { data: tasks }] =
+    await Promise.all([
+      supabase
+        .from("student_enquiries")
+        .select("*")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false }),
+      supabase
+        .from("calendar_events")
+        .select("id, title, starts_at, duration_minutes")
+        .gte("starts_at", new Date().toISOString())
+        .order("starts_at", { ascending: true })
+        .limit(1),
+      supabase.from("tasks").select("status").eq("assigned_to", userId),
+    ]);
 
   const displayName = profile?.full_name ?? "Student";
   const nextMeeting = upcomingMeetings?.[0];
+
+  const taskCounts = TASK_STATUSES.reduce(
+    (acc, s) => ({ ...acc, [s]: 0 }),
+    {} as Record<TaskStatus, number>
+  );
+  for (const t of tasks ?? []) {
+    const status = t.status as TaskStatus;
+    if (status in taskCounts) taskCounts[status] += 1;
+  }
+  const taskCountColor: Record<TaskStatus, string> = {
+    pending: "text-amber-600 dark:text-amber-400",
+    in_progress: "text-yellow-600 dark:text-yellow-400",
+    completed: "text-emerald-600 dark:text-emerald-400",
+  };
 
   return (
     <div className="space-y-6">
@@ -75,7 +93,7 @@ export default async function DashboardView({ userId }: { userId: string }) {
       />
 
       {/* KPI Stats Grid */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <AdminCard className="p-5 flex items-center gap-4">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-yellow-400 text-stone-950 shadow-md shadow-yellow-500/20">
             <MessageSquare className="h-6 w-6" />
@@ -109,7 +127,7 @@ export default async function DashboardView({ userId }: { userId: string }) {
           </div>
         </AdminCard>
 
-        <AdminCard className="p-5 flex items-center gap-4 sm:col-span-2 lg:col-span-1">
+        <AdminCard className="p-5 flex items-center gap-4">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-stone-100 text-stone-900 dark:bg-stone-800 dark:text-stone-200">
             <CalendarClock className="h-6 w-6" />
           </div>
@@ -134,6 +152,30 @@ export default async function DashboardView({ userId }: { userId: string }) {
             <p className="mt-0.5 text-[10px] uppercase tracking-wider font-bold text-stone-400">
               Next Live Session
             </p>
+          </div>
+        </AdminCard>
+
+        <AdminCard className="p-5">
+          <div className="flex items-center gap-2">
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-stone-100 text-stone-900 dark:bg-stone-800 dark:text-stone-200">
+              <ClipboardList className="h-3.5 w-3.5" />
+            </span>
+            <p className="text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+              Task
+            </p>
+          </div>
+
+          <div className="mt-2.5 grid grid-cols-3 divide-x divide-stone-200 dark:divide-stone-800">
+            {TASK_STATUSES.map((s) => (
+              <div key={s} className="text-center">
+                <p className="truncate text-[9px] font-bold uppercase tracking-wide text-stone-500 dark:text-stone-400">
+                  {TASK_STATUS_LABELS[s]}
+                </p>
+                <p className={`mt-0.5 text-lg font-extrabold ${taskCountColor[s]}`}>
+                  {taskCounts[s]}
+                </p>
+              </div>
+            ))}
           </div>
         </AdminCard>
       </div>

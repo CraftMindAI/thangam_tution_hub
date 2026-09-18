@@ -41,3 +41,23 @@ export type Task = {
   updated_at: string;
   created_at: string;
 };
+
+/**
+ * The task email goes out over plain SMTP, not the Gmail API, so there's no
+ * message id to deep-link to. The closest we can do is open Gmail's own
+ * search for the exact subject line it was sent with (see notifyStudents()
+ * in app/actions/tasks.ts) — optionally narrowed to a specific recipient,
+ * for an admin viewing a task they sent to a particular student.
+ *
+ * Opens in whichever Gmail account is signed in in the viewer's browser —
+ * the student's own inbox, or an admin's, depending on who clicks it.
+ */
+export function gmailTaskSearchUrl(taskTitle: string, recipientEmail?: string) {
+  const query = [
+    recipientEmail ? `to:${recipientEmail}` : null,
+    `subject:"Task assigned: ${taskTitle}"`,
+  ]
+    .filter(Boolean)
+    .join(" ");
+  return `https://mail.google.com/mail/u/0/#search/${encodeURIComponent(query)}`;
+}

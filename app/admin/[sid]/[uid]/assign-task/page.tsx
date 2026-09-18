@@ -1,5 +1,7 @@
+import Link from "next/link";
 import { createClient } from "@/app/lib/supabase/server";
 import { X, ClipboardList } from "@/app/components/icons";
+import TaskFilterForm from "@/app/components/TaskFilterForm";
 import { deleteTask, setTaskStatus } from "@/app/actions/tasks";
 import { getRoster } from "@/app/lib/roster";
 import {
@@ -11,11 +13,15 @@ import {
 import TaskFormModal from "./TaskFormModal";
 import {
   AdminPageHeader,
+  AdminCard,
   AdminTableContainer,
   AdminBadge,
   AdminButton,
+  AdminPagination,
   tableClasses,
 } from "../_components/ui";
+
+const PAGE_SIZE = 10;
 
 const statusBadgeVariant: Record<TaskStatus, "warning" | "yellow" | "gray"> = {
   pending: "warning",
@@ -44,21 +50,83 @@ function isOverdue(t: Task) {
   return new Date(`${t.due_date}T00:00:00`) < today;
 }
 
-export default async function AssignTaskPage() {
+export default async function AssignTaskPage({
+  searchParams,
+}: PageProps<"/admin/[sid]/[uid]/assign-task">) {
   const supabase = await createClient();
 
-  const [{ data: admins }, { data: tasks }, roster] = await Promise.all([
+  const sp = (await searchParams) as {
+    status?: string;
+    q?: string;
+    email?: string;
+    due?: string;
+    page?: string;
+  };
+  const statusFilter = TASK_STATUSES.includes(sp.status as TaskStatus)
+    ? (sp.status as TaskStatus)
+    : null;
+  const titleFilter = typeof sp.q === "string" ? sp.q.trim() : "";
+  const emailFilter = typeof sp.email === "string" ? sp.email.trim() : "";
+  const dueFilter =
+    typeof sp.due === "string" && /^\d{4}-\d{2}-\d{2}$/.test(sp.due) ? sp.due : "";
+  const hasFilters = Boolean(statusFilter || titleFilter || emailFilter || dueFilter);
+  const requestedPage = Math.max(1, Number.parseInt(sp.page ?? "1", 10) || 1);
+
+  function buildHref(overrides: {
+    status?: TaskStatus | null;
+    q?: string;
+    email?: string;
+    due?: string;
+    page?: number;
+  }) {
+    const params = new URLSearchParams();
+    const status = "status" in overrides ? overrides.status : statusFilter;
+    const q = overrides.q ?? titleFilter;
+    const email = overrides.email ?? emailFilter;
+    const due = overrides.due ?? dueFilter;
+    const page = overrides.page ?? 1;
+    if (status) params.set("status", status);
+    if (q) params.set("q", q);
+    if (email) params.set("email", email);
+    if (due) params.set("due", due);
+    if (page > 1) params.set("page", String(page));
+    const qs = params.toString();
+    return qs ? `?${qs}` : "?";
+  }
+
+  // Every filter and the page slice are applied in the query itself — only
+  // the current page's rows (plus a few cheap counts) ever leave the DB.
+  function baseTaskQuery() {
+    let q = supabase
+      .from("tasks")
+      .select(
+        "id, title, assigned_to, due_date, due_time, notes, status, notified_email, email_status, created_at",
+        { count: "exact" }
+      );
+    if (titleFilter) q = q.ilike("title", `%${titleFilter}%`);
+    if (emailFilter) q = q.ilike("notified_email", `%${emailFilter}%`);
+    if (dueFilter) q = q.eq("due_date", dueFilter);
+    return q;
+  }
+
+  const from = (requestedPage - 1) * PAGE_SIZE;
+  const [
+    { data: admins },
+    { data: tasks, count: filteredCount },
+    { count: allCount },
+    statusCountResults,
+    roster,
+  ] = await Promise.all([
     supabase
       .from("profiles")
       .select("id, full_name")
       .eq("role", "admin")
       .order("full_name", { ascending: true }),
-    supabase
-      .from("tasks")
-      .select(
-        "id, title, assigned_to, due_date, due_time, notes, status, notified_email, email_status, created_at"
-      )
-      .order("created_at", { ascending: false }),
+    (statusFilter ? baseTaskQuery().eq("status", statusFilter) : baseTaskQuery())
+      .order("created_at", { ascending: false })
+      .range(from, from + PAGE_SIZE - 1),
+    baseTaskQuery(),
+    Promise.all(TASK_STATUSES.map((s) => baseTaskQuery().eq("status", s))),
     getRoster(),
   ]);
 
@@ -76,7 +144,13 @@ export default async function AssignTaskPage() {
     ...adminOptions.map((a) => [a.id, a.name] as const),
     ...studentOptions.map((s) => [s.userId, s.name] as const),
   ]);
+
+  const totalPages = Math.max(1, Math.ceil((filteredCount ?? 0) / PAGE_SIZE));
+  const page = Math.min(requestedPage, totalPages);
   const rows = (tasks ?? []) as Task[];
+  const countByStatus = Object.fromEntries(
+    TASK_STATUSES.map((s, i) => [s, statusCountResults[i].count ?? 0])
+  ) as Record<TaskStatus, number>;
 
   return (
     <div className="space-y-8">
@@ -86,11 +160,41 @@ export default async function AssignTaskPage() {
         actions={<TaskFormModal students={studentOptions} />}
       />
 
+      <AdminCard className="p-4 sm:p-5">
+        <TaskFilterForm showEmail />
+
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <Link
+            href={buildHref({ status: null })}
+            className={`rounded-full px-3.5 py-1.5 text-xs font-bold transition-colors ${
+              !statusFilter
+                ? "bg-yellow-400 text-stone-950"
+                : "bg-stone-100 text-stone-600 hover:bg-stone-200 dark:bg-stone-800 dark:text-stone-300 dark:hover:bg-stone-700"
+            }`}
+          >
+            All ({allCount ?? 0})
+          </Link>
+          {TASK_STATUSES.map((s) => (
+            <Link
+              key={s}
+              href={buildHref({ status: s })}
+              className={`rounded-full px-3.5 py-1.5 text-xs font-bold transition-colors ${
+                statusFilter === s
+                  ? "bg-yellow-400 text-stone-950"
+                  : "bg-stone-100 text-stone-600 hover:bg-stone-200 dark:bg-stone-800 dark:text-stone-300 dark:hover:bg-stone-700"
+              }`}
+            >
+              {TASK_STATUS_LABELS[s]} ({countByStatus[s]})
+            </Link>
+          ))}
+        </div>
+      </AdminCard>
+
       <AdminTableContainer
         header={
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-extrabold uppercase tracking-wider text-stone-900 dark:text-yellow-400">
-              Assigned Tasks ({rows.length})
+              Assigned Tasks ({filteredCount ?? 0})
             </h2>
           </div>
         }
@@ -196,14 +300,30 @@ export default async function AssignTaskPage() {
               <ClipboardList className="h-6 w-6" />
             </div>
             <p className="mt-3 text-sm font-bold text-stone-800 dark:text-stone-200">
-              No tasks currently recorded
+              {hasFilters ? "No tasks match your filters" : "No tasks currently recorded"}
             </p>
             <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
-              Click &ldquo;Add Task&rdquo; above to assign a task to a class or particular students.
+              {hasFilters
+                ? "Try clearing or adjusting the filters above."
+                : 'Click "Add Task" above to assign a task to a class or particular students.'}
             </p>
           </div>
         )}
       </AdminTableContainer>
+
+      <AdminPagination
+        page={page}
+        totalPages={totalPages}
+        buildHref={(p) =>
+          buildHref({
+            status: statusFilter,
+            q: titleFilter,
+            email: emailFilter,
+            due: dueFilter,
+            page: p,
+          })
+        }
+      />
     </div>
   );
 }

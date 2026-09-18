@@ -5,3 +5,4 @@ export * from "./AdminBadge";
 export * from "./AdminStatCard";
 export * from "./AdminPageHeader";
 export * from "./AdminTable";
+export * from "./AdminPagination";
