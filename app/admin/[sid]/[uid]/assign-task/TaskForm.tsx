@@ -1,10 +1,15 @@
 "use client";
 
-import { useActionState, useMemo, useState } from "react";
+import { useActionState, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createTask } from "@/app/actions/tasks";
 import { ClipboardList, Plus, X } from "@/app/components/icons";
-import { STUDENT_CLASSES } from "@/app/lib/students";
+import {
+  STUDENT_CLASSES,
+  STUDENT_TYPES,
+  STUDENT_TYPE_LABELS,
+  type StudentType,
+} from "@/app/lib/students";
 import { SEND_TO_OPTIONS, TASK_SEND_TO_LABELS } from "@/app/lib/tasks";
 import { AdminCard, AdminButton } from "../_components/ui";
 
@@ -16,6 +21,7 @@ export type StudentOption = {
   name: string;
   class: string;
   email: string;
+  type: StudentType;
 };
 
 export default function TaskForm({
@@ -48,22 +54,36 @@ export default function TaskForm({
   }
 
   const [classFilter, setClassFilter] = useState("");
+  const [typeFilter, setTypeFilter] = useState<StudentType | "">("");
   const [sendTo, setSendTo] = useState<(typeof SEND_TO_OPTIONS)[number]>("all");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [studentSearch, setStudentSearch] = useState("");
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const pickerRef = useRef<HTMLDivElement>(null);
 
   const classStudents = useMemo(
-    () => (classFilter ? students.filter((s) => s.class === classFilter) : students),
-    [students, classFilter]
+    () =>
+      students.filter(
+        (s) => (!classFilter || s.class === classFilter) && (!typeFilter || s.type === typeFilter)
+      ),
+    [students, classFilter, typeFilter]
   );
 
-  const filteredStudents = useMemo(() => {
-    if (!studentSearch.trim()) return classStudents;
-    const q = studentSearch.toLowerCase();
-    return classStudents.filter(
-      (s) => s.name.toLowerCase().includes(q) || s.email.toLowerCase().includes(q)
-    );
-  }, [classStudents, studentSearch]);
+  const selectedStudents = useMemo(
+    () => classStudents.filter((s) => selectedIds.has(s.userId)),
+    [classStudents, selectedIds]
+  );
+
+  // Only unselected students appear as pickable suggestions — selected ones
+  // move up into the chip row instead of staying in the dropdown.
+  const suggestions = useMemo(() => {
+    const q = studentSearch.trim().toLowerCase();
+    return classStudents.filter((s) => {
+      if (selectedIds.has(s.userId)) return false;
+      if (!q) return true;
+      return s.name.toLowerCase().includes(q) || s.email.toLowerCase().includes(q);
+    });
+  }, [classStudents, studentSearch, selectedIds]);
 
   function toggleStudent(id: string) {
     setSelectedIds((prev) => {
@@ -72,6 +92,11 @@ export default function TaskForm({
       else next.add(id);
       return next;
     });
+  }
+
+  function addStudent(id: string) {
+    setSelectedIds((prev) => new Set(prev).add(id));
+    setStudentSearch("");
   }
 
   return (
@@ -179,6 +204,47 @@ export default function TaskForm({
             </label>
           </div>
 
+          <div>
+            <p className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+              Student Type
+            </p>
+            <div className="mt-1.5 flex flex-wrap gap-3">
+              <label className="flex items-center gap-1.5 text-xs font-semibold text-stone-700 dark:text-stone-300 cursor-pointer">
+                <input
+                  type="radio"
+                  name="type_filter"
+                  value=""
+                  checked={typeFilter === ""}
+                  onChange={() => {
+                    setTypeFilter("");
+                    setSelectedIds(new Set());
+                  }}
+                  className="h-3.5 w-3.5 accent-yellow-400"
+                />
+                All Types
+              </label>
+              {STUDENT_TYPES.map((t) => (
+                <label
+                  key={t}
+                  className="flex items-center gap-1.5 text-xs font-semibold text-stone-700 dark:text-stone-300 cursor-pointer"
+                >
+                  <input
+                    type="radio"
+                    name="type_filter"
+                    value={t}
+                    checked={typeFilter === t}
+                    onChange={() => {
+                      setTypeFilter(t);
+                      setSelectedIds(new Set());
+                    }}
+                    className="h-3.5 w-3.5 accent-yellow-400"
+                  />
+                  {STUDENT_TYPE_LABELS[t]}
+                </label>
+              ))}
+            </div>
+          </div>
+
           <div className="sm:col-span-2 rounded-2xl border border-stone-200/80 bg-stone-50/60 p-4 dark:border-stone-800 dark:bg-stone-900/40">
             <p className="text-xs font-bold uppercase tracking-wider text-stone-800 dark:text-stone-200">
               Assign To
@@ -208,49 +274,89 @@ export default function TaskForm({
 
             {sendTo === "selected" && classFilter && (
               <div className="mt-3 space-y-2">
-                <input
-                  type="text"
-                  value={studentSearch}
-                  onChange={(e) => setStudentSearch(e.target.value)}
-                  placeholder="Search students…"
-                  className={`${inputClass} !mt-0`}
-                />
                 <p className="text-[10px] font-semibold text-stone-400">
-                  {selectedIds.size} of {classStudents.length} existing students selected in
-                  Class {classFilter}
+                  {selectedIds.size} of {classStudents.length} students selected in Class{" "}
+                  {classFilter}
+                  {typeFilter ? ` (${STUDENT_TYPE_LABELS[typeFilter]})` : ""}
                 </p>
-                <div className="max-h-40 space-y-1 overflow-y-auto rounded-xl border border-stone-200/80 bg-white p-1 dark:border-stone-800 dark:bg-stone-900/80 no-scrollbar">
-                  {filteredStudents.length === 0 ? (
-                    <p className="p-2 text-center text-xs text-stone-400">
-                      No matching students
-                    </p>
-                  ) : (
-                    filteredStudents.map((s) => (
-                      <label
+
+                <div ref={pickerRef} className="relative">
+                  {/* The chips + search box together look like one input. */}
+                  <div
+                    onClick={() =>
+                      pickerRef.current?.querySelector("input")?.focus()
+                    }
+                    className="flex flex-wrap items-center gap-1.5 rounded-2xl border border-stone-200 bg-stone-50 p-2 cursor-text dark:border-stone-800 dark:bg-stone-900 focus-within:border-yellow-400"
+                  >
+                    {selectedStudents.map((s) => (
+                      <span
                         key={s.userId}
-                        className="flex cursor-pointer items-center justify-between gap-2 rounded-lg p-1 hover:bg-stone-50 dark:hover:bg-stone-800/60 transition-colors"
+                        className="flex items-center gap-1 rounded-full bg-yellow-400/20 py-1 pl-2.5 pr-1 text-xs font-bold text-yellow-800 dark:text-yellow-300"
                       >
-                        <div className="flex items-center gap-2 min-w-0">
-                          <input
-                            type="checkbox"
-                            checked={selectedIds.has(s.userId)}
-                            onChange={() => toggleStudent(s.userId)}
-                            className="h-3.5 w-3.5 accent-yellow-400 rounded shrink-0"
-                          />
-                          <span className="min-w-0 leading-tight">
-                            <span className="block text-xs font-semibold text-stone-800 dark:text-stone-200 truncate">
-                              {s.name}
+                        {s.name}
+                        <button
+                          type="button"
+                          onClick={() => toggleStudent(s.userId)}
+                          aria-label={`Remove ${s.name}`}
+                          className="rounded-full p-0.5 hover:bg-yellow-400/30 transition-colors"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </span>
+                    ))}
+                    <input
+                      type="text"
+                      value={studentSearch}
+                      onChange={(e) => setStudentSearch(e.target.value)}
+                      onFocus={() => setPickerOpen(true)}
+                      onBlur={() =>
+                        setTimeout(() => {
+                          if (!pickerRef.current?.contains(document.activeElement)) {
+                            setPickerOpen(false);
+                          }
+                        }, 100)
+                      }
+                      placeholder={selectedStudents.length ? "Add more…" : "Search students…"}
+                      className="min-w-[120px] flex-1 bg-transparent px-1 py-1 text-xs font-semibold text-stone-900 outline-none placeholder:text-stone-400 dark:text-white"
+                    />
+                  </div>
+
+                  {pickerOpen && (
+                    <div className="absolute z-10 mt-1.5 max-h-48 w-full overflow-y-auto rounded-xl border border-stone-200/80 bg-white p-1 shadow-lg dark:border-stone-800 dark:bg-stone-900 no-scrollbar">
+                      {suggestions.length === 0 ? (
+                        <p className="p-2 text-center text-xs text-stone-400">
+                          {classStudents.length === selectedIds.size
+                            ? "All students in this class are selected"
+                            : "No matching students"}
+                        </p>
+                      ) : (
+                        suggestions.map((s) => (
+                          <button
+                            type="button"
+                            key={s.userId}
+                            onClick={() => addStudent(s.userId)}
+                            className="flex w-full cursor-pointer items-center justify-between gap-2 rounded-lg p-1.5 text-left hover:bg-stone-50 dark:hover:bg-stone-800/60 transition-colors"
+                          >
+                            <span className="min-w-0 leading-tight">
+                              <span className="block text-xs font-semibold text-stone-800 dark:text-stone-200 truncate">
+                                {s.name}
+                              </span>
+                              <span className="block text-[10px] text-stone-400 truncate">
+                                {s.email || "No email on file"}
+                              </span>
                             </span>
-                            <span className="block text-[10px] text-stone-400 truncate">
-                              {s.email || "No email on file"}
+                            <span className="flex flex-col items-end gap-1 shrink-0">
+                              <span className="rounded-md bg-stone-100 px-1.5 py-0.5 text-[10px] font-bold text-stone-600 dark:bg-stone-800 dark:text-stone-300">
+                                Class {s.class}
+                              </span>
+                              <span className="rounded-md bg-stone-100 px-1.5 py-0.5 text-[10px] font-bold text-stone-600 dark:bg-stone-800 dark:text-stone-300">
+                                {STUDENT_TYPE_LABELS[s.type]}
+                              </span>
                             </span>
-                          </span>
-                        </div>
-                        <span className="rounded-md bg-stone-100 px-1.5 py-0.5 text-[10px] font-bold text-stone-600 dark:bg-stone-800 dark:text-stone-300 shrink-0">
-                          Class {s.class}
-                        </span>
-                      </label>
-                    ))
+                          </button>
+                        ))
+                      )}
+                    </div>
                   )}
                 </div>
               </div>

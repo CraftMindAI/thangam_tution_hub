@@ -65,14 +65,16 @@ export async function getRoster(): Promise<RosterStudent[]> {
  * Who gets emailed a meeting invitation.
  *
  * All students (both online and offline) who have an email address.
- * Pass a class to narrow further, or null for every class.
+ * Pass a class to narrow further, or null for every class. Optionally also
+ * narrow to one student type (new_student / existing_student).
  */
 export async function getMeetingInvitees(
-  cls: string | null
+  cls: string | null,
+  type: StudentType | null = null
 ): Promise<RosterStudent[]> {
   const roster = await getRoster();
   return roster.filter(
-    (s) => s.email && (!cls || s.class === cls)
+    (s) => s.email && (!cls || s.class === cls) && (!type || s.type === type)
   );
 }
 

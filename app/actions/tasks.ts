@@ -6,7 +6,7 @@ import { createClient } from "../lib/supabase/server";
 import { createAdminClient } from "../lib/supabase/admin";
 import { getMailTransport, MAIL_FROM } from "../lib/mailer";
 import { getMeetingInvitees, getStudentsByIds } from "../lib/roster";
-import { STUDENT_CLASSES } from "../lib/students";
+import { STUDENT_CLASSES, STUDENT_TYPES, type StudentType } from "../lib/students";
 import { TASK_STATUSES, SEND_TO_OPTIONS, type TaskStatus } from "../lib/tasks";
 
 
@@ -65,10 +65,17 @@ function resolveClassFilter(raw: string): string | null {
     : null;
 }
 
+function resolveTypeFilter(raw: string): StudentType | null {
+  return raw && (STUDENT_TYPES as readonly string[]).includes(raw)
+    ? (raw as StudentType)
+    : null;
+}
+
 const taskSchema = z.object({
   subject: z.string().trim().min(1, "Subject is required"),
   description: z.string().nullable(),
   class_filter: z.string().trim(),
+  type_filter: z.string().trim(),
   send_to: z.enum(SEND_TO_OPTIONS).default("all"),
   duration_days: z
     .coerce.number()
@@ -169,6 +176,7 @@ export async function createTask(
     subject: formData.get("subject"),
     description: optionalText(formData.get("description")),
     class_filter: formData.get("class_filter") ?? "",
+    type_filter: formData.get("type_filter") ?? "",
     send_to: formData.get("send_to") ?? "all",
     duration_days: optionalText(formData.get("duration_days")),
   });
@@ -178,6 +186,7 @@ export async function createTask(
   }
 
   const classFilter = resolveClassFilter(parsed.data.class_filter);
+  const typeFilter = resolveTypeFilter(parsed.data.type_filter);
   const selectedStudentIds = formData
     .getAll("selected_student_ids")
     .map(String)
@@ -186,7 +195,7 @@ export async function createTask(
   const targets =
     parsed.data.send_to === "selected"
       ? await getStudentsByIds(selectedStudentIds)
-      : await getMeetingInvitees(classFilter);
+      : await getMeetingInvitees(classFilter, typeFilter);
 
   const withEmail = targets.filter((s) => s.email);
   if (withEmail.length === 0) {

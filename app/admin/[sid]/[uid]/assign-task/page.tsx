@@ -139,6 +139,7 @@ export default async function AssignTaskPage({
     name: s.name || s.email || "Student",
     class: s.class,
     email: s.email,
+    type: s.type,
   }));
   const nameById = new Map([
     ...adminOptions.map((a) => [a.id, a.name] as const),
