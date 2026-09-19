@@ -329,9 +329,10 @@ export default function Home() {
               Annual Holiday Activities
             </h3>
             <p className="mx-auto mt-2 max-w-xl text-center text-sm text-zinc-400">
-              No tuition fees for 2 months of annual holidays for our tuition
-              children - instead, we teach valuable extra-curricular skills
-              exclusively for them.
+              Enrolled tuition students pay no tuition fees for 2 months of
+              annual holidays - instead, we teach them valuable
+              extra-curricular skills, exclusively for our enrolled students
+              and not open to outside children.
             </p>
             <div className="relative mt-8 -mx-6 overflow-hidden sm:mx-0">
               <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-zinc-950 to-transparent" />
